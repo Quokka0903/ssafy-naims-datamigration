@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ============================================================ -->
+    <!--  ProgressBar — 가로 (Standard)                              -->
+    <!-- ============================================================ -->
+    <Style x:Key="ProgressBarDefaultStyle" TargetType="ProgressBar">
+        <Setter Property="Background"  Value="{DynamicResource BorderLightBrush}"/>
+        <Setter Property="Foreground"  Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Height"      Value="4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Border x:Name="Track"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="2"
+                            ClipToBounds="True">
+                        <!-- Filled portion -->
+                        <Border x:Name="PART_Indicator"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="2"
+                                HorizontalAlignment="Left"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  ProgressBar — 파일 Import 진행률 (라벨+바 세트)            -->
+    <!--  Usage: 위 TextBlock + 아래 ProgressBar 묶어서 사용         -->
+    <!-- ============================================================ -->
+    <Style x:Key="ProgressBarImportStyle" TargetType="ProgressBar"
+           BasedOn="{StaticResource ProgressBarDefaultStyle}">
+        <Setter Property="Height"     Value="3"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  ProgressBar — 두꺼운 버전 (8px)                            -->
+    <!-- ============================================================ -->
+    <Style x:Key="ProgressBarThickStyle" TargetType="ProgressBar"
+           BasedOn="{StaticResource ProgressBarDefaultStyle}">
+        <Setter Property="Height" Value="8"/>
+    </Style>
+
+</ResourceDictionary>

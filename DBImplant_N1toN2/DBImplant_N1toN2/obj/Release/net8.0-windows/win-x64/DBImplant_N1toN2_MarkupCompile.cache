@@ -1,0 +1,20 @@
+﻿DBImplant_N1toN2
+
+
+winexe
+C#
+.cs
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Release\net8.0-windows\win-x64\
+DBImplant_N1toN2
+none
+false
+TRACE;RELEASE;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\App.xaml
+20-502449042
+
+76-405590585
+217259738372
+Features\DbBrowser\DbBrowserView.xaml;Features\DbBrowser\RelationPanelView.xaml;Features\FileBrowser\FileBrowserView.xaml;Features\Migration\Views\MigrationExecuteView.xaml;Features\Migration\Views\MigrationPreviewView.xaml;Features\Setup\SetupView.xaml;Features\Workspace\WorkspaceView.xaml;MainWindow.xaml;Themes\ButtonStyles.xaml;Themes\CheckBoxStyles.xaml;Themes\Colors.xaml;Themes\ComboBoxStyles.xaml;Themes\DataGridStyles.xaml;Themes\PanelStyles.xaml;Themes\ProgressBarStyles.xaml;Themes\ScrollBarStyles.xaml;Themes\Styles.xaml;Themes\TabControlStyles.xaml;Themes\TextBoxStyles.xaml;Themes\Typography.xaml;
+
+False
+

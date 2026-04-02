@@ -1,0 +1,79 @@
+<UserControl x:Class="DBImplant_N1toN2.Features.DbBrowser.RelationPanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:DBImplant_N1toN2.Features.DbBrowser"
+             xmlns:conv="clr-namespace:DBImplant_N1toN2.Infrastructure.Converters"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:RelationPanelViewModel}"
+             d:DesignHeight="600" d:DesignWidth="380">
+
+    <UserControl.Resources>
+        <conv:NullToCollapsedConverter x:Key="NullToCollapsedConverter"/>
+    </UserControl.Resources>
+
+    <Border BorderBrush="#555555" BorderThickness="1"
+            Margin="0,0,6,0" CornerRadius="4" Background="#1e1e1e">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 헤더: 테이블 이름 + 필터 정보 -->
+            <Border Grid.Row="0" Background="#2d2d44" CornerRadius="4,4,0,0" Padding="8,5">
+                <StackPanel>
+                    <TextBlock Text="{Binding TableName}"
+                               FontWeight="Bold" Foreground="White" FontSize="13"/>
+                    <TextBlock Foreground="#aaaacc" FontSize="10"
+                               Visibility="{Binding FilterColumn, Converter={StaticResource NullToCollapsedConverter}}">
+                        <Run Text="{Binding FilterColumn, Mode=OneWay}"/>
+                        <Run Text=" = "/>
+                        <Run Text="{Binding FilterValue, Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- 레코드 DataGrid (자동 컬럼 생성) -->
+            <DataGrid Grid.Row="1"
+                      ItemsSource="{Binding Rows}"
+                      SelectedItem="{Binding SelectedRow}"
+                      AutoGenerateColumns="True"
+                      IsReadOnly="True"
+                      EnableRowVirtualization="True"
+                      CanUserAddRows="False"
+                      SelectionMode="Single"
+                      GridLinesVisibility="Horizontal"
+                      Background="Transparent"
+                      RowBackground="#252525"
+                      AlternatingRowBackground="#2a2a2a">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#3a3a5a"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="6,3"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Foreground" Value="#dddddd"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#4a6a9a"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.CellStyle>
+            </DataGrid>
+
+            <!-- 상태 표시줄 -->
+            <Border Grid.Row="2" Background="#2a2a2a" Padding="6,3">
+                <TextBlock Text="{Binding StatusText}"
+                           Foreground="#999999" FontSize="11"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

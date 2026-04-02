@@ -1,0 +1,55 @@
+<UserControl x:Class="DBImplant_N1toN2.Features.FileBrowser.FileBrowserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:DBImplant_N1toN2.Features.FileBrowser"
+             d:DataContext="{d:DesignInstance Type=vm:FileBrowserViewModel}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+
+    <Grid Margin="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 카테고리 선택 바 -->
+        <Border Grid.Row="0" Background="#1e1e2e" CornerRadius="4" Padding="8,6" Margin="0,0,0,6">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Left" Text="파일트리 브라우저"
+                           FontWeight="Bold" Foreground="#aaaacc" VerticalAlignment="Center"
+                           Margin="0,0,16,0"/>
+                <TextBlock DockPanel.Dock="Left" Text="{Binding MsuRootPath}"
+                           Foreground="#666699" FontSize="11" VerticalAlignment="Center"
+                           Margin="0,0,16,0"/>
+                <ListBox ItemsSource="{Binding Categories}"
+                         SelectedItem="{Binding SelectedCategory}"
+                         Background="Transparent" BorderThickness="0">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="12,4"/>
+                            <Setter Property="Margin" Value="0,0,4,0"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Background" Value="#2a2a4a"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#3a5a8a"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- 활성 콘텐츠: 기존 TabViewModel DataTemplate으로 렌더링 -->
+        <ContentControl Grid.Row="1" Content="{Binding ActiveContent}"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,246 @@
+# NAIMS 마이그레이션 WPF 프로젝트 구조 세션 정리
+> 기록일: 2026-03-31 | 세션 ID: 250d295a-84f0-4a20-b1ee-b46eee45ccb5
+
+---
+
+## 1. 세션 목적 한 줄 요약
+
+C++/NAS+MsSQL → C# WPF/MsSQL 마이그레이션 도구의 소스코드 구조 파악, 경로 선택 UI 추가, 파싱·전시 기능 런타임 오류 수정, 참조 엑셀 생성.
+
+---
+
+## 2. 시간순 사용자 요청 목록
+
+| # | 요청 요약 | 상태 |
+|---|-----------|------|
+| R01 | 프로젝트 컨텍스트 설명 (이번 주 수요일까지 파일 직접 읽지 말 것) | ✅ 메모리 저장 |
+| R02 | Notion 'NAIMS Data Migration' 하위 페이지 생성 + 매주 금요일 /compact 워크플로우 등록 | ✅ 완료 |
+| R03 | NAS \\192.168.111.165\naims_share\MSU 접근 가능 여부 확인 | ✅ 확인 (접근 불가 → 로컬 D:\MSU로 이동됨 확인) |
+| R04 | F:\JKYi\2026\260109 DB임플란트\NAIMS_DB_Query.sql 파악 | ✅ 41개 테이블 분석 완료 |
+| R05 | 솔루션 소스코드 전체 읽기 + 기능 분류/구현 현황 파악 | ✅ 4탭 구조 파악, 구현/미구현 정리 |
+| R06 | D:\MSU\단주기원음자료, D:\MSU\협대역원음자료 실존 여부 확인 | ✅ 존재 확인 (이전 오분석 정정) |
+| R07 | CollectRaw 등 MSU 경로를 파일 탐색기로 선택 가능하게 변경 + 파싱·전시 기능 오류 없이 리팩토링 | ✅ 완료, 빌드 오류 0 |
+| R08 | RuntimeError: TwoWay 바인딩이 읽기 전용 속성에서 실패 (PreciseName, PackageName) | ✅ IsReadOnly="True" 추가로 수정 |
+| R09 | Old 산출자료 정리.xlsx (C++ struct 레이아웃) 분석 → 현재 파싱 구조 대조 | ✅ 대조 완료 (TmpFileReader 수정 기반) |
+| R10 | 각 파일트리 및 DB 데이터테이블 트리를 엑셀 파일로 정리 | ✅ 프로젝트_구조_정리.xlsx 생성 (사용자 의도와 불일치) |
+| R11 | NAIMS_DB_Query.sql 포함, 파싱 폴더 트리 + 파일 데이터 구조 + DB 테이블 트리를 하나의 엑셀로 재작성 | ✅ NAIMS_마이그레이션_정리.xlsx 생성 (4시트) |
+| R12 | 내일 오전 9시 Todo 3건 스케줄 등록 | ✅ 등록 완료 (2026-04-01T09:00+09:00) |
+| R13 | 이 세션 정리 txt 파일 생성 (현재 요청) | ✅ 이 파일 |
+
+---
+
+## 3. 각 요청에 대한 Claude의 핵심 응답/설계 판단
+
+### R05 — 소스코드 구조 파악
+```
+MainWindowViewModel
+├── RawTabViewModel       → 수집원음자료 탭
+├── NarrowBandTabViewModel → 협대역원음자료 탭
+├── ShortPeriodTabViewModel → 단주기원음자료 탭 (기본 선택)
+└── FolderTabViewModel    → 식별DB 스니펫 탭
+```
+- 파싱 완성, DB INSERT 전부 TODO 상태로 확인
+- 기존 RootPath는 모두 `public string RootPath { get; }` 읽기 전용 const 문자열
+
+### R06 — 경로 오분석 정정
+- 경로명 한글이 터미널에서 깨져 보인 것. `Test-Path` 결과 `True`. 이전 "경로 불일치" 지적은 오류였음.
+
+### R07 — 경로 선택 리팩토링 설계 판단
+- `Microsoft.Win32.OpenFolderDialog` (.NET 8 WPF 내장) 사용
+- `Model/Common.cs`: `const string` → `static string { get; set; }` + 기본값 `D:\MSU\...`
+- 각 ViewModel: `_rootPath` backing field + `SelectRootPathCommand` 추가
+- `NarrowBandTabViewModel`: 경로 변경 후 `ScanNbFolders()` 자동 재실행
+- 바인딩 오류 선제 수정: `Sd.Files` → `Files`, `NbGroup.Files` → `Files`
+
+### R08 — TwoWay 바인딩 오류
+- 원인: DataGrid `IsReadOnly="False"` 상태에서 셀 더블클릭 → WPF 편집 모드 진입 → get-only 속성에 TwoWay 쓰기 시도
+- 수정: 3개 DataGrid의 모든 `DataGridTextColumn`에 `IsReadOnly="True"` 추가 (CheckBox 컬럼만 편집 가능 유지)
+
+### R09 — TmpFileReader 수정 (wpftmp 빌드 실패 해결 포함)
+- wpftmp 빌드 실패 근본 원인: Edit 툴이 ASCII `"` 대신 Unicode curly quote `"` (U+201C/U+201D) 삽입
+- Python 바이너리 치환으로 10곳 수정: `replace(b'\xe2\x80\x9c', b'"').replace(b'\xe2\x80\x9d', b'"')`
+- 추가 수정:
+  - `$"..."` 보간 문자열 → 연결 문자열 (`+`) 전환
+  - `TryRead<T> where T:struct` → 구체적 오버로드 3개 (int, float, double)
+  - `init` → `set` (replace_all)
+  - `new()` → `new List<TrTmpSegmentResult>()`
+- SdParser.cs: `StartFreq = s.StartFreq` → `StartFreq = 0` (제거된 필드 참조 수정)
+
+---
+
+## 4. 이 세션에서 생성/수정된 파일 목록
+
+### 수정된 파일
+
+| 파일 경로 | 변경 내용 |
+|-----------|-----------|
+| `Model/Common.cs` | const → static string 가변 속성, 기본값 D:\MSU\... |
+| `ViewModel/RawTabViewModel.cs` | RootPath 가변화, SelectRootPathCommand, SpsListPath null가드 |
+| `ViewModel/NarrowBandTabViewModel.cs` | RootPath 가변화, SelectRootPathCommand, ScanNbFolders 자동 재실행, RaiseCanExecuteChanged |
+| `ViewModel/ShortPeriodTabViewModel.cs` | RootPath 가변화, SelectRootPathCommand |
+| `ViewModel/FolderTabViewModel.cs` | RootPath 가변화, SelectRootPathCommand |
+| `MainWindow.xaml` | 4개 DataTemplate에 [경로 선택] 버튼 추가, 바인딩 오류 수정, DataGridTextColumn IsReadOnly="True" |
+| `ReadFileToDB/sd/TmpFileReader.cs` | curly quote 제거(10곳), 보간문자열→연결, TryRead 오버로드, init→set, new()→명시적 생성자 |
+| `ReadFileToDB/sd/SdParser.cs` | AI_SEGMENT_RESULT에서 제거된 StartFreq/EndFreq → 0 패치 |
+
+### 생성된 파일
+
+| 파일 경로 | 내용 |
+|-----------|------|
+| `F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\프로젝트_구조_정리.xlsx` | 첫 번째 엑셀 (사용자 의도 불일치, 보관용) |
+| `F:\JKYi\2026\260109 DB임플란트\NAIMS_마이그레이션_정리.xlsx` | 마이그레이션 참조 엑셀 (4시트) |
+| `C:\Users\TUKIM\AppData\Local\Temp\gen_xlsx2.py` | 위 엑셀 생성 Python 스크립트 |
+| `F:\JKYi\2026\260109 DB임플란트\세션_정리_WPF구조_20260331.txt` | 이 파일 |
+
+---
+
+## 5. 확정된 구조 결정 사항
+
+### 프로젝트 파일 구조 (현재 확정)
+```
+DBImplant_N1toN2/
+├── App.xaml / App.xaml.cs
+├── MainWindow.xaml / MainWindow.xaml.cs
+├── DBImplant_N1toN2.csproj         (.NET 8.0-windows, WPF)
+├── AssemblyInfo.cs
+│
+├── Common/
+│   ├── BWFReader.cs                 (namespace DBImplant_N1toN2.BWFReader)
+│   ├── Command.cs                   (RelayCommand 구현)
+│   ├── FolderNode.cs
+│   ├── TokenReader.cs
+│   └── WaveFileWorder.cs            (namespace BwfHandler - BwfFile.Read, BwfHeader)
+│
+├── Model/
+│   ├── Common.cs                    (AppSettings / 경로 static 속성, DB연결 문자열)
+│   ├── ShortPeriodParseModels.cs
+│   └── ShortPeriodTabModel.cs
+│
+├── ReadFileToDB/
+│   ├── nb/
+│   │   ├── NbAuxReaders.cs
+│   │   ├── NbLoader.cs
+│   │   └── NbResultReader.cs
+│   ├── raw/
+│   │   ├── DrawinglistParser.cs
+│   │   ├── RawParser.cs
+│   │   └── RawScanner.cs
+│   ├── sd/
+│   │   ├── ClaFileReader.cs
+│   │   ├── EventListReader.cs
+│   │   ├── SdLoader.cs
+│   │   ├── SdPackageImporter.cs
+│   │   ├── SdParser.cs
+│   │   ├── SPSlistReader.cs
+│   │   └── TmpFileReader.cs
+│   └── Supplement/
+│       └── supplement.cs
+│
+└── ViewModel/
+    ├── MainWindowViewModel.cs
+    ├── RawTabViewModel.cs
+    ├── NarrowBandTabViewModel.cs
+    ├── ShortPeriodTabViewModel.cs
+    └── FolderTabViewModel.cs
+```
+
+### 탭 구조 확정
+| ViewModel | 탭 이름 | RootPath 기본값 | 기능 |
+|-----------|---------|----------------|------|
+| RawTabViewModel | 수집원음자료 | D:\MSU\수집원음자료 | .sd/.nb 폴더 DFS 스캔 + 파싱 |
+| NarrowBandTabViewModel | 협대역원음자료 | D:\MSU\협대역원음자료 | .nb 패키지 스캔 + 파싱 |
+| ShortPeriodTabViewModel | 단주기원음자료 (기본) | D:\MSU\단주기원음자료 | .sd 패키지 스캔 + 파싱 |
+| FolderTabViewModel | 식별DB 스니펫 | D:\MSU\CLASSIFICATIONDB\SNIPPET | 트리 탐색 전용 |
+
+### NuGet 패키지 (csproj 확정)
+- `Microsoft.Data.SqlClient`
+- `System.Text.Encoding.CodePages`
+- BwfHandler: **외부 패키지 아님** → `Common/WaveFileWorder.cs`의 로컬 namespace
+
+### SD 파싱 파이프라인
+```
+SdParser.Parse(sdDir)
+  └─ SPSlistReader    → SPSlist__.txt
+  └─ EventListReader  → 이벤트리스트.lst
+  └─ .set 파일 직접 읽기
+  └─ AI분석결과/ 폴더
+      └─ ClaFileReader  → ai_식별결과.cla (AI_SEGMENT_RESULT 24B, 4B padding 포함)
+      └─ TmpFileReader  → ai_식별결과.tmp
+  └─ TR분석결과/ 폴더
+      └─ ClaFileReader  → tr_식별결과.cla (TR_SEGMENT_RESULT 636B)
+      └─ TmpFileReader  → tr_식별결과.tmp (TrResultItem 52B)
+→ SdLoader.Load()
+→ SdPackageImporter (DB INSERT - 미완성)
+```
+
+### NAIMS_DB_Query.sql 구조 (UTF-16 LE, 41개 테이블)
+| 그룹 | 테이블 수 | 대표 테이블 |
+|------|-----------|------------|
+| 기준정보 | 7 | VESSEL_DATA, CLASSES, CHARACTERISTICS |
+| NB_식별 | 5 | SIGNATURES, HARMONICS, DATASET, NB_SNIPPET |
+| AI_펄스 | 7 | PULSES, PULSE_SEGMENTS, AI_SNIPPET |
+| TR_과도음 | 4 | TRANSIENT, TR_FRAME, TR_SNIPPET |
+| Raw_데이터 | 3 | RAWDATAIMPORTINFO, RAWDATAINFO, RAWSIGNALINFO |
+| ONA_측정 | 2 | ONA_209, ONA_214 |
+| 운용/관리 | 4 | OPERATOR, USER_JUMIN, PASSWORD, IMAGE_DATA |
+| 배포/로그 | 10 | CD_BACKUP_LOG, DB_DIST_GROUP, DIST_LIST 등 |
+
+---
+
+## 6. 나중에 변경되었거나 보류된 사항
+
+| 항목 | 원래 상태 | 변경/보류 이유 |
+|------|-----------|---------------|
+| NAS 경로 `\\192.168.111.165\naims_share\MSU` | 하드코딩된 기본값 | 접근 불가 → `D:\MSU\...` 로 변경 |
+| `TryRead<T> where T:struct` Generic 메서드 | 원래 구현 | wpftmp 컴파일 실패 우회를 위해 구체적 오버로드 3개로 분리 |
+| `init` 접근자 | record-like 속성 | wpftmp 실패 우회를 위해 `set`으로 교체 |
+| `new()` 축약 생성자 | C# 9 target-typed new | wpftmp 실패 우회를 위해 명시적 `new List<T>()` 로 교체 |
+| `프로젝트_구조_정리.xlsx` | 첫 번째 엑셀 | 사용자 의도와 불일치 → NAIMS_마이그레이션_정리.xlsx로 재작성 |
+| DB INSERT 로직 | 전부 TODO 주석 | 2026-04-01(수) NAIMS2 스키마 쿼리 수신 후 구현 예정 |
+
+---
+
+## 7. 남은 TODO / 미해결 이슈
+
+### 즉시 처리 (2026-04-01 오전 9시 스케줄 등록됨)
+1. **엑셀 상세화**: `NAIMS_마이그레이션_정리.xlsx` → `01_폴더파일_트리` 시트를 필드명/C#타입/바이트크기 전체 표현으로 재작성
+2. **TableManager 분석**: `F:\JKYi\2024\4_NAIMS\AcousticAnalysisSystem_180423\Library_DBInterface\TableManager_*.cs` 읽기 → NAIMS_DB_Query.sql 대조 → 05_TableManager_분석 시트 추가
+3. **관계성 테이블 브라우저 구현**: `Views/RelationBrowser/` 폴더 생성, WPF 계층형 패널 UI (RelationBrowserViewModel, RelationPanelViewModel, RelationBrowserView.xaml, RelationPanelView.xaml)
+
+### 대기 중 (수요일 제공 예정)
+- NAIMS2 신 스키마 CREATE 쿼리 수신 → DB INSERT 로직 구현 (SdPackageImporter, NbLoader, RawParser INSERT 완성)
+- 구 NAIMS → 신 NAIMS2 필드 매핑 기준 수신
+
+### 미해결 이슈
+- 경고 292개 (모두 기존 코드의 nullable 참조 관련, 신규 없음) — 추후 정리 필요
+- `ReadFileToDB/Supplement/supplement.cs` 기능 미파악 (읽기 생략됨)
+- AI_SEGMENT_RESULT의 `StartFreq`, `EndFreq` 필드 제거 이력 — 원래 C++ struct에는 존재했으나 C# 재설계 시 제거, SdParser에서 0으로 패치 (추후 확인 필요)
+
+---
+
+## 8. 이 세션이 현재 코드베이스에 끼친 영향
+
+| 분류 | 영향 |
+|------|------|
+| **빌드 상태** | 오류 0개 달성 (wpftmp curly quote 오류, CS1061 StartFreq/EndFreq 오류 해결) |
+| **경로 관리** | 모든 탭 경로가 런타임에 파일 탐색기로 선택 가능해짐 |
+| **런타임 안정성** | DataGrid 편집 모드 TwoWay 바인딩 오류 제거 |
+| **null 안전성** | RawTabViewModel 생성자의 SpsListPath null 가드 추가 |
+| **파싱 로직** | TmpFileReader의 wpftmp 비호환 문법 전면 교체 (기능 동일) |
+| **참조 문서** | NAIMS_마이그레이션_정리.xlsx (4시트, 41개 테이블, 761행) 생성 |
+| **미변경** | DB INSERT 로직 (전부 TODO 상태 유지), 파싱 알고리즘 자체 |
+
+---
+
+## 핵심 결정 10개
+
+1. WPF 4탭 구조 확정: MainWindowViewModel → RawTabViewModel / NarrowBandTabViewModel / ShortPeriodTabViewModel / FolderTabViewModel
+2. 모든 ViewModel의 RootPath를 backing field + INotifyPropertyChanged + SelectRootPathCommand 패턴으로 통일
+3. 기본 경로를 NAS(\\192.168.111.165\...)에서 로컬(D:\MSU\...)으로 교체
+4. BwfHandler는 외부 NuGet이 아닌 Common/WaveFileWorder.cs 내 로컬 namespace
+5. DataGridTextColumn 전부 IsReadOnly="True", CheckBox 컬럼만 편집 허용
+6. wpftmp 컴파일 실패 회피: Generic TryRead<T> → 오버로드 3개, init → set, new() → 명시적 생성자, 보간문자열 → 연결 연산자
+7. AI_SEGMENT_RESULT에서 StartFreq/EndFreq 제거된 상태로 확정, SdParser에서 0 패치
+8. NuGet은 Microsoft.Data.SqlClient + System.Text.Encoding.CodePages만 사용
+9. NAIMS_DB_Query.sql은 UTF-16 LE 인코딩, 41개 테이블, 8개 그룹으로 분류
+10. 관계성 테이블 브라우저(Views/RelationBrowser/)는 2026-04-01 오전 9시 스케줄로 구현 예정

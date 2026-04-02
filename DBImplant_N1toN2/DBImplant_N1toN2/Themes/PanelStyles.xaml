@@ -1,0 +1,123 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ============================================================ -->
+    <!--  Card / Content Panel                                        -->
+    <!-- ============================================================ -->
+    <Style x:Key="CardStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="6"/>
+        <Setter Property="Padding"         Value="16"/>
+        <Setter Property="Effect" Value="{DynamicResource DropShadowSmall}"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Section Header — Cyan 좌측 강조선 스타일                   -->
+    <!--  Usage:                                                      -->
+    <!--    <Border Style="{DynamicResource SectionHeaderBorderStyle}">-->
+    <!--      <TextBlock Text="그룹 생성 제어"                         -->
+    <!--                 Style="{DynamicResource TextSectionHeaderStyle}"/> -->
+    <!--    </Border>                                                  -->
+    <!-- ============================================================ -->
+    <Style x:Key="SectionHeaderBorderStyle" TargetType="Border">
+        <Setter Property="BorderBrush"     Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="3,0,0,0"/>
+        <Setter Property="Padding"         Value="8,4,0,4"/>
+        <Setter Property="Margin"          Value="0,0,0,10"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Separator (구분선)                                          -->
+    <!-- ============================================================ -->
+    <Style x:Key="SeparatorStyle" TargetType="Separator">
+        <Setter Property="Background"      Value="{DynamicResource BorderLightBrush}"/>
+        <Setter Property="Height"          Value="1"/>
+        <Setter Property="Margin"          Value="0,6"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Chip / Tag  (가시화 분석 태그 버튼 스타일)                  -->
+    <!--  Usage: Border + TextBlock                                   -->
+    <!-- ============================================================ -->
+    <Style x:Key="ChipStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="CornerRadius"    Value="12"/>
+        <Setter Property="Padding"         Value="10,4"/>
+    </Style>
+
+    <Style x:Key="ChipTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground"  Value="White"/>
+        <Setter Property="FontFamily"  Value="{DynamicResource PrimaryFont}"/>
+        <Setter Property="FontSize"    Value="{DynamicResource FontSizeSmall}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Chip — Outline variant                                      -->
+    <!-- ============================================================ -->
+    <Style x:Key="ChipOutlineStyle" TargetType="Border">
+        <Setter Property="Background"      Value="White"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="12"/>
+        <Setter Property="Padding"         Value="10,4"/>
+    </Style>
+
+    <Style x:Key="ChipOutlineTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground"  Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="FontFamily"  Value="{DynamicResource PrimaryFont}"/>
+        <Setter Property="FontSize"    Value="{DynamicResource FontSizeSmall}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Dialog Header Bar                                           -->
+    <!-- ============================================================ -->
+    <Style x:Key="DialogHeaderStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="Padding"         Value="12,0"/>
+        <Setter Property="Height"          Value="36"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Dialog Body                                                 -->
+    <!-- ============================================================ -->
+    <Style x:Key="DialogBodyStyle" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+        <Setter Property="Padding"    Value="16"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Dialog Footer (버튼 영역)                                   -->
+    <!-- ============================================================ -->
+    <Style x:Key="DialogFooterStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceVariantBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderLightBrush}"/>
+        <Setter Property="BorderThickness" Value="0,1,0,0"/>
+        <Setter Property="Padding"         Value="16,10"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  File List Box (파일 목록 영역 컨테이너)                     -->
+    <!-- ============================================================ -->
+    <Style x:Key="FileListBoxStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{DynamicResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Coordinate Info Box  (지도 우상단 좌표 표시 박스)           -->
+    <!-- ============================================================ -->
+    <Style x:Key="CoordInfoBoxStyle" TargetType="Border">
+        <Setter Property="Background"      Value="#CC1B3040"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+        <Setter Property="Padding"         Value="10,6"/>
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Styles.xaml — 테마 진입점
+        App.xaml 의 Application.Resources 에서 이 파일 하나만 MergedDictionaries 에 추가하면
+        모든 스타일 리소스가 자동으로 로드됩니다.
+    -->
+    <ResourceDictionary.MergedDictionaries>
+
+        <!-- 1. Color tokens (가장 먼저 로드) -->
+        <ResourceDictionary Source="/Themes/Colors.xaml"/>
+
+        <!-- 2. Typography (Color 다음) -->
+        <ResourceDictionary Source="/Themes/Typography.xaml"/>
+
+        <!-- 3. Component styles -->
+        <ResourceDictionary Source="/Themes/ButtonStyles.xaml"/>
+        <ResourceDictionary Source="/Themes/TextBoxStyles.xaml"/>
+        <ResourceDictionary Source="/Themes/ComboBoxStyles.xaml"/>
+        <ResourceDictionary Source="/Themes/CheckBoxStyles.xaml"/>
+        <ResourceDictionary Source="/Themes/DataGridStyles.xaml"/>
+        <ResourceDictionary Source="/Themes/ProgressBarStyles.xaml"/>
+        <ResourceDictionary Source="/Themes/TabControlStyles.xaml"/>
+        <ResourceDictionary Source="/Themes/ScrollBarStyles.xaml"/>
+        <ResourceDictionary Source="/Themes/PanelStyles.xaml"/>
+
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>
