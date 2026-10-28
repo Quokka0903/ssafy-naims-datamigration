@@ -1,0 +1,148 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!--
+      ════════════════════════════════════════════════════════════════════════
+       [가이드:디자인] [GUIDE:DESIGN-TOKENS] [찾기:색토큰] [찾기:NAIMS2디자인]
+       NAIMS2 디자인 시스템 색·타이포 토큰 (다크 테마 확정본).
+
+       원본 : F:\JKYi\2024\4_NAIMS\NAIMS-II\ComponentKit\Resources\Colors.xaml
+              (aeon) NAIMS UX 디자인 가이드 UI v1.3 / Figma 최종UI
+       이식 : 원본은 _Light/_Dark 접미사로 양 테마를 함께 두지만, 이 도구는 다크 전용이라
+              다크 값만 확정해 옮겼다. 값은 원본과 1:1 동일하다(임의 조정 금지).
+       ════════════════════════════════════════════════════════════════════════
+    -->
+
+    <!-- ── Grayscale ── -->
+    <Color x:Key="Gray100">#F5F5F5</Color>
+    <Color x:Key="Gray200">#EEEEEE</Color>
+    <Color x:Key="Gray300">#E0E0E0</Color>
+    <Color x:Key="Gray400">#BDBDBD</Color>
+    <Color x:Key="Gray500">#9E9E9E</Color>
+    <Color x:Key="Gray600">#757575</Color>
+    <Color x:Key="Gray700">#616161</Color>
+    <Color x:Key="Gray800">#424242</Color>
+    <Color x:Key="Gray850">#3C3C3C</Color>
+    <Color x:Key="Gray900">#373737</Color>
+
+    <!-- ── Surface (배경) ── -->
+    <Color x:Key="BGBase">#333333</Color>
+    <Color x:Key="BGBase2">#3C3C3C</Color>
+    <Color x:Key="BGSubtle">#373737</Color>
+    <Color x:Key="BGSubtle2">#383838</Color>
+    <Color x:Key="BGDeep">#2C2C2C</Color>
+    <Color x:Key="BGFocusMain">#3D5F8E</Color>
+    <Color x:Key="BGFocusSub">#3C4857</Color>
+    <Color x:Key="BGHoverWhite20">#33FFFFFF</Color>
+
+    <!-- ── Border / Divider ── -->
+    <Color x:Key="BorderDefault">#505050</Color>
+    <Color x:Key="BorderSubtle">#333333</Color>
+    <Color x:Key="BorderStrong">#464646</Color>
+    <Color x:Key="Divider">#464646</Color>
+    <Color x:Key="Divider2">#404040</Color>
+
+    <!-- ── Text ── -->
+    <Color x:Key="TextPrimary">#CACACA</Color>
+    <Color x:Key="TextStrong">#FFFFFF</Color>
+    <Color x:Key="TextHelp">#787878</Color>
+    <Color x:Key="TextDisabled">#505050</Color>
+    <Color x:Key="TextInfo">#B4DCE9</Color>
+    <Color x:Key="TextHover">#D1D1D1</Color>
+
+    <!-- ── Primary / Accent ── -->
+    <Color x:Key="PrimaryColor">#3E77C5</Color>
+    <Color x:Key="PrimaryHover">#3D5F8E</Color>
+    <Color x:Key="AccentRed">#FF7B7B</Color>
+    <Color x:Key="AccentGreen">#3CCFB4</Color>
+    <Color x:Key="AccentYellow">#FF9900</Color>
+    <Color x:Key="AccentBlue">#B4DCE9</Color>
+
+    <!-- ════════════════════════════════════════════════════════════
+         브러시 — NAIMS2 이름
+         ════════════════════════════════════════════════════════════ -->
+    <SolidColorBrush x:Key="BrushBGBase"      Color="{StaticResource BGBase}"/>
+    <SolidColorBrush x:Key="BrushBGBase2"     Color="{StaticResource BGBase2}"/>
+    <SolidColorBrush x:Key="BrushBGSubtle"    Color="{StaticResource BGSubtle}"/>
+    <SolidColorBrush x:Key="BrushBGDeep"      Color="{StaticResource BGDeep}"/>
+    <SolidColorBrush x:Key="BrushBGFocusMain" Color="{StaticResource BGFocusMain}"/>
+    <SolidColorBrush x:Key="BrushBGFocusSub"  Color="{StaticResource BGFocusSub}"/>
+    <SolidColorBrush x:Key="BrushHoverWhite"  Color="{StaticResource BGHoverWhite20}"/>
+
+    <SolidColorBrush x:Key="BrushBorderDefault" Color="{StaticResource BorderDefault}"/>
+    <SolidColorBrush x:Key="BrushBorderStrong"  Color="{StaticResource BorderStrong}"/>
+    <SolidColorBrush x:Key="BrushDivider"       Color="{StaticResource Divider}"/>
+
+    <SolidColorBrush x:Key="BrushTextPrimary"  Color="{StaticResource TextPrimary}"/>
+    <SolidColorBrush x:Key="BrushTextStrong"   Color="{StaticResource TextStrong}"/>
+    <SolidColorBrush x:Key="BrushTextHelp"     Color="{StaticResource TextHelp}"/>
+    <SolidColorBrush x:Key="BrushTextDisabled" Color="{StaticResource TextDisabled}"/>
+    <SolidColorBrush x:Key="BrushTextInfo"     Color="{StaticResource TextInfo}"/>
+
+    <SolidColorBrush x:Key="BrushPrimary"      Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="BrushPrimaryHover" Color="{StaticResource PrimaryHover}"/>
+    <SolidColorBrush x:Key="BrushDanger"       Color="{StaticResource AccentRed}"/>
+    <SolidColorBrush x:Key="BrushSuccess"      Color="{StaticResource AccentGreen}"/>
+    <SolidColorBrush x:Key="BrushWarning"      Color="{StaticResource AccentYellow}"/>
+    <SolidColorBrush x:Key="BrushInfo"         Color="{StaticResource AccentBlue}"/>
+
+    <!-- ════════════════════════════════════════════════════════════
+         기존 키 별칭 — 화면 XAML 을 고치지 않고 색만 NAIMS2 로 바뀌게 한다.
+         (BgBrush/PanelBrush/… 는 이 프로젝트 전 화면이 쓰는 이름이다)
+         ════════════════════════════════════════════════════════════ -->
+    <SolidColorBrush x:Key="BgBrush"     Color="{StaticResource BGBase}"/>
+    <SolidColorBrush x:Key="PanelBrush"  Color="{StaticResource BGSubtle}"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderDefault}"/>
+    <SolidColorBrush x:Key="TextBrush"   Color="{StaticResource TextPrimary}"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentBlue}"/>
+    <SolidColorBrush x:Key="OkBrush"     Color="{StaticResource AccentGreen}"/>
+    <SolidColorBrush x:Key="WarnBrush"   Color="{StaticResource AccentYellow}"/>
+    <SolidColorBrush x:Key="ErrBrush"    Color="{StaticResource AccentRed}"/>
+
+    <!-- ════════════════════════════════════════════════════════════
+         타이포그래피 — ComponentKit Typography.xaml 규격
+         Pretendard 미설치 환경을 대비해 한글 폴백을 함께 지정한다.
+         ════════════════════════════════════════════════════════════ -->
+    <FontFamily x:Key="FontFamily_Default">Pretendard, Malgun Gothic, Segoe UI</FontFamily>
+    <FontFamily x:Key="FontFamily_Mono">Consolas, D2Coding, Courier New</FontFamily>
+
+    <sys:Double x:Key="FontSize_Title1">20</sys:Double>
+    <sys:Double x:Key="FontSize_Title2">18</sys:Double>
+    <sys:Double x:Key="FontSize_Title3">16</sys:Double>
+    <sys:Double x:Key="FontSize_Body1">15</sys:Double>
+    <sys:Double x:Key="FontSize_Body2">14</sys:Double>
+    <sys:Double x:Key="FontSize_Body3">13</sys:Double>
+    <sys:Double x:Key="FontSize_Caption1">12</sys:Double>
+    <sys:Double x:Key="FontSize_Caption2">11</sys:Double>
+    <sys:Double x:Key="FontSize_Button">14</sys:Double>
+
+    <Style x:Key="TextTitle1" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamily_Default}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSize_Title1}"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextStrong}"/>
+    </Style>
+    <Style x:Key="TextTitle2" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamily_Default}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSize_Title2}"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextStrong}"/>
+    </Style>
+    <Style x:Key="TextTitle3" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamily_Default}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSize_Title3}"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextStrong}"/>
+    </Style>
+    <Style x:Key="TextBody" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamily_Default}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSize_Body3}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    </Style>
+    <Style x:Key="TextCaption" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamily_Default}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSize_Caption2}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushTextHelp}"/>
+    </Style>
+</ResourceDictionary>

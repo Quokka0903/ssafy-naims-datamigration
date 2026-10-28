@@ -1,4 +1,4 @@
-<UserControl x:Class="DBImplant_N1toN2.Features.FileBrowser.FileBrowserView"
+﻿<UserControl x:Class="DBImplant_N1toN2.Features.FileBrowser.FileBrowserView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:DBImplant_N1toN2.Features.FileBrowser"
@@ -14,13 +14,13 @@
         </Grid.RowDefinitions>
 
         <!-- 카테고리 선택 바 -->
-        <Border Grid.Row="0" Background="#1e1e2e" CornerRadius="4" Padding="8,6" Margin="0,0,0,6">
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" CornerRadius="4" Padding="8,6" Margin="0,0,0,6">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Left" Text="파일트리 브라우저"
-                           FontWeight="Bold" Foreground="#aaaacc" VerticalAlignment="Center"
+                           FontWeight="Bold" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"
                            Margin="0,0,16,0"/>
                 <TextBlock DockPanel.Dock="Left" Text="{Binding MsuRootPath}"
-                           Foreground="#666699" FontSize="11" VerticalAlignment="Center"
+                           Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center"
                            Margin="0,0,16,0"/>
                 <ListBox ItemsSource="{Binding Categories}"
                          SelectedItem="{Binding SelectedCategory}"

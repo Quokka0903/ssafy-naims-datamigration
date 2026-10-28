@@ -1,0 +1,47 @@
+# Oracle Database 12.2.0.1 무인 설치 응답 파일 (Windows x64, 단일 인스턴스 + DB 생성)
+# 리허설용 non-CDB, 문자셋 AL32UTF8. 관리자 콘솔에서:
+#   cd D:\oracle12c_setup\database
+#   setup.exe -silent -responseFile "F:\JKYi\2026\260109 DB임플란트\rehearsal\install_12c\db_install.rsp" -ignorePrereqFailure -waitForCompletion
+oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v12.2.0
+
+oracle.install.option=INSTALL_DB_AND_CONFIG
+UNIX_GROUP_NAME=
+INVENTORY_LOCATION=
+ORACLE_HOME=D:\app\oracle\product\12.2.0\dbhome_1
+ORACLE_BASE=D:\app\oracle
+
+oracle.install.db.InstallEdition=EE
+oracle.install.db.OSDBA_GROUP=
+oracle.install.db.OSOPER_GROUP=
+oracle.install.db.OSBACKUPDBA_GROUP=
+oracle.install.db.OSDGDBA_GROUP=
+oracle.install.db.OSKMDBA_GROUP=
+oracle.install.db.OSRACDBA_GROUP=
+
+oracle.install.db.config.starterdb.type=GENERAL_PURPOSE
+oracle.install.db.config.starterdb.globalDBName=orcl
+oracle.install.db.config.starterdb.SID=orcl
+# non-CDB (레거시처럼 단순 스키마 구조)
+oracle.install.db.ConfigureAsContainerDB=false
+oracle.install.db.config.starterdb.characterSet=AL32UTF8
+
+oracle.install.db.config.starterdb.memoryOption=true
+oracle.install.db.config.starterdb.memoryLimit=2048
+oracle.install.db.config.starterdb.installExampleSchemas=false
+
+# SYS/SYSTEM 등 관리자 계정 공통 암호 (복잡도 충족)
+oracle.install.db.config.starterdb.password.ALL=Naims2026#
+
+oracle.install.db.config.starterdb.managementOption=DEFAULT
+oracle.install.db.config.starterdb.omsHost=
+oracle.install.db.config.starterdb.omsPort=0
+oracle.install.db.config.starterdb.emAdminUser=
+oracle.install.db.config.starterdb.emAdminPassword=
+
+oracle.install.db.config.starterdb.storageType=FILE_SYSTEM_STORAGE
+oracle.install.db.config.starterdb.fileSystemStorage.dataLocation=D:\app\oracle\oradata
+oracle.install.db.config.starterdb.fileSystemStorage.recoveryLocation=
+oracle.install.db.config.starterdb.enableRecovery=false
+
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+DECLINE_SECURITY_UPDATES=true

@@ -1,0 +1,42 @@
+총 348행
+  단주기(.sd)     231
+  협대역(.nb)     117
+
+[판정]
+  확정         324
+  미결         14
+  스키마변경      8
+  제외         2
+
+[대상 테이블 21개]
+  -                            8
+  EXTRACT_DATA_STORE           9
+  PREC_ANALYSIS                4
+  PREC_COLLECT_SUPPLEMENT      3  << 현재 NAIMS2 에 없음
+  PREC_NB_ANALYSIS             40
+  PREC_NB_CLASSIFICATION       23
+  PREC_NB_HARMONIC             3
+  PREC_NB_SIGNATURE            19
+  PREC_NB_SNIPPET              14
+  PREC_SRC_NB_SIG              3
+  PREC_SRC_SIG                 6
+  PREC_SRC_SS_SIG_EVENT        8
+  PREC_SRC_SS_SIG_SEGMENT      12
+  PREC_SS_ANALYSIS             9
+  PREC_SS_EVENT                48
+  PREC_SS_FRAME                70
+  PREC_SS_SEGMENT              48
+  RAW_COLLECT_SIG              1
+  RAW_COLLECT_SUPPLEMENT       3
+  RAW_SCHANNEL_SS_EVENT        5
+  RAW_SCHANNEL_SS_SEGMENT      12
+
+[정합성 이슈 8건]
+  스키마변경      정밀분석설정.set / Overlap -> PREC_SS_ANALYSIS.OVERLAP : 대상 PREC_SS_ANALYSIS 에 컬럼 OVERLAP 없음 — 확정 이후 스키마 변경
+  스키마변경      정밀분석설정.set / FreqResolution -> PREC_SS_ANALYSIS.FREQ_RESOLUTION : 대상 PREC_SS_ANALYSIS 에 컬럼 FREQ_RESOLUTION 없음 — 확정 이후 스키마 변경
+  스키마변경      tr_식별결과.cla / byteSnippetAppliedState -> PREC_SS_SEGMENT.HAS_SNIPPET : 대상 PREC_SS_SEGMENT 에 컬럼 HAS_SNIPPET 없음 — 확정 이후 스키마 변경
+  스키마변경      TR Snippets / grm 파일 바이트 -> PREC_SS_SEGMENT.GRAM_FILE : 대상 PREC_SS_SEGMENT 에 컬럼 GRAM_FILE 없음 — 확정 이후 스키마 변경
+  스키마변경      정밀신호처리파라미터.set / AI_DIFFUSION_MASK -> PREC_NB_ANALYSIS.AI_DIFFUSION_MASK : 대상 PREC_NB_ANALYSIS 에 컬럼 AI_DIFFUSION_MASK 없음 — 확정 이후 스키마 변경
+  스키마변경      보조정보.alg / MissionSeaArea -> PREC_COLLECT_SUPPLEMENT.MISSION_SEA_AREA : 대상 테이블 PREC_COLLECT_SUPPLEMENT 가 현재 NAIMS2 에 없음
+  스키마변경      보조정보.alg / DetSonar -> PREC_COLLECT_SUPPLEMENT.DET_SONAR : 대상 테이블 PREC_COLLECT_SUPPLEMENT 가 현재 NAIMS2 에 없음
+  스키마변경      보조정보.alg / 전체 보조정보 구조 -> PREC_COLLECT_SUPPLEMENT.SUPPLEMENT_DATA : 대상 테이블 PREC_COLLECT_SUPPLEMENT 가 현재 NAIMS2 에 없음

@@ -197,13 +197,21 @@ namespace DBImplant_N1toN2.Audio
                                 byte[] bext = ReadExact(br, (int)declSize);
                                 info.mn32HeaderSize += (int)declSize;
 
+                                // 고정 오프셋(0~602) 접근 전 최소 길이 검증
+                                if (bext.Length < 602)
+                                    throw new InvalidDataException(
+                                        $"bext 청크가 너무 작습니다: {bext.Length}바이트(고정 필드에 최소 602바이트 필요)");
+
                                 header.Bext.Description = Encoding.ASCII.GetString(bext, 0, 256).TrimEnd('\0');
                                 header.Bext.Originator = Encoding.ASCII.GetString(bext, 256, 32).TrimEnd('\0');
                                 header.Bext.OriginatorReference = Encoding.ASCII.GetString(bext, 288, 32).TrimEnd('\0');
                                 header.Bext.OriginationDate = Encoding.ASCII.GetString(bext, 320, 10).TrimEnd('\0');
                                 header.Bext.OriginationTime = Encoding.ASCII.GetString(bext, 330, 8).TrimEnd('\0');
-                                header.Bext.TimeReferenceHigh = BitConverter.ToUInt32(bext, 338);
-                                header.Bext.TimeReferenceLow = BitConverter.ToUInt32(bext, 342);
+                                // BWF 규격(EBU Tech 3285): TimeReference는 64비트 값이며
+                                // offset 338 = TimeReferenceLow(하위 32비트), offset 342 = TimeReferenceHigh(상위 32비트).
+                                // 쓰기 루틴(Write)도 Low → High 순으로 기록하므로 읽기와 방향 일치.
+                                header.Bext.TimeReferenceLow = BitConverter.ToUInt32(bext, 338);
+                                header.Bext.TimeReferenceHigh = BitConverter.ToUInt32(bext, 342);
                                 header.Bext.Version = BitConverter.ToUInt16(bext, 346);
                                 Array.Copy(bext, 348, header.Bext.UMID, 0, 64);
                                 Array.Copy(bext, 412, header.Bext.Reserved, 0, 190);
@@ -230,10 +238,19 @@ namespace DBImplant_N1toN2.Audio
                                 byte[] fmt = ReadExact(br, (int)declSize);
                                 info.mn32HeaderSize += (int)declSize;
 
-                                IntPtr p = Marshal.AllocHGlobal(fmt.Length);
+                                if (fmt.Length < 16)
+                                    throw new InvalidDataException($"fmt 청크 크기가 비정상입니다: {fmt.Length}바이트(최소 16바이트 필요)");
+
+                                // 표준 PCM fmt는 16바이트일 수 있으나 WaveFormat 구조체는 18바이트이므로
+                                // 구조체 크기 이상으로 0-패딩된 버퍼를 만들어 비관리 힙 초과 읽기를 방지
+                                int wfSize = Marshal.SizeOf(typeof(WaveFormat));
+                                byte[] fmtBuf = new byte[Math.Max(wfSize, fmt.Length)];
+                                Buffer.BlockCopy(fmt, 0, fmtBuf, 0, fmt.Length);
+
+                                IntPtr p = Marshal.AllocHGlobal(fmtBuf.Length);
                                 try
                                 {
-                                    Marshal.Copy(fmt, 0, p, fmt.Length);
+                                    Marshal.Copy(fmtBuf, 0, p, fmtBuf.Length);
                                     header.Format = (WaveFormat)Marshal.PtrToStructure(p, typeof(WaveFormat));
                                 }
                                 finally { Marshal.FreeHGlobal(p); }
@@ -286,7 +303,8 @@ namespace DBImplant_N1toN2.Audio
                                 // 16-bit PCM(모노 가정: 기존 로직 유지)
                                 info.mu32SigDataCnt = (uint)(header.DataSize / 2);
                                 var n16 = new short[info.mu32SigDataCnt];
-                                Buffer.BlockCopy(dataBytes, 0, n16, 0, dataBytes.Length);
+                                // 홀수 DataSize 대비: 완성된 16비트 샘플 바이트 수(n16*2)만 복사(ArgumentException 방지)
+                                Buffer.BlockCopy(dataBytes, 0, n16, 0, (int)(info.mu32SigDataCnt * 2));
 
                                 info.mdSigData = new double[info.mu32SigDataCnt];
 
@@ -303,6 +321,11 @@ namespace DBImplant_N1toN2.Audio
                                 for (int i = 0; i < info.mu32SigDataCnt; i++)
                                     info.mdSigData[i] = n16[i] / 32768.0 * dRange;
 
+                                // fmt 청크 미등장 또는 AvgBytesPerSec==0 상태 가드(0 나눗셈 금지 → 명시 오류)
+                                if (header.Format.AvgBytesPerSec == 0)
+                                    throw new InvalidDataException(
+                                        "fmt 청크가 없거나 AvgBytesPerSec=0 이라 data 길이를 시간으로 환산할 수 없습니다.");
+
                                 header.FactChunk.EndTime =
                                     header.FactChunk.StartTime + (int)(header.DataSize / header.Format.AvgBytesPerSec);
 
@@ -311,33 +334,34 @@ namespace DBImplant_N1toN2.Audio
 
                         default:
                             {
-                                // 여기 들어왔다는 건 chunkID가 s_knownIds에 없다는 뜻(=헤더가 어긋났을 가능성 높음).
-                                // 바로 스킵하지 말고, 헤더 위치 주변을 ±2바이트 진동하며 재동기화 시도.
-                                // headerPos는 "이번 청크를 읽기 직전 헤더의 시작 위치"여야 한다.
-                                // → while 루프 시작부에서 long headerPos = br.BaseStream.Position; 를 잡아둔 상태여야 함.
-                                //    (이미 그렇게 되어 있다면 그대로 사용)
+                                // [무한루프 수정] 미처리 청크(LIST/fact/JUNK 등) 처리 방침:
+                                //  - 헤더가 유효(인쇄 가능 FourCC + 크기가 파일 범위 내)한 미지원 청크는
+                                //    재동기화 없이 "청크시작 + 8 + chunkSize + 홀수패딩" 위치로 정상 스킵한다.
+                                //  - 재동기화 스캔은 청크 헤더 자체가 invalid일 때만 수행하며,
+                                //    반드시 현재 헤더 위치(headerPos)보다 전진한 지점에서만 재개한다.
+                                //    (같은 위치로 복귀하면 동일 청크를 무한 재방문하므로, 전진 불가 시 파싱 중단)
+                                bool headerValid =
+                                    IsPrintableFourCC(Encoding.ASCII.GetBytes(chunkID)) &&
+                                    headerPos + 8 + declSize <= br.BaseStream.Length;
 
-                                // ① 우선 짧은 ±2바이트 지터 재동기화
-                                if (TryJitterResyncAround(br, headerPos, 2, out var _newId, out var _newSize))
+                                if (headerValid)
+                                {
+                                    // 정상 스킵: 청크시작 + 헤더(8) + 페이로드 + 홀수 패딩 1바이트
+                                    br.BaseStream.Position = headerPos + 8 + declSize + (declSize & 1);
+                                    info.mn32HeaderSize += (int)declSize;
+                                    break;
+                                }
+
+                                // 헤더 invalid → headerPos "이후" 구간에서만 재동기화 스캔(전진 보장)
+                                if (TryShortScanResync(br, headerPos, 64, out var _newId, out var _newSize))
                                 {
                                     // 잘못 더한 헤더 8바이트 롤백
                                     if (info.mn32HeaderSize >= 8) info.mn32HeaderSize -= 8;
-
-                                    // 이제 루프 처음으로 돌아가서 새 헤더를 정상적으로 다시 읽는다
                                     continue;
                                 }
 
-                                // ② 실패 시, 주변 소범위 스캔(예: +64바이트)으로 헤더 재발견 시도
-                                if (TryShortScanResync(br, headerPos, 64, out _newId, out _newSize))
-                                {
-                                    if (info.mn32HeaderSize >= 8) info.mn32HeaderSize -= 8;
-                                    continue;
-                                }
-
-                                // ③ 그래도 실패하면, 원래 로직대로 'declSize'만큼 건너뛰고 패딩 처리
-                                br.BaseStream.Seek(declSize, SeekOrigin.Current);
-                                info.mn32HeaderSize += (int)declSize;
-                                SkipPadIfOdd(br, declSize);
+                                // 전진 가능한 재동기화 지점 없음 → 파싱 중단(무한루프 방지)
+                                br.BaseStream.Position = br.BaseStream.Length;
                                 break;
                             }
 
@@ -459,14 +483,15 @@ namespace DBImplant_N1toN2.Audio
             return false;
         }
 
-        // 짧은 범위 슬라이딩 스캔(옵션): 주변 N바이트에서 합리적 헤더 찾기
+        // 짧은 범위 슬라이딩 스캔(옵션): headerPos "이후" N바이트에서 합리적 헤더 찾기
+        // (주의) 반드시 headerPos보다 전진한 지점만 반환해야 같은 헤더 재방문에 의한 무한루프가 없다.
         private static bool TryShortScanResync(System.IO.BinaryReader br, long headerPos,
                                                int scanBytes, out string id, out uint size)
         {
             id = null; size = 0;
             var s = br.BaseStream;
 
-            long begin = System.Math.Max(0, headerPos - 8);
+            long begin = headerPos + 1;                       // 전진 보장: 현재 헤더 위치는 제외
             long end = System.Math.Min(s.Length, headerPos + scanBytes);
 
             for (long p = begin; p + 8 <= end; p++)
@@ -1007,10 +1032,16 @@ namespace DBImplant_N1toN2.Audio
                 if (fs.Length < expectedSize)
                     throw new InvalidDataException($"File length smaller than RIFF size. Header: {expectedSize}, Actual: {fs.Length}");
 
-                while (br.BaseStream.Position < br.BaseStream.Length)                 // 청크 순서가 바뀌거나 없을 때를 대비
+                while (br.BaseStream.Position + 8 <= br.BaseStream.Length)            // 청크 순서가 바뀌거나 없을 때를 대비(헤더 8바이트 확보 검증)
                 {
                     string chunkID = Encoding.ASCII.GetString(br.ReadBytes(4));       // 다음 청크 ID 읽기
                     uint chunkSize = br.ReadUInt32();                                 // 청크 크기 읽기
+
+                    // 청크 크기 검증: 잔여 길이 초과 또는 int 캐스팅 불가 크기면 명시 오류
+                    long remaining = br.BaseStream.Length - br.BaseStream.Position;
+                    if (chunkSize > remaining || chunkSize > int.MaxValue)
+                        throw new InvalidDataException(
+                            $"청크 '{chunkID}' 크기({chunkSize})가 파일 잔여 길이({remaining})를 초과합니다.");
 
                     if ((chunkSize % 2) != 0) chunkSize++;                            // 홀수 크기인 경우 패딩 추가
 
@@ -1021,17 +1052,26 @@ namespace DBImplant_N1toN2.Audio
 
                             header.BextChunkSize = chunkSize;                                    // bext 크기 읽기
                             var bext = br.ReadBytes((int)chunkSize);                             // bext 전체 사이즈 읽기
+
+                            // 고정 오프셋(0~602) 접근 전 최소 길이 검증
+                            if (bext.Length < 602)
+                                throw new InvalidDataException(
+                                    $"bext 청크가 너무 작습니다: {bext.Length}바이트(고정 필드에 최소 602바이트 필요)");
+
                             header.Bext.Description = Encoding.ASCII.GetString(bext, 0, 256).TrimEnd('\0');
                             header.Bext.Originator = Encoding.ASCII.GetString(bext, 256, 32).TrimEnd('\0');
                             header.Bext.OriginatorReference = Encoding.ASCII.GetString(bext, 288, 32).TrimEnd('\0');
                             header.Bext.OriginationDate = Encoding.ASCII.GetString(bext, 320, 10).TrimEnd('\0');
                             header.Bext.OriginationTime = Encoding.ASCII.GetString(bext, 330, 8).TrimEnd('\0');
-                            header.Bext.TimeReferenceHigh = BitConverter.ToUInt32(bext, 338);
-                            header.Bext.TimeReferenceLow = BitConverter.ToUInt32(bext, 342);
+                            // BWF 규격(EBU Tech 3285): offset 338 = TimeReferenceLow, offset 342 = TimeReferenceHigh
+                            header.Bext.TimeReferenceLow = BitConverter.ToUInt32(bext, 338);
+                            header.Bext.TimeReferenceHigh = BitConverter.ToUInt32(bext, 342);
                             header.Bext.Version = BitConverter.ToUInt16(bext, 346);
                             Array.Copy(bext, 348, header.Bext.UMID, 0, 64);
                             Array.Copy(bext, 412, header.Bext.Reserved, 0, 190);
-                            header.Bext.CodingHistory = Encoding.ASCII.GetString(bext, 602, 256).TrimEnd('\0');
+                            header.Bext.CodingHistory = bext.Length > 602
+                                ? Encoding.ASCII.GetString(bext, 602, Math.Min(256, bext.Length - 602)).TrimEnd('\0')
+                                : string.Empty;
                             break;
 
                         // fmt 청크
@@ -1040,8 +1080,16 @@ namespace DBImplant_N1toN2.Audio
                             header.FmtSize = chunkSize;                                          // fmt 전체 사이즈 읽기
 
                             var fmt = br.ReadBytes((int)header.FmtSize);                         // 포맷 읽기
-                            IntPtr fmtPtr = Marshal.AllocHGlobal(fmt.Length);                    // 메모리 할당
-                            Marshal.Copy(fmt, 0, fmtPtr, fmt.Length);                            // 데이터 복사
+                            if (fmt.Length < 16)
+                                throw new InvalidDataException($"fmt 청크 크기가 비정상입니다: {fmt.Length}바이트(최소 16바이트 필요)");
+
+                            // WaveFormat 구조체(18바이트)보다 작은 fmt(표준 PCM=16바이트) 대비 0-패딩 버퍼 사용
+                            int wfStructSize = Marshal.SizeOf(typeof(WaveFormat));
+                            byte[] fmtPadded = new byte[Math.Max(wfStructSize, fmt.Length)];
+                            Buffer.BlockCopy(fmt, 0, fmtPadded, 0, fmt.Length);
+
+                            IntPtr fmtPtr = Marshal.AllocHGlobal(fmtPadded.Length);              // 메모리 할당
+                            Marshal.Copy(fmtPadded, 0, fmtPtr, fmtPadded.Length);                // 데이터 복사
                             header.Format = (WaveFormat)Marshal.PtrToStructure(fmtPtr, typeof(WaveFormat)); // 구조체로 역변환
                             Marshal.FreeHGlobal(fmtPtr);                                         // 메모리 해제
                             break;

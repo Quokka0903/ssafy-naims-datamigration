@@ -1,4 +1,4 @@
-using DBImplant_N1toN2.Features.ShortPeriod.Models;
+﻿using DBImplant_N1toN2.Features.ShortPeriod.Models;
 using DBImplant_N1toN2.Features.ShortPeriod.Parsers;
 using DBImplant_N1toN2.Infrastructure;
 using DBImplant_N1toN2.Infrastructure.Commands;
@@ -120,7 +120,9 @@ namespace DBImplant_N1toN2.Features.ShortPeriod.ViewModels
                     return;
                 }
 
-                string connStr = "Server=tcp:192.168.200.205,1433;Database=NAIMS2;User Id=NAIMS2DB;Password=NAIMS2@;Encrypt=true;TrustServerCertificate=true;";
+                // [NAIMS-ISSUE:NO-EMBEDDED-SECRET] 비밀번호를 코드에 두지 않는다(이 파일은 git 추적 대상).
+                //   실행 전 접속문자열을 채워 넣어야 한다.
+                string connStr = "Server=tcp:192.168.200.205,1433;Database=NAIMS2;User Id=NAIMS2DB;Password=;Encrypt=true;TrustServerCertificate=true;";
 
                 StatusText = $"DB Import 준비(대상 {targets.Count}개) ...";
                 Progress = 0;

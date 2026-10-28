@@ -1,0 +1,38 @@
+<UserControl x:Class="DBImplant_N1toN2.Features.Migration.Views.GramCompareView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" d:DesignHeight="700" d:DesignWidth="900">
+
+    <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="4">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 상단 전시 -->
+            <Border Grid.Row="0" Background="{DynamicResource ShellBackgroundBrush}" Padding="8,4">
+                <TextBlock x:Name="TxtLabelTop" Text="레거시 원본 (BYTE → Green 채널)" Foreground="{DynamicResource TextOnDarkSecondaryBrush}" FontWeight="SemiBold"/>
+            </Border>
+            <Image Grid.Row="1" x:Name="ImgLegacy" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+
+            <!-- 하단 전시 -->
+            <Border Grid.Row="2" Background="{DynamicResource ShellBackgroundBrush}" Padding="8,4">
+                <TextBlock x:Name="TxtLabelBottom" Text="신규 변환 (float→×150+40→Green 채널)" Foreground="{DynamicResource TextOnDarkSecondaryBrush}" FontWeight="SemiBold"/>
+            </Border>
+
+            <!-- 하단: 신규 변환 결과 전시 -->
+            <Image Grid.Row="3" x:Name="ImgNew" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+
+            <!-- 정보 바 -->
+            <Border Grid.Row="4" Background="{DynamicResource ShellBackgroundBrush}" Padding="8,4">
+                <TextBlock x:Name="TxtInfo" Foreground="{DynamicResource TextOnDarkSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,349 @@
+구분	MapID	L1_No	SourceEntity	SourcePatternOrTable	ParsedObject	SourceField	TransformRule	TargetTable	TargetColumn	Required	LoadOrder	Status	Notes
+SD	SD-001	1	단주기 .sd 패키지(루트)	*.sd	PackageMeta	패키지 폴더명	패키지명 생성	PREC_ANALYSIS	PRECISE_NAME	Y	01	Fixed	폴더당 단주기 정밀분석 임무 1개
+SD	SD-002	1	단주기 .sd 패키지(루트)	*.sd	PackageMeta	상위 PREC_SRC_SIG RECORD_ID	생성 후 FK 연결	PREC_ANALYSIS	REF_PREC_SRC_SIG_ID	Y	02	Fixed	PREC_SRC_SIG 선생성 필요
+SD	SD-003	1	단주기 .sd 패키지(루트)	*.sd	PackageMeta	패키지 폴더명	패키지명 생성	PREC_SRC_SIG	PREC_SRC_SIG_NAME	Y	00	Fixed	정책상 대표 소스명
+SD	SD-004	1	단주기 .sd 패키지(루트)	*.sd	PackageMeta	대표 WAV SamplingRate	대표 WAV 메타 추출	PREC_SRC_SIG	SAMPLING_RATE	N	00	Fixed	Signal_*.wav 중 대표 원음 기준
+SD	SD-005	1	단주기 .sd 패키지(루트)	*.sd	PackageMeta	대표 WAV StartTime	대표 WAV/BWF 시작시각	PREC_SRC_SIG	RECORDING_DATETIME	N	00	Fixed	없으면 이관시각 또는 정책값
+SD	SD-006	2	Signal_*.wav	*.sd/Signal_*.wav	File	파일 바이트	원본 바이트 저장	EXTRACT_DATA_STORE	DATA	Y	10	Fixed	PREC_SRC_SS_SIG_EVENT.REF_EXTRACT_DATA_STORE_ID가 참조하는 바이너리
+SD	SD-007	2	Signal_*.wav	*.sd/Signal_*.wav	File	파일 길이(bytes)	len(file)	EXTRACT_DATA_STORE	DATA_LENGTH	Y	10	Fixed	
+SD	SD-008	2	Signal_*.wav	*.sd/Signal_*.wav	File	상수값	SS_EVENT_WAV	EXTRACT_DATA_STORE	DATA_TYPE	Y	10	Fixed	정책값
+SD	SD-009	2	Signal_*.wav	*.sd/Signal_*.wav	File	EXTRACT_DATA_STORE.RECORD_ID	insert 후 생성값	PREC_SRC_SS_SIG_EVENT	REF_EXTRACT_DATA_STORE_ID	Y	11	Fixed	항상 EXTRACT_DATA_STORE 선저장
+SD	SD-010	2	Signal_*.wav	*.sd/Signal_*.wav	WaveHeader	StartTime	BWF/TFID 시작시각 파싱	PREC_SRC_SS_SIG_EVENT	SIG_START_DATETIME	N	11	Fixed	PREC_SS_EVENT에도 동일 기준 사용
+SD	SD-011	2	Signal_*.wav	*.sd/Signal_*.wav	WaveHeader	SamplesPerSec	정수 변환	PREC_SRC_SS_SIG_EVENT	SAMPLING_RATE	N	11	Fixed	
+SD	SD-012	2	Signal_*.wav	*.sd/Signal_*.wav	File	파일 바이트	원본 바이트 저장	EXTRACT_DATA_STORE	DATA	Y	10	Fixed	PREC_SS_EVENT.REF_EXTRACT_DATA_STORE_ID가 참조하는 바이너리
+SD	SD-013	2	Signal_*.wav	*.sd/Signal_*.wav	File	파일 길이(bytes)	len(file)	EXTRACT_DATA_STORE	DATA_LENGTH	Y	10	Fixed	
+SD	SD-014	2	Signal_*.wav	*.sd/Signal_*.wav	File	상수값	SS_EVENT_WAV	EXTRACT_DATA_STORE	DATA_TYPE	Y	10	Fixed	정책값
+SD	SD-015	2	Signal_*.wav	*.sd/Signal_*.wav	File	EXTRACT_DATA_STORE.RECORD_ID	insert 후 생성값	PREC_SS_EVENT	REF_EXTRACT_DATA_STORE_ID	Y	11	Fixed	항상 EXTRACT_DATA_STORE 선저장
+SD	SD-016	2	Signal_*.wav	*.sd/Signal_*.wav	WaveHeader	StartTime	BWF/TFID 시작시각 파싱	PREC_SS_EVENT	SIG_START_DATETIME	N	11	Fixed	PREC_SS_EVENT에도 동일 기준 사용
+SD	SD-017	2	Signal_*.wav	*.sd/Signal_*.wav	WaveHeader	SamplesPerSec	정수 변환	PREC_SS_EVENT	SAMPLING_RATE	N	11	Fixed	
+SD	SD-018	2	Signal_*.wav	*.sd/Signal_*.wav	Filename	파일명의 * 값	EventID 조인키로 사용	-	-	Y	09	Fixed	저장 컬럼은 없고 SPS/LST EventID와 매칭
+SD	SD-019	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodEvent	EventID	이벤트 식별용/순번 관리	-	-	N	20	Fixed	EventID는 신규 RAW 이벤트 테이블에 별도 컬럼 없음
+SD	SD-020	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodEvent	StartTime	직접 매핑	RAW_SCHANNEL_SS_EVENT	START_MICROSEC	Y	20	Fixed	
+SD	SD-021	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodEvent	EndTime	직접 매핑	RAW_SCHANNEL_SS_EVENT	END_MICROSEC	Y	20	Fixed	
+SD	SD-022	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodEvent	EventLength	직접 매핑	RAW_SCHANNEL_SS_EVENT	EVENT_LENGTH_MICROSEC	Y	20	Fixed	
+SD	SD-023	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodEvent	DetectingType	직접 매핑	RAW_SCHANNEL_SS_EVENT	DETECTING_TYPE	Y	20	Fixed	
+SD	SD-024	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodEvent	ManualOrAuto	직접 매핑	RAW_SCHANNEL_SS_EVENT	MANUAL_AUTO	Y	20	Fixed	
+SD	SD-025	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	SegmentID	원 세그먼트 식별용	-	-	N	21	Fixed	SegmentID는 신규 RAW 세그먼트 테이블에 별도 컬럼 없음
+SD	SD-026	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	StartTime	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	START_MICROSEC	Y	21	Fixed	
+SD	SD-027	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	EndTime	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	END_MICROSEC	Y	21	Fixed	
+SD	SD-028	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	Length	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	SEGMENT_LENGTH_MICROSEC	Y	21	Fixed	
+SD	SD-029	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	LDAx	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	LDA_X	Y	21	Fixed	
+SD	SD-030	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	LDAy	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	LDA_Y	Y	21	Fixed	
+SD	SD-031	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	DetectingType	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	DETECT_TYPE	Y	21	Fixed	
+SD	SD-032	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	FrameCount	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	FRAME_COUNT	Y	21	Fixed	
+SD	SD-033	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	StartFreq	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	START_FREQ	Y	21	Fixed	
+SD	SD-034	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	EndFreq	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	END_FREQ	Y	21	Fixed	
+SD	SD-035	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	Modulation	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	MODE	Y	21	Fixed	
+SD	SD-036	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	CenterFreq	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	CENTER_FREQ	Y	21	Fixed	
+SD	SD-037	3	SPSlist.txt	*.sd/SPSlist.txt	ShortPeriodSegment	BandWidth	직접 매핑	RAW_SCHANNEL_SS_SEGMENT	BANDWIDTH	Y	21	Fixed	
+SD	SD-038	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodEvent	EventID	이벤트 식별용/Signal_*.wav 조인	-	-	N	30	Fixed	EventID는 Signal_*.wav와 조인
+SD	SD-039	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodEvent	StartTime	직접 매핑	PREC_SRC_SS_SIG_EVENT	START_MICROSEC	Y	30	Fixed	
+SD	SD-040	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodEvent	EndTime	직접 매핑	PREC_SRC_SS_SIG_EVENT	END_MICROSEC	Y	30	Fixed	
+SD	SD-041	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodEvent	EventLength	직접 매핑	PREC_SRC_SS_SIG_EVENT	EVENT_LENGTH_MICROSEC	Y	30	Fixed	
+SD	SD-042	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodEvent	DetectingType	DetectType 문자열은 int 코드화	PREC_SRC_SS_SIG_EVENT	DETECTING_TYPE	Y	30	Fixed	
+SD	SD-043	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodEvent	ManualOrAuto	직접 매핑	PREC_SRC_SS_SIG_EVENT	MANUAL_AUTO	Y	30	Fixed	
+SD	SD-044	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	SegmentID	원 세그먼트 식별용	-	-	N	31	Fixed	
+SD	SD-045	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	StartTime	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	START_MICROSEC	Y	31	Fixed	
+SD	SD-046	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	EndTime	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	END_MICROSEC	Y	31	Fixed	
+SD	SD-047	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	Length	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	SEGMENT_LENGTH_MICROSEC	Y	31	Fixed	
+SD	SD-048	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	LDAx	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	LDA_X	Y	31	Fixed	
+SD	SD-049	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	LDAy	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	LDA_Y	Y	31	Fixed	
+SD	SD-050	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	DetectingType	DetectType 문자열은 int 코드화	PREC_SRC_SS_SIG_SEGMENT	DETECT_TYPE	Y	31	Fixed	
+SD	SD-051	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	FrameCount	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	FRAME_COUNT	Y	31	Fixed	
+SD	SD-052	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	StartFreq	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	START_FREQ	Y	31	Fixed	
+SD	SD-053	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	EndFreq	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	END_FREQ	Y	31	Fixed	
+SD	SD-054	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	Modulation	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	MODE	Y	31	Fixed	
+SD	SD-055	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	CenterFreq	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	CENTER_FREQ	Y	31	Fixed	
+SD	SD-056	4	이벤트리스트.lst	*.sd/이벤트리스트.lst	ShortPeriodSegment	BandWidth	직접 매핑	PREC_SRC_SS_SIG_SEGMENT	BANDWIDTH	Y	31	Fixed	
+SD	SD-057	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	DtThreshold	직접 매핑	PREC_SS_ANALYSIS	DT_THRESHOLD	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-058	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	DtThresholdStep	직접 매핑	PREC_SS_ANALYSIS	DT_THRESHOLD_STEP	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-059	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	BwThreshold	직접 매핑	PREC_SS_ANALYSIS	BW_THRESHOLD	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-060	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	BwThresholdStep	직접 매핑	PREC_SS_ANALYSIS	BW_THRESHOLD_STEP	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-061	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	Window	직접 매핑	PREC_SS_ANALYSIS	WINDOW	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-062	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	KaiserBesselParameter	직접 매핑	PREC_SS_ANALYSIS	KAISER_BESSEL_PARAMETER	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-063	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	Overlap	직접 매핑	PREC_SS_ANALYSIS	OVERLAP	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-064	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	Fft	직접 매핑	PREC_SS_ANALYSIS	N_FFT	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-065	5	정밀분석설정.set	*.sd/정밀분석설정.set	SsParam	FreqResolution	직접 매핑	PREC_SS_ANALYSIS	FREQ_RESOLUTION	N	40	Fixed	PREC_SS_PARAM은 사용하지 않음
+SD	SD-066	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	EventID	이벤트 식별용	-	-	N	50	Fixed	
+SD	SD-067	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	StartTime	직접 매핑	PREC_SS_EVENT	START_MICROSEC	N	50	Fixed	
+SD	SD-068	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	EndTime	직접 매핑	PREC_SS_EVENT	END_MICROSEC	N	50	Fixed	
+SD	SD-069	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	EventLength	직접 매핑	PREC_SS_EVENT	EVENT_LENGTH_MICROSEC	N	50	Fixed	
+SD	SD-070	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	ManualOrAuto	직접 매핑	PREC_SS_EVENT	MANUAL_AUTO	N	50	Fixed	
+SD	SD-071	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	PRI	직접 매핑	PREC_SS_EVENT	PRI	N	50	Fixed	
+SD	SD-072	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	SPL	직접 매핑	PREC_SS_EVENT	SPL	N	50	Fixed	
+SD	SD-073	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	TRMMode	직접 매핑	PREC_SS_EVENT	TRM_MODE	N	50	Fixed	
+SD	SD-074	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	Modulation	직접 매핑	PREC_SS_EVENT	MODULATION	N	50	Fixed	
+SD	SD-075	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	SnippetComment	직접 매핑	PREC_SS_EVENT	SNIPPET_COMMENT	N	50	Fixed	
+SD	SD-076	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	DetectingType	고정값 1 또는 AI 문자열->1	PREC_SS_EVENT	DETECTING_TYPE	Y	50	Fixed	최종 명세 확정
+SD	SD-077	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	AiSegmentCount	세그먼트 유형별 count	PREC_SS_EVENT	AI_SEGMENT_CNT	N	50	Fixed	
+SD	SD-078	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	TrSegmentCount	세그먼트 유형별 count	PREC_SS_EVENT	TR_SEGMENT_CNT	N	50	Fixed	
+SD	SD-079	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodEvent	UnkSegmentCount	세그먼트 유형별 count	PREC_SS_EVENT	UNK_SEGMENT_CNT	N	50	Fixed	
+SD	SD-080	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	SegmentID	원 세그먼트 식별용	-	-	N	51	Fixed	
+SD	SD-081	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	StartTime	직접 매핑	PREC_SS_SEGMENT	START_MICROSEC	N	51	Fixed	
+SD	SD-082	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	EndTime	직접 매핑	PREC_SS_SEGMENT	END_MICROSEC	N	51	Fixed	
+SD	SD-083	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	Length	직접 매핑	PREC_SS_SEGMENT	SEGMENT_LENGTH_MICROSEC	N	51	Fixed	
+SD	SD-084	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	LDAx	직접 매핑	PREC_SS_SEGMENT	LDA_X	N	51	Fixed	
+SD	SD-085	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	LDAy	직접 매핑	PREC_SS_SEGMENT	LDA_Y	N	51	Fixed	
+SD	SD-086	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	DetectingType	DetectType 문자열은 int 코드화	PREC_SS_SEGMENT	DETECT_TYPE	N	51	Fixed	
+SD	SD-087	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	FrameCount	직접 매핑	PREC_SS_SEGMENT	FRAME_COUNT	N	51	Fixed	
+SD	SD-088	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	StartFreq	직접 매핑	PREC_SS_SEGMENT	START_FREQ	N	51	Fixed	
+SD	SD-089	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	EndFreq	직접 매핑	PREC_SS_SEGMENT	END_FREQ	N	51	Fixed	
+SD	SD-090	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	Modulation	직접 매핑	PREC_SS_SEGMENT	MODE	N	51	Fixed	
+SD	SD-091	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	CenterFreq	직접 매핑	PREC_SS_SEGMENT	CENTER_FREQ	N	51	Fixed	
+SD	SD-092	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	BandWidth	직접 매핑	PREC_SS_SEGMENT	BANDWIDTH	N	51	Fixed	
+SD	SD-093	6	AI탐지리스트.lst	*.sd/정밀분석/AI/AI탐지리스트.lst	ShortPeriodSegment	DBSegID	직접 매핑	PREC_SS_SEGMENT	DB_SEG_ID	N	51	Fixed	
+SD	SD-094	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strSonarName	직접 매핑	PREC_SS_EVENT	SONAR_NAME	N	60	Fixed	
+SD	SD-095	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strPulseName	직접 매핑	PREC_SS_EVENT	PULSE_NAME	N	60	Fixed	
+SD	SD-096	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	fScore	직접 매핑	PREC_SS_EVENT	SCORE	N	60	Fixed	
+SD	SD-097	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strAudioSnippetFileName	직접 매핑	PREC_SS_EVENT	AI_AUDIO_SNIPPET_FILE_NAME	N	60	Fixed	
+SD	SD-098	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strGramSnippetFileName	직접 매핑	PREC_SS_EVENT	AI_GRAM_SNIPPET_FILE_NAME	N	60	Fixed	
+SD	SD-099	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strComment	직접 매핑	PREC_SS_EVENT	CLASSIFICATION_COMMENT	N	60	Fixed	
+SD	SD-100	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	byteAppliedState	직접 매핑	PREC_SS_EVENT	IS_CLASSIFIED	N	60	Fixed	
+SD	SD-101	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strDBAppliedDate	직접 매핑	PREC_SS_EVENT	DB_APPLY_DATETIME	N	60	Fixed	
+SD	SD-102	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	fDistance	직접 매핑	PREC_SS_EVENT	DET_DISTANCE_NM	N	60	Fixed	거리 단위는 원본 값 기준 유지 정책 검토 가능
+SD	SD-103-1	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strDetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_SS_EVENT	LATITUDE_DEGREE	N	60	Fixed	LATITUDE_DEGREE 성분 저장
+SD	SD-103-2	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strDetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_SS_EVENT	LATITUDE_MINUTE	N	60	Fixed	LATITUDE_MINUTE 성분 저장
+SD	SD-103-3	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strDetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_SS_EVENT	LATITUDE_SECOND	N	60	Fixed	LATITUDE_SECOND 성분 저장
+SD	SD-104-1	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strDetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_SS_EVENT	LONGITUDE_DEGREE	N	60	Fixed	LONGITUDE_DEGREE 성분 저장
+SD	SD-104-2	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strDetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_SS_EVENT	LONGITUDE_MINUTE	N	60	Fixed	LONGITUDE_MINUTE 성분 저장
+SD	SD-104-3	7	ai_식별결과.cla	*.sd/정밀분석/AI/ai_식별결과.cla	AIPulseResult/PulseInfo	strDetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_SS_EVENT	LONGITUDE_SECOND	N	60	Fixed	LONGITUDE_SECOND 성분 저장
+SD	SD-105	9	AI Snippets	*.sd/정밀분석/AI/Snippets/*.wav,*.grm	SnippetFile	wav 파일 바이트	basename 또는 cla/lst 파일명으로 이벤트 매칭	PREC_SS_EVENT	AI_AUDIO_SNIPPET_FILE	N	70	Fixed	이벤트 단위 스니펫
+SD	SD-106	9	AI Snippets	*.sd/정밀분석/AI/Snippets/*.wav,*.grm	SnippetFile	grm 파일 바이트	basename 또는 cla/lst 파일명으로 이벤트 매칭	PREC_SS_EVENT	GRAM_SNIPPET_FILE	N	70	Fixed	이벤트 단위 스니펫
+SD	SD-107	9	AI Snippets	*.sd/정밀분석/AI/Snippets/*.wav,*.grm	SnippetFile	wav 파일명	basename 또는 cla/lst 파일명으로 이벤트 매칭	PREC_SS_EVENT	AI_AUDIO_SNIPPET_FILE_NAME	N	70	Fixed	이벤트 단위 스니펫
+SD	SD-108	9	AI Snippets	*.sd/정밀분석/AI/Snippets/*.wav,*.grm	SnippetFile	grm 파일명	basename 또는 cla/lst 파일명으로 이벤트 매칭	PREC_SS_EVENT	AI_GRAM_SNIPPET_FILE_NAME	N	70	Fixed	이벤트 단위 스니펫
+SD	SD-109	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	StartTime	직접 매핑	PREC_SS_EVENT	START_MICROSEC	N	80	Fixed	
+SD	SD-110	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	EndTime	직접 매핑	PREC_SS_EVENT	END_MICROSEC	N	80	Fixed	
+SD	SD-111	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	EventLength	직접 매핑	PREC_SS_EVENT	EVENT_LENGTH_MICROSEC	N	80	Fixed	
+SD	SD-112	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	ManualOrAuto	직접 매핑	PREC_SS_EVENT	MANUAL_AUTO	N	80	Fixed	
+SD	SD-113	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	PRI	직접 매핑	PREC_SS_EVENT	PRI	N	80	Fixed	
+SD	SD-114	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	SPL	직접 매핑	PREC_SS_EVENT	SPL	N	80	Fixed	
+SD	SD-115	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	TRMMode	직접 매핑	PREC_SS_EVENT	TRM_MODE	N	80	Fixed	
+SD	SD-116	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	Modulation	직접 매핑	PREC_SS_EVENT	MODULATION	N	80	Fixed	
+SD	SD-117	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	SnippetComment	직접 매핑	PREC_SS_EVENT	SNIPPET_COMMENT	N	80	Fixed	
+SD	SD-118	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	DetectingType	고정값 2 또는 TR 문자열->2	PREC_SS_EVENT	DETECTING_TYPE	Y	80	Fixed	최종 명세 확정
+SD	SD-119	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	AiSegmentCount	세그먼트 유형별 count	PREC_SS_EVENT	AI_SEGMENT_CNT	N	80	Fixed	
+SD	SD-120	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	TrSegmentCount	세그먼트 유형별 count	PREC_SS_EVENT	TR_SEGMENT_CNT	N	80	Fixed	
+SD	SD-121	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodEvent	UnkSegmentCount	세그먼트 유형별 count	PREC_SS_EVENT	UNK_SEGMENT_CNT	N	80	Fixed	
+SD	SD-122	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	StartTime	직접 매핑	PREC_SS_SEGMENT	START_MICROSEC	N	81	Fixed	
+SD	SD-123	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	EndTime	직접 매핑	PREC_SS_SEGMENT	END_MICROSEC	N	81	Fixed	
+SD	SD-124	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	Length	직접 매핑	PREC_SS_SEGMENT	SEGMENT_LENGTH_MICROSEC	N	81	Fixed	
+SD	SD-125	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	LDAx	직접 매핑	PREC_SS_SEGMENT	LDA_X	N	81	Fixed	
+SD	SD-126	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	LDAy	직접 매핑	PREC_SS_SEGMENT	LDA_Y	N	81	Fixed	
+SD	SD-127	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	DetectingType	직접 매핑	PREC_SS_SEGMENT	DETECT_TYPE	N	81	Fixed	
+SD	SD-128	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	FrameCount	직접 매핑	PREC_SS_SEGMENT	FRAME_COUNT	N	81	Fixed	
+SD	SD-129	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	StartFreq	직접 매핑	PREC_SS_SEGMENT	START_FREQ	N	81	Fixed	
+SD	SD-130	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	EndFreq	직접 매핑	PREC_SS_SEGMENT	END_FREQ	N	81	Fixed	
+SD	SD-131	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	Modulation	직접 매핑	PREC_SS_SEGMENT	MODE	N	81	Fixed	
+SD	SD-132	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	CenterFreq	직접 매핑	PREC_SS_SEGMENT	CENTER_FREQ	N	81	Fixed	
+SD	SD-133	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	BandWidth	직접 매핑	PREC_SS_SEGMENT	BANDWIDTH	N	81	Fixed	
+SD	SD-134	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	DBSegID	직접 매핑	PREC_SS_SEGMENT	DB_SEG_ID	N	81	Fixed	
+SD	SD-135	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodSegment	PatternValue	직접 매핑	PREC_SS_SEGMENT	PATTERN_VALUE	N	81	Fixed	
+SD	SD-136	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	FrameID	원 프레임 식별용	-	-	N	82	Fixed	신규 PREC_SS_FRAME에 FrameID 자체 컬럼은 없음
+SD	SD-137	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	DBSegID	직접 매핑	PREC_SS_FRAME	SEG_ID	N	82	Fixed	
+SD	SD-138	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	DBFrmID	직접 매핑	PREC_SS_FRAME	DB_FRM_ID	N	82	Fixed	
+SD	SD-139	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	Score	직접 매핑	PREC_SS_FRAME	SCORE	N	82	Fixed	
+SD	SD-140	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	프레임 순번(index)	0-based 또는 정책 인덱스	PREC_SS_FRAME	DB_FRAME_INDEX	N	82	Fixed	
+SD	SD-141	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[0]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_01	N	82	Fixed	32개 고정 슬롯
+SD	SD-142	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[1]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_02	N	82	Fixed	32개 고정 슬롯
+SD	SD-143	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[2]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_03	N	82	Fixed	32개 고정 슬롯
+SD	SD-144	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[3]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_04	N	82	Fixed	32개 고정 슬롯
+SD	SD-145	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[4]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_05	N	82	Fixed	32개 고정 슬롯
+SD	SD-146	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[5]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_06	N	82	Fixed	32개 고정 슬롯
+SD	SD-147	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[6]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_07	N	82	Fixed	32개 고정 슬롯
+SD	SD-148	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[7]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_08	N	82	Fixed	32개 고정 슬롯
+SD	SD-149	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[8]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_09	N	82	Fixed	32개 고정 슬롯
+SD	SD-150	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[9]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_10	N	82	Fixed	32개 고정 슬롯
+SD	SD-151	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[10]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_11	N	82	Fixed	32개 고정 슬롯
+SD	SD-152	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[11]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_12	N	82	Fixed	32개 고정 슬롯
+SD	SD-153	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[12]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_13	N	82	Fixed	32개 고정 슬롯
+SD	SD-154	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[13]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_14	N	82	Fixed	32개 고정 슬롯
+SD	SD-155	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[14]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_15	N	82	Fixed	32개 고정 슬롯
+SD	SD-156	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[15]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_16	N	82	Fixed	32개 고정 슬롯
+SD	SD-157	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[16]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_17	N	82	Fixed	32개 고정 슬롯
+SD	SD-158	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[17]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_18	N	82	Fixed	32개 고정 슬롯
+SD	SD-159	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[18]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_19	N	82	Fixed	32개 고정 슬롯
+SD	SD-160	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[19]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_20	N	82	Fixed	32개 고정 슬롯
+SD	SD-161	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[20]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_21	N	82	Fixed	32개 고정 슬롯
+SD	SD-162	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[21]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_22	N	82	Fixed	32개 고정 슬롯
+SD	SD-163	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[22]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_23	N	82	Fixed	32개 고정 슬롯
+SD	SD-164	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[23]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_24	N	82	Fixed	32개 고정 슬롯
+SD	SD-165	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[24]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_25	N	82	Fixed	32개 고정 슬롯
+SD	SD-166	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[25]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_26	N	82	Fixed	32개 고정 슬롯
+SD	SD-167	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[26]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_27	N	82	Fixed	32개 고정 슬롯
+SD	SD-168	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[27]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_28	N	82	Fixed	32개 고정 슬롯
+SD	SD-169	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[28]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_29	N	82	Fixed	32개 고정 슬롯
+SD	SD-170	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[29]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_30	N	82	Fixed	32개 고정 슬롯
+SD	SD-171	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[30]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_31	N	82	Fixed	32개 고정 슬롯
+SD	SD-172	10	순간소음탐지리스트.lst	*.sd/정밀분석/TR/순간소음탐지리스트.lst	ShortPeriodFrame	MFBs[31]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_32	N	82	Fixed	32개 고정 슬롯
+SD	SD-173	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	strGroup	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	TR_TYPE	N	90	Fixed	
+SD	SD-174	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	strTransientName	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	TR_SOURCE_NAME	N	90	Fixed	
+SD	SD-175	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	fScore	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	SCORE	N	90	Fixed	
+SD	SD-176	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	strComments	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	COMMENT	N	90	Fixed	
+SD	SD-177	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	strAudioSnippetFileName	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	TR_AUDIO_SNIPPET_FILE_NAME	N	90	Fixed	
+SD	SD-178	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	byteAppliedState	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	IS_CLASSIFIED	N	90	Fixed	
+SD	SD-179	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	strDBAppliedDate	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	DB_APPLIED_DATETIME	N	90	Fixed	
+SD	SD-180	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	byteSnippetAppliedState	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	HAS_SNIPPET	N	90	Fixed	
+SD	SD-181	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	nFrameNum	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	MFB_COUNT	N	90	Fixed	
+SD	SD-182	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRSegmentResult	fDistance	직접 매핑 또는 상태값 변환	PREC_SS_SEGMENT	DET_DISTANCE_NM	N	90	Fixed	
+SD	SD-183-1	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRClassificationResult/DetectArea	strDetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_SS_SEGMENT	LATITUDE_DEGREE	N	90	Fixed	LATITUDE_DEGREE 성분 저장
+SD	SD-183-2	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRClassificationResult/DetectArea	strDetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_SS_SEGMENT	LATITUDE_MINUTE	N	90	Fixed	LATITUDE_MINUTE 성분 저장
+SD	SD-183-3	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRClassificationResult/DetectArea	strDetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_SS_SEGMENT	LATITUDE_SECOND	N	90	Fixed	LATITUDE_SECOND 성분 저장
+SD	SD-184-1	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRClassificationResult/DetectArea	strDetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_SS_SEGMENT	LONGITUDE_DEGREE	N	90	Fixed	LONGITUDE_DEGREE 성분 저장
+SD	SD-184-2	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRClassificationResult/DetectArea	strDetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_SS_SEGMENT	LONGITUDE_MINUTE	N	90	Fixed	LONGITUDE_MINUTE 성분 저장
+SD	SD-184-3	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRClassificationResult/DetectArea	strDetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_SS_SEGMENT	LONGITUDE_SECOND	N	90	Fixed	LONGITUDE_SECOND 성분 저장
+SD	SD-185	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[0]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_01	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-186	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[1]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_02	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-187	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[2]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_03	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-188	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[3]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_04	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-189	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[4]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_05	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-190	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[5]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_06	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-191	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[6]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_07	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-192	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[7]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_08	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-193	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[8]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_09	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-194	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[9]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_10	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-195	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[10]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_11	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-196	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[11]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_12	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-197	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[12]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_13	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-198	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[13]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_14	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-199	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[14]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_15	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-200	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[15]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_16	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-201	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[16]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_17	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-202	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[17]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_18	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-203	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[18]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_19	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-204	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[19]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_20	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-205	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[20]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_21	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-206	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[21]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_22	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-207	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[22]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_23	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-208	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[23]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_24	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-209	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[24]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_25	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-210	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[25]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_26	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-211	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[26]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_27	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-212	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[27]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_28	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-213	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[28]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_29	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-214	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[29]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_30	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-215	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[30]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_31	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-216	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	arrMFB[31]	없으면 0, 있으면 실수값 매핑	PREC_SS_FRAME	XI_32	N	91	Fixed	프레임별 32개 슬롯
+SD	SD-217	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	byteAppliedState	제외	PREC_SS_FRAME	-	N	91	Exclude	byteAppliedState는 제외 확정
+SD	SD-218	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	lDBApplyID	해당 lDBApplyID가 실제 레거시 DB에 존재하면 DB_SEG_ID에 입력	PREC_SS_SEGMENT	DB_SEG_ID	N	91	Fixed	frame-level lDBApplyID는 owning PREC_SS_SEGMENT.DB_SEG_ID로 승격 저장
+SD	SD-219	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	byteSnippetAppliedState	제외	PREC_SS_FRAME	-	N	91	Exclude	byteSnippetAppliedState는 제외 확정
+SD	SD-220	13	TR Snippets	*.sd/정밀분석/TR/Snippets/*.wav,*.grm	SnippetFile	wav 파일 바이트	basename 또는 cla/lst 파일명으로 세그먼트 매칭	PREC_SS_SEGMENT	TR_AUDIO_SNIPPET_FILE	N	100	Fixed	세그먼트 단위 스니펫
+SD	SD-221	13	TR Snippets	*.sd/정밀분석/TR/Snippets/*.wav,*.grm	SnippetFile	grm 파일 바이트	basename 또는 cla/lst 파일명으로 세그먼트 매칭	PREC_SS_SEGMENT	GRAM_FILE	N	100	Fixed	세그먼트 단위 스니펫
+SD	SD-222	13	TR Snippets	*.sd/정밀분석/TR/Snippets/*.wav,*.grm	SnippetFile	wav 파일명	basename 또는 cla/lst 파일명으로 세그먼트 매칭	PREC_SS_SEGMENT	TR_AUDIO_SNIPPET_FILE_NAME	N	100	Fixed	세그먼트 단위 스니펫
+NB	NB-001	14	협대역 .nb 패키지(루트)	*.nb	PackageMeta	패키지 폴더명	패키지명 생성	RAW_COLLECT_SIG	RAW_SIG_NAME	Y	00	Fixed	협대역 패키지 대표 raw 이름
+NB	NB-002	14	협대역 .nb 패키지(루트)	*.nb	PackageMeta	패키지 폴더명	패키지명 생성	PREC_ANALYSIS	PRECISE_NAME	Y	01	Fixed	정밀분석 임무명
+NB	NB-003	14	협대역 .nb 패키지(루트)	*.nb	PackageMeta	상위 PREC_SRC_SIG RECORD_ID	생성 후 FK 연결	PREC_ANALYSIS	REF_PREC_SRC_SIG_ID	Y	02	Fixed	PREC_SRC_SIG 선생성 필요
+NB	NB-004	14	협대역 .nb 패키지(루트)	*.nb	PackageMeta	패키지 폴더명	패키지명 생성	PREC_SRC_SIG	PREC_SRC_SIG_NAME	Y	00	Fixed	
+NB	NB-005	14	협대역 .nb 패키지(루트)	*.nb	PackageMeta	대표 Signal.wav SamplingRate	대표 WAV 메타 추출	PREC_SRC_SIG	SAMPLING_RATE	N	00	Fixed	
+NB	NB-006	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	WindowKind	직접 매핑	PREC_NB_ANALYSIS	WINDOW	N	10	Fixed	
+NB	NB-007	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	KaiserBessel	직접 매핑	PREC_NB_ANALYSIS	KAISER_BESSEL_PARAMETER	N	10	Fixed	
+NB	NB-008	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	Overlap	직접 매핑	PREC_NB_ANALYSIS	OVERLAP	N	10	Fixed	
+NB	NB-009	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	NoiseNormalizationKind	직접 매핑	PREC_NB_ANALYSIS	NB_NN_TYPE	N	10	Fixed	
+NB	NB-010	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	WindowSize	직접 매핑	PREC_NB_ANALYSIS	NB_NN_WINDOW_SIZE	N	10	Fixed	
+NB	NB-011	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	WindowGapSize	직접 매핑	PREC_NB_ANALYSIS	NB_NN_GAP_SIZE	N	10	Fixed	
+NB	NB-012	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	LinearIntegrationNum	직접 매핑	PREC_NB_ANALYSIS	LINEAR_INTEGRAL_TIME	N	10	Fixed	
+NB	NB-013	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	ExpIntegrationNum	직접 매핑	PREC_NB_ANALYSIS	EXPONENTIAL_INTEGRAL_TIME	N	10	Fixed	
+NB	NB-014	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	AScale	직접 매핑	PREC_NB_ANALYSIS	ASCALE	N	10	Fixed	
+NB	NB-015	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbParameterSet	BScale	직접 매핑	PREC_NB_ANALYSIS	BSCALE	N	10	Fixed	
+NB	NB-016	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[0].CenterFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D1_CENTER_FREQ	N	10	Fixed	
+NB	NB-017	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[0].StartFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D1_START_FREQ	N	10	Fixed	
+NB	NB-018	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[0].EndFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D1_END_FREQ	N	10	Fixed	
+NB	NB-019	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[0].DisplayBand	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D1_DISP_BAND	N	10	Fixed	
+NB	NB-020	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[0].CenterFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V1_CENTER_FREQ	N	10	Fixed	
+NB	NB-021	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[0].StartFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V1_START_FREQ	N	10	Fixed	
+NB	NB-022	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[0].EndFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V1_END_FREQ	N	10	Fixed	
+NB	NB-023	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[1].CenterFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D2_CENTER_FREQ	N	10	Fixed	
+NB	NB-024	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[1].StartFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D2_START_FREQ	N	10	Fixed	
+NB	NB-025	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[1].EndFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D2_END_FREQ	N	10	Fixed	
+NB	NB-026	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[1].DisplayBand	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D2_DISP_BAND	N	10	Fixed	
+NB	NB-027	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[1].CenterFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V2_CENTER_FREQ	N	10	Fixed	
+NB	NB-028	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[1].StartFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V2_START_FREQ	N	10	Fixed	
+NB	NB-029	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[1].EndFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V2_END_FREQ	N	10	Fixed	
+NB	NB-030	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[2].CenterFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D3_CENTER_FREQ	N	10	Fixed	
+NB	NB-031	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[2].StartFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D3_START_FREQ	N	10	Fixed	
+NB	NB-032	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[2].EndFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D3_END_FREQ	N	10	Fixed	
+NB	NB-033	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[2].DisplayBand	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D3_DISP_BAND	N	10	Fixed	
+NB	NB-034	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[2].CenterFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V3_CENTER_FREQ	N	10	Fixed	
+NB	NB-035	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[2].StartFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V3_START_FREQ	N	10	Fixed	
+NB	NB-036	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[2].EndFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V3_END_FREQ	N	10	Fixed	
+NB	NB-037	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[3].CenterFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D4_CENTER_FREQ	N	10	Fixed	
+NB	NB-038	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[3].StartFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D4_START_FREQ	N	10	Fixed	
+NB	NB-039	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[3].EndFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D4_END_FREQ	N	10	Fixed	
+NB	NB-040	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbDemonParameter	DemonParameters[3].DisplayBand	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	D4_DISP_BAND	N	10	Fixed	
+NB	NB-041	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[3].CenterFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V4_CENTER_FREQ	N	10	Fixed	
+NB	NB-042	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[3].StartFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V4_START_FREQ	N	10	Fixed	
+NB	NB-043	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	NbVernierParameter	VernierParameters[3].EndFreq	직접 매핑 또는 없으면 0/NULL	PREC_NB_ANALYSIS	V4_END_FREQ	N	10	Fixed	
+NB	NB-044	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	Constant	SELECTED_DEMON_BAND	상수 1	PREC_NB_ANALYSIS	SELECTED_DEMON_BAND	Y	10	Fixed	사용자 확정 규칙
+NB	NB-045	15	정밀신호처리파라미터.set	*.nb/정밀신호처리파라미터.set	Constant	AI_DIFFUSION_MASK	미기입	PREC_NB_ANALYSIS	AI_DIFFUSION_MASK	N	10	Exclude	최종 제외 확정
+NB	NB-046	16	Signal.wav	*.nb/Signal.wav	File	파일 바이트	원본 바이트 저장	EXTRACT_DATA_STORE	DATA	Y	20	Fixed	
+NB	NB-047	16	Signal.wav	*.nb/Signal.wav	File	파일 길이(bytes)	len(file)	EXTRACT_DATA_STORE	DATA_LENGTH	Y	20	Fixed	
+NB	NB-048	16	Signal.wav	*.nb/Signal.wav	File	상수값	NB_SIGNAL_WAV	EXTRACT_DATA_STORE	DATA_TYPE	Y	20	Fixed	정책값
+NB	NB-049	16	Signal.wav	*.nb/Signal.wav	File	EXTRACT_DATA_STORE.RECORD_ID	insert 후 생성값	PREC_SRC_NB_SIG	REF_EXTRACT_DATA_STORE_ID	Y	21	Fixed	항상 EXTRACT_DATA_STORE 선저장
+NB	NB-050	16	Signal.wav	*.nb/Signal.wav	WaveHeader	StartTime	BWF/TFID 시작시각 파싱	PREC_SRC_NB_SIG	EXTRACT_START_DATETIME	N	21	Fixed	
+NB	NB-051	16	Signal.wav	*.nb/Signal.wav	WaveHeader	EndTime	BWF/TFID 종료시각 또는 파일길이 기반	PREC_SRC_NB_SIG	EXTRACT_END_DATETIME	N	21	Fixed	
+NB	NB-052	16	Signal.wav	*.nb/Signal.wav	WaveHeader	SamplesPerSec	정수 변환	PREC_SRC_SIG	SAMPLING_RATE	N	21	Fixed	상위 PREC_SRC_SIG에 저장
+NB	NB-053	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	FeatureNumber	직접 매핑	PREC_NB_SIGNATURE	HYPERSIS	N	30	Fixed	
+NB	NB-054	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	StartTime	직접 매핑	PREC_NB_SIGNATURE	START_DATETIME	N	30	Fixed	
+NB	NB-055	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	EndTime	직접 매핑	PREC_NB_SIGNATURE	END_DATETIME	N	30	Fixed	
+NB	NB-056	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	StartFreq	직접 매핑	PREC_NB_SIGNATURE	START_FREQ	N	30	Fixed	
+NB	NB-057	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	EndFreq	직접 매핑	PREC_NB_SIGNATURE	END_FREQ	N	30	Fixed	
+NB	NB-058	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	CenterFreq	직접 매핑	PREC_NB_SIGNATURE	CENTER_FREQ	N	30	Fixed	
+NB	NB-059	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	FundamentalFreq	직접 매핑	PREC_NB_SIGNATURE	FUNDAMENTAL_FREQ	N	30	Fixed	
+NB	NB-060	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	Resolution	직접 매핑	PREC_NB_SIGNATURE	RESOLUTION	N	30	Fixed	
+NB	NB-061	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	Stable	직접 매핑	PREC_NB_SIGNATURE	STABILITY	N	30	Fixed	
+NB	NB-062	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	LineType	직접 매핑	PREC_NB_SIGNATURE	LINE_TYPE	N	30	Fixed	
+NB	NB-063	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	LineWidth	직접 매핑	PREC_NB_SIGNATURE	LINE_WIDTH	N	30	Fixed	
+NB	NB-064	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	SourceLevel	직접 매핑	PREC_NB_SIGNATURE	SOURCE_LEVEL	N	30	Fixed	
+NB	NB-065	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	CPA	직접 매핑	PREC_NB_SIGNATURE	CPA	N	30	Fixed	
+NB	NB-066	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	NoiseSource	직접 매핑	PREC_NB_SIGNATURE	NOISE_SOURCE	N	30	Fixed	
+NB	NB-067	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	NoiseSource2	직접 매핑	PREC_NB_SIGNATURE	DETAIL_NOISE_SOURCE	N	30	Fixed	
+NB	NB-068	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	Speed	직접 매핑	PREC_NB_SIGNATURE	SPEED	N	30	Fixed	
+NB	NB-069	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	Score	직접 매핑	PREC_NB_SIGNATURE	SCORE	N	30	Fixed	
+NB	NB-070	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	Comment	직접 매핑	PREC_NB_SIGNATURE	COMMENT	N	30	Fixed	
+NB	NB-071	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	Gram	직접 매핑	PREC_NB_SIGNATURE	GRAM_TYPE	N	30	Fixed	
+NB	NB-072-1	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	HarmonicList	HarmonicList를 공백 기준 분리하여 token마다 1 row 생성; 숫자부를 HARM_NO로 저장	PREC_NB_HARMONIC	HARM_NO	N	31	Fixed	예: 1p, 4P는 숫자부만 HARM_NO로 저장
+NB	NB-072-2	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	HarmonicList	분리된 각 harmonic row에 고정값 0 입력	PREC_NB_HARMONIC	FREQ	N	31	Fixed	FREQ는 0 고정
+NB	NB-072-3	17	nb_식별결과.fea	*.nb/정밀분석/nb_식별결과.fea	NbFeature	HarmonicList	token이 p/P로 끝나면 1, 단순 숫자면 0	PREC_NB_HARMONIC	PREDOMINANCE	N	31	Fixed	예: 1p, 4P -> 1 / 1,4 -> 0
+NB	NB-073	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	HypNumber	직접 매핑	PREC_NB_CLASSIFICATION	HYPERSIS	N	40	Fixed	
+NB	NB-074	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	ClassName	직접 매핑	PREC_NB_CLASSIFICATION	CLASS_K	N	40	Fixed	
+NB	NB-075	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	ClassEName	직접 매핑	PREC_NB_CLASSIFICATION	CLASS_E	N	40	Fixed	
+NB	NB-076	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	VesselName	직접 매핑	PREC_NB_CLASSIFICATION	VESSEL_K	N	40	Fixed	
+NB	NB-077	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	VesselEName	직접 매핑	PREC_NB_CLASSIFICATION	VESSEL_E	N	40	Fixed	
+NB	NB-078	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	Score	직접 매핑	PREC_NB_CLASSIFICATION	SCORE	N	40	Fixed	
+NB	NB-079	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	Speed	직접 매핑	PREC_NB_CLASSIFICATION	SPEED	N	40	Fixed	
+NB	NB-080	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	MatchingRate	직접 매핑	PREC_NB_CLASSIFICATION	MATCH_RATE	N	40	Fixed	
+NB	NB-081	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	BladeNum	직접 매핑	PREC_NB_CLASSIFICATION	BLADE_NUM	N	40	Fixed	
+NB	NB-082	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	AppliedState	직접 매핑	PREC_NB_CLASSIFICATION	IS_DB_APPLY	N	40	Fixed	
+NB	NB-083	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	DbAppliedDate	직접 매핑	PREC_NB_CLASSIFICATION	DB_APPLY_DATETIME	N	40	Fixed	
+NB	NB-084	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	Comment	직접 매핑	PREC_NB_CLASSIFICATION	COMMENT	N	40	Fixed	
+NB	NB-085	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	Distance	우선 nm로 가정하여 값 그대로 저장하고, 프로그램 내 단위 동기화/변환 가능하도록 처리	PREC_NB_CLASSIFICATION	DET_DISTANCE_NM	N	40	Fixed	현재는 nm 가정, 후속 구현에서 단위 sync 지원
+NB	NB-086	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbClassificationResult.Header	header.DetectSonar	varchar 직접 매핑	PREC_NB_CLASSIFICATION	DET_SONAR	N	40	Fixed	header.DetectSonar를 그대로 옮김
+NB	NB-087	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbClassificationResult.Header	header.DetectShipName	varchar 직접 매핑	PREC_NB_CLASSIFICATION	DET_SHIP	N	40	Fixed	header.DetectShipName를 그대로 옮김
+NB	NB-088	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbClassificationResult.Header	header.DetectSystem	varchar 직접 매핑	PREC_NB_CLASSIFICATION	DET_PLATFORM	N	40	Fixed	header.DetectSystem을 그대로 옮김
+NB	NB-089	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbClassificationResult.Header	header.DetectDate	날짜 변환 후 매핑	PREC_NB_CLASSIFICATION	DET_DATETIME	N	40	Fixed	header.DetectDate를 날짜 변환 후 옮김
+NB	NB-090-1	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	DetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_NB_CLASSIFICATION	LATITUDE_DEGREE	N	40	Fixed	LATITUDE_DEGREE 성분 저장
+NB	NB-090-2	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	DetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_NB_CLASSIFICATION	LATITUDE_MINUTE	N	40	Fixed	LATITUDE_MINUTE 성분 저장
+NB	NB-090-3	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	DetectionSeaAreaLatitude	도/분/초 분해(위도)	PREC_NB_CLASSIFICATION	LATITUDE_SECOND	N	40	Fixed	LATITUDE_SECOND 성분 저장
+NB	NB-091-1	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	DetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_NB_CLASSIFICATION	LONGITUDE_DEGREE	N	40	Fixed	LONGITUDE_DEGREE 성분 저장
+NB	NB-091-2	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	DetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_NB_CLASSIFICATION	LONGITUDE_MINUTE	N	40	Fixed	LONGITUDE_MINUTE 성분 저장
+NB	NB-091-3	19	nb_식별결과.cla	*.nb/정밀분석/nb_식별결과.cla	NbHypResult	DetectionSeaAreaLongitude	도/분/초 분해(경도)	PREC_NB_CLASSIFICATION	LONGITUDE_SECOND	N	40	Fixed	LONGITUDE_SECOND 성분 저장
+NB	NB-092	20	보조정보.alg	*.nb/정밀분석/보조정보.alg	SupplementMissionInfo	MissionSeaArea	코드/정책값 변환	RAW_COLLECT_SUPPLEMENT	MISSION_SEA_AREA	N	50	Fixed	
+NB	NB-093	20	보조정보.alg	*.nb/정밀분석/보조정보.alg	SupplementDetection	DetSonar	Detection 영역의 DetSonar 대표값 사용	RAW_COLLECT_SUPPLEMENT	DET_SONAR	N	50	Fixed	DetSonar 대표값은 Detection으로 확정
+NB	NB-094	20	보조정보.alg	*.nb/정밀분석/보조정보.alg	SupplementSheet 전체	전체 보조정보 구조	alg 파싱 결과 구조체를 추후 제공될 가공 메서드로 특정 binary로 변환하여 저장	RAW_COLLECT_SUPPLEMENT	SUPPLEMENT_DATA	Y	51	NeedConfirm	SUPPLEMENT_DATA 직렬화 포맷/가공 메서드 TODO
+NB	NB-095	20	보조정보.alg	*.nb/정밀분석/보조정보.alg	SupplementMissionInfo	MissionSeaArea	코드/정책값 변환	PREC_COLLECT_SUPPLEMENT	MISSION_SEA_AREA	N	50	Fixed	
+NB	NB-096	20	보조정보.alg	*.nb/정밀분석/보조정보.alg	SupplementDetection	DetSonar	Detection 영역의 DetSonar 대표값 사용	PREC_COLLECT_SUPPLEMENT	DET_SONAR	N	50	Fixed	DetSonar 대표값은 Detection으로 확정
+NB	NB-097	20	보조정보.alg	*.nb/정밀분석/보조정보.alg	SupplementSheet 전체	전체 보조정보 구조	alg 파싱 결과 구조체를 추후 제공될 가공 메서드로 특정 binary로 변환하여 저장	PREC_COLLECT_SUPPLEMENT	SUPPLEMENT_DATA	Y	51	NeedConfirm	SUPPLEMENT_DATA 직렬화 포맷/가공 메서드 TODO
+NB	NB-098	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetPair	grm 파일 바이트	basename 기준 wav/grm 페어	PREC_NB_SNIPPET	NB_GRAM_SNIPPET_DATA	N	60	Fixed	
+NB	NB-099	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetPair	wav 파일 바이트	basename 기준 wav/grm 페어	PREC_NB_SNIPPET	NB_AUDIO_SNIPPET_FILE	N	60	Fixed	
+NB	NB-100	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetPair	grm 파일명	basename 기준 wav/grm 페어	PREC_NB_SNIPPET	NB_GRAM_SNIPPET_FILE_NAME	N	60	Fixed	
+NB	NB-101	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetPair	wav 파일명	basename 기준 wav/grm 페어	PREC_NB_SNIPPET	NB_AUDIO_SNIPPET_FILE_NAME	N	60	Fixed	
+NB	NB-102	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	FREQ_MIN (source rule TBD)	기존 .grm 데이터를 신규 형식으로 컨버팅하는 작업에서 산출	PREC_NB_SNIPPET	FREQ_MIN	N	61	NeedConfirm	그램 데이터 변환 작업 후 확정
+NB	NB-103	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	FREQ_MAX (source rule TBD)	기존 .grm 데이터를 신규 형식으로 컨버팅하는 작업에서 산출	PREC_NB_SNIPPET	FREQ_MAX	N	61	NeedConfirm	그램 데이터 변환 작업 후 확정
+NB	NB-104	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	FRAME_NUM (source rule TBD)	기존 .grm 데이터를 신규 형식으로 컨버팅하는 작업에서 산출	PREC_NB_SNIPPET	FRAME_NUM	N	61	NeedConfirm	그램 데이터 변환 작업 후 확정
+NB	NB-105	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	BIN_NUM (source rule TBD)	기존 .grm 데이터를 신규 형식으로 컨버팅하는 작업에서 산출	PREC_NB_SNIPPET	BIN_NUM	N	61	NeedConfirm	그램 데이터 변환 작업 후 확정
+NB	NB-106	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	RESOLUTION (source rule TBD)	기존 .grm 데이터를 신규 형식으로 컨버팅하는 작업에서 산출	PREC_NB_SNIPPET	RESOLUTION	N	61	NeedConfirm	그램 데이터 변환 작업 후 확정
+NB	NB-107	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	A_START_MILLISEC (source rule TBD)	snippet wav 헤더를 읽어서 산출	PREC_NB_SNIPPET	A_START_MILLISEC	N	61	Fixed	wav 헤더 기반
+NB	NB-108	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	A_END_MILLISEC (source rule TBD)	snippet wav 헤더를 읽어서 산출	PREC_NB_SNIPPET	A_END_MILLISEC	N	61	Fixed	wav 헤더 기반
+NB	NB-109	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	SAMPLING_RATE (source rule TBD)	snippet wav 헤더를 읽어서 산출	PREC_NB_SNIPPET	SAMPLING_RATE	N	61	Fixed	wav 헤더 기반
+NB	NB-110	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	GRAM_TYPE (source rule TBD)	fea 특징정보의 GramFileName/AudioFileName과 동일 Wav/Grm snippet을 매핑하고 Gram 값을 코드화(L=101,D=201,V1~V4=301~304)	PREC_NB_SNIPPET	GRAM_TYPE	N	61	Fixed	Snippet 매칭: GramFileName+AudioFileName 기준 / GRAM_TYPE 코드 매핑 적용
+NB	NB-111	21	NB Snippets	*.nb/정밀분석/Snippets/*.wav,*.grm	SnippetMeta	DET_DATETIME (source rule TBD)	생성날짜가 있으면 사용하고, 없으면 현재 시각 입력	PREC_NB_SNIPPET	DET_DATETIME	N	61	Fixed	DET_DATETIME fallback=현재 시각
+SD	SD-218A	11	tr_식별결과.cla	*.sd/정밀분석/TR/tr_식별결과.cla	TRFrameResult	lDBApplyID	해당 lDBApplyID가 실제 레거시 DB에 존재하면 현재 시각 입력	PREC_SS_SEGMENT	DB_APPLIED_DATETIME	N	90	Fixed	lDBApplyID 매칭 성공 시 현재 시각으로 DB_APPLIED_DATETIME 설정

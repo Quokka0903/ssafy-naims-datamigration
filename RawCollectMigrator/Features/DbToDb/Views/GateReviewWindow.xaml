@@ -1,0 +1,117 @@
+﻿<Window x:Class="RawCollectMigrator.Features.DbToDb.GateReviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="⚠ 실제 이관 승인 — 리허설(Trial) 결과 검토"
+        Height="720" Width="1060"
+        Background="{StaticResource BgBrush}"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" x:Name="HeaderText" FontSize="16" FontWeight="Bold"
+                   Foreground="{StaticResource TextBrush}" Margin="0,0,0,8"/>
+
+        <!-- 타겟 확인 -->
+        <Border x:Name="TargetBox" Grid.Row="1" Background="#3a2020" BorderBrush="#883333" BorderThickness="1"
+                Padding="12,10" Margin="0,0,0,10" CornerRadius="3">
+            <StackPanel>
+                <TextBlock Text="이 작업은 되돌릴 수 없습니다. 적재 대상 서버를 확인하세요."
+                           FontWeight="Bold" Foreground="#ffbbaa" Margin="0,0,0,6"/>
+                <TextBlock x:Name="TargetText" FontFamily="Consolas" FontSize="12"
+                           Foreground="#ffddcc" TextWrapping="Wrap"/>
+                <TextBlock x:Name="SourceText" FontFamily="Consolas" FontSize="12"
+                           Foreground="#ccbbaa" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                <Border x:Name="RebuildWarnBox" Visibility="Collapsed"
+                        Background="#5a1a1a" BorderBrush="#cc4444" BorderThickness="1"
+                        Padding="10,8" Margin="0,8,0,0" CornerRadius="3">
+                    <TextBlock x:Name="RebuildWarnText" TextWrapping="Wrap"
+                               FontWeight="Bold" Foreground="#ffdddd"/>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- 채점표 -->
+        <DataGrid Grid.Row="2" x:Name="CheckGrid" Style="{StaticResource DetailGrid}"
+                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                  GridLinesVisibility="Horizontal"
+                  HorizontalGridLinesBrush="{StaticResource BorderBrush}">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Level}" Value="차단">
+                            <Setter Property="Foreground" Value="#ff6666"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Level}" Value="경고">
+                            <Setter Property="Foreground" Value="#ffaa44"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header=""     Binding="{Binding Icon}"     Width="30"/>
+                <DataGridTextColumn Header="판정" Binding="{Binding Level}"    Width="Auto" MinWidth="50"/>
+                <DataGridTextColumn Header="지표" Binding="{Binding Name}"     Width="Auto" MinWidth="150"/>
+                <DataGridTextColumn Header="관측" Binding="{Binding Value}"    Width="Auto" MinWidth="130"/>
+                <DataGridTextColumn Header="기준" Binding="{Binding Expected}" Width="Auto" MinWidth="70"/>
+                <DataGridTextColumn Header="근거 / 조치" Binding="{Binding Detail}" Width="*" MinWidth="220"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- 승인 -->
+        <Border x:Name="ApproveBox" Grid.Row="3" Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                Padding="12,10" Margin="0,10,0,0" CornerRadius="3">
+            <StackPanel>
+                <CheckBox x:Name="ConfirmTargetChk" Foreground="{StaticResource TextBrush}"
+                          Checked="OnConfirmChanged" Unchecked="OnConfirmChanged" Margin="0,0,0,6">
+                    <TextBlock x:Name="ConfirmTargetText" TextWrapping="Wrap"/>
+                </CheckBox>
+                <CheckBox x:Name="ConfirmResultChk" Foreground="{StaticResource TextBrush}"
+                          Checked="OnConfirmChanged" Unchecked="OnConfirmChanged"
+                          Content=" 위 리허설 결과(스킵·경고 포함)를 확인했으며 이대로 적재하는 데 동의합니다."
+                          Margin="0,0,0,6"/>
+                <CheckBox x:Name="AcceptBlockedChk" Foreground="#ff9999" Visibility="Collapsed"
+                          Checked="OnConfirmChanged" Unchecked="OnConfirmChanged"
+                          Content=" ⚠ 차단 항목이 있음을 알고도 진행합니다(권장하지 않음)."/>
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                    <TextBlock Text="승인자:" VerticalAlignment="Center"
+                               Foreground="{StaticResource TextBrush}"/>
+                    <TextBox x:Name="ApproverBox" Width="180" Margin="8,0,0,0"
+                             VerticalAlignment="Center" TextChanged="OnApproverChanged"
+                             ToolTip="보고서에 기록됩니다(감사 추적)."/>
+                    <TextBlock x:Name="HintText" VerticalAlignment="Center" Margin="14,0,0,0"
+                               FontSize="11" Foreground="{StaticResource BrushTextHelp}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="4" Margin="0,12,0,0">
+        <TextBlock x:Name="ReviewHint" HorizontalAlignment="Left" VerticalAlignment="Center"
+                   Foreground="#9999b0" FontSize="11" TextWrapping="Wrap"
+                   MaxWidth="700" Visibility="Collapsed"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="세션 폴더 열기" Click="OnOpenFolder" Width="130" Margin="0,0,8,0"/>
+            <Button x:Name="BtnOrphans" Content="🔗 고아 레코드 해결" Click="OnResolveOrphans"
+                    Width="170" Margin="0,0,8,0" Visibility="Collapsed"
+                    ToolTip="부모를 못 찾은 행에 붙일 부모를 고르거나 버리기로 정합니다.&#10;정한 뒤에는 리허설을 다시 돌려야 반영됩니다."/>
+            <Button x:Name="BtnMissingFiles" Content="📁 파일 부재 해결" Click="OnResolveMissingFiles"
+                    Visibility="Collapsed" Width="190" Margin="0,0,8,0"
+                    ToolTip="참조 파일이 없는 건을 빈 값으로 실을지, 행을 버릴지, 다른 파일을 쓸지 정합니다."/>
+            <Button x:Name="BtnConflicts" Content="♻ 멱등 충돌 해결" Click="OnResolveConflicts"
+                    Visibility="Collapsed" Width="190" Margin="0,0,8,0"
+                    ToolTip="타겟에 이미 있고 값이 다른 행을 유지할지 덮어쓸지 정합니다."/>
+            <Button Style="{StaticResource DangerButton}" x:Name="BtnApprove" Content="⚠ 승인하고 실제 이관" Click="OnApprove"
+                    Width="200" Margin="0,0,8,0" IsEnabled="False"
+                   />
+            <Button x:Name="BtnClose" Content="취소" Click="OnCancel" Width="90"/>
+        </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

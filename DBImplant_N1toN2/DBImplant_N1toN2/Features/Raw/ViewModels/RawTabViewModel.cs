@@ -1,5 +1,6 @@
 ﻿using DBImplant_N1toN2.Audio.Writer;
 using DBImplant_N1toN2.Features.Raw.Models;
+using DBImplant_N1toN2.Features.ShortPeriod.Parsers;
 using DBImplant_N1toN2.Features.Raw.Parsers;
 using DBImplant_N1toN2.Infrastructure;
 using DBImplant_N1toN2.Infrastructure.Commands;
@@ -25,7 +26,7 @@ namespace DBImplant_N1toN2.Features.Raw.ViewModels
         public string RootPath
         {
             get => _rootPath;
-            private set => Set(ref _rootPath, value);
+            set => Set(ref _rootPath, value);
         }
 
         public RelayCommand SelectRootPathCommand { get; }
@@ -63,6 +64,9 @@ namespace DBImplant_N1toN2.Features.Raw.ViewModels
         public AsyncRelayCommand DbImportCommand { get; }
         public RelayCommand CancelCommand { get; }
 
+        /// <summary>.grm 파일 비교 전시 윈도우 열기</summary>
+        public RelayCommand<object> OpenGramCompareCommand { get; }
+
         private CancellationTokenSource? _cts;
 
         public RawTabViewModel(string header, string rootPath) : base(header)
@@ -73,6 +77,14 @@ namespace DBImplant_N1toN2.Features.Raw.ViewModels
             DbImportCommand = new AsyncRelayCommand(DbImportAsync, () => !IsRunning && Packages.Any(p => p.IsChecked));
             CancelCommand = new RelayCommand(() => _cts?.Cancel(), () => IsRunning);
             SelectRootPathCommand = new RelayCommand(SelectRootPath, () => !IsRunning);
+            OpenGramCompareCommand = new RelayCommand<object>(o =>
+            {
+                if (o is FileParseRow row && row.FullPath.EndsWith(".grm", StringComparison.OrdinalIgnoreCase))
+                {
+                    var win = new Features.Migration.Views.GramCompareWindow(row.FullPath);
+                    win.Show();
+                }
+            });
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

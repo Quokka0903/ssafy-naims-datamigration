@@ -30,6 +30,12 @@
                            FontSize="13" VerticalAlignment="Center"/>
 
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Content="MSU 경로 변경" Margin="0,0,8,0"
+                            Style="{DynamicResource ButtonHeaderStyle}"
+                            Command="{Binding ChangeMsuPathCommand}"/>
+                    <Button Content="전체 스캔+파싱" Margin="0,0,16,0"
+                            Style="{DynamicResource ButtonHeaderStyle}"
+                            Command="{Binding ScanAllCommand}"/>
                     <Button Content="Migration Preview" Margin="0,0,8,0"
                             Style="{DynamicResource ButtonHeaderStyle}"
                             Command="{Binding ShowPreviewCommand}"/>
@@ -67,6 +73,33 @@
             <!-- Layer 2: Migration Execute 오버레이 -->
             <mig:MigrationExecuteView DataContext="{Binding MigrationExecute}"
                                       Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}"/>
+
+            <!-- Layer 3: 전역 진행률 오버레이 -->
+            <Border DataContext="{Binding ProgressOverlay}"
+                    Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}"
+                    Background="#CC000000">
+                <Border Background="{DynamicResource SidebarBackgroundBrush}"
+                        CornerRadius="8" Padding="32,24"
+                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                        MinWidth="420" MaxWidth="600"
+                        Effect="{DynamicResource DropShadowSmall}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Title}"
+                                   Foreground="{DynamicResource TextOnDarkBrush}"
+                                   FontSize="18" FontWeight="Bold"
+                                   HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                        <ProgressBar Height="8" Minimum="0" Maximum="1"
+                                     Value="{Binding Progress}"
+                                     IsIndeterminate="{Binding IsIndeterminate}"
+                                     Style="{DynamicResource ProgressBarDefaultStyle}"
+                                     Margin="0,0,0,12"/>
+                        <TextBlock Text="{Binding Message}"
+                                   Foreground="{DynamicResource TextOnDarkSecondaryBrush}"
+                                   FontSize="12" TextWrapping="Wrap"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

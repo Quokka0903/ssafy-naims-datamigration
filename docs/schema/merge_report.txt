@@ -1,0 +1,38 @@
+총 563행
+  확정         456
+  자동생성       29
+  스키마변경      29
+  제외         22
+  신규제안       16
+  미결         11
+
+[정합성 이슈 29건]
+  스키마변경      CD_BACKUP_LOG.BACKUP_TYPE -> STD_CD_BACKUP_LOG.BACKUP_TYPE : 확정본이 가리키는 대상 컬럼 BACKUP_TYPE 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.BACKUP_DATE -> STD_CD_BACKUP_LOG.BACKUP_DATETIME : 확정본이 가리키는 대상 컬럼 BACKUP_DATETIME 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.BACK_BY -> STD_CD_BACKUP_LOG.BACK_BY : 확정본이 가리키는 대상 컬럼 BACK_BY 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.BACKUP_MEDIA -> STD_CD_BACKUP_LOG.BACKUP_MEDIA : 확정본이 가리키는 대상 컬럼 BACKUP_MEDIA 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.BACKUP_MEDIA_ID -> STD_CD_BACKUP_LOG.BACKUP_MEDIA_ID : 확정본이 가리키는 대상 컬럼 BACKUP_MEDIA_ID 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.NO_NB_GRAM -> STD_CD_BACKUP_LOG.NO_NB_GRAM : 확정본이 가리키는 대상 컬럼 NO_NB_GRAM 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.SIZE_NB_GRAM -> STD_CD_BACKUP_LOG.SIZE_NB_GRAM : 확정본이 가리키는 대상 컬럼 SIZE_NB_GRAM 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.NO_AI_GRAM -> STD_CD_BACKUP_LOG.NO_AI_GRAM : 확정본이 가리키는 대상 컬럼 NO_AI_GRAM 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.SIZE_AI_GRAM -> STD_CD_BACKUP_LOG.SIZE_AI_GRAM : 확정본이 가리키는 대상 컬럼 SIZE_AI_GRAM 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.NO_TR_GRAM -> STD_CD_BACKUP_LOG.NO_TR_GRAM : 확정본이 가리키는 대상 컬럼 NO_TR_GRAM 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.SIZE_TR_GRAM -> STD_CD_BACKUP_LOG.SIZE_TR_GRAM : 확정본이 가리키는 대상 컬럼 SIZE_TR_GRAM 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.NO_NB_AUDIO -> STD_CD_BACKUP_LOG.NO_NB_AUDIO : 확정본이 가리키는 대상 컬럼 NO_NB_AUDIO 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.SIZE_NB_AUDIO -> STD_CD_BACKUP_LOG.SIZE_NB_AUDIO : 확정본이 가리키는 대상 컬럼 SIZE_NB_AUDIO 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.NO_AI_AUDIO -> STD_CD_BACKUP_LOG.NO_AI_AUDIO : 확정본이 가리키는 대상 컬럼 NO_AI_AUDIO 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.SIZE_AI_AUDIO -> STD_CD_BACKUP_LOG.SIZE_AI_AUDIO : 확정본이 가리키는 대상 컬럼 SIZE_AI_AUDIO 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.NO_TR_AUDIO -> STD_CD_BACKUP_LOG.NO_TR_AUDIO : 확정본이 가리키는 대상 컬럼 NO_TR_AUDIO 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.SIZE_TR_AUDIO -> STD_CD_BACKUP_LOG.SIZE_TR_AUDIO : 확정본이 가리키는 대상 컬럼 SIZE_TR_AUDIO 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.NO_VESSEL_IMAGE -> STD_CD_BACKUP_LOG.NO_VESSEL_IMAGE : 확정본이 가리키는 대상 컬럼 NO_VESSEL_IMAGE 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.SIZE_VESSEL_IMAGE -> STD_CD_BACKUP_LOG.SIZE_VESSEL_IMAGE : 확정본이 가리키는 대상 컬럼 SIZE_VESSEL_IMAGE 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.SIZE_FLAG_IMAGE -> STD_CD_BACKUP_LOG.SIZE_FLAG_IMAGE : 확정본이 가리키는 대상 컬럼 SIZE_FLAG_IMAGE 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.TOTAL_SIZE -> STD_CD_BACKUP_LOG.TOTAL_SIZE : 확정본이 가리키는 대상 컬럼 TOTAL_SIZE 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      CD_BACKUP_LOG.COMMENTS -> STD_CD_BACKUP_LOG.COMMENT : 확정본이 가리키는 대상 컬럼 COMMENT 가 현재 STD_CD_BACKUP_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      DB_DIST_LOG.DIST_PATH -> STD_DB_DIST_LOG.DIST_PATH : 확정본이 가리키는 대상 컬럼 DIST_PATH 가 현재 STD_DB_DIST_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      DB_DIST_LOG.NO_CLASSES -> STD_DB_DIST_LOG.NO_CLASSES : 확정본이 가리키는 대상 컬럼 NO_CLASSES 가 현재 STD_DB_DIST_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      DB_DIST_LOG.NO_VESSEL -> STD_DB_DIST_LOG.NO_VESSEL : 확정본이 가리키는 대상 컬럼 NO_VESSEL 가 현재 STD_DB_DIST_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      DB_DIST_LOG.NO_SONAR -> STD_DB_DIST_LOG.NO_SONAR : 확정본이 가리키는 대상 컬럼 NO_SONAR 가 현재 STD_DB_DIST_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      DB_DIST_LOG.NO_TR_EVENT -> STD_DB_DIST_LOG.NO_TR_EVENT : 확정본이 가리키는 대상 컬럼 NO_TR_EVENT 가 현재 STD_DB_DIST_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      DB_DIST_LOG.NO_WEAPON -> STD_DB_DIST_LOG.NO_WEAPON : 확정본이 가리키는 대상 컬럼 NO_WEAPON 가 현재 STD_DB_DIST_LOG 스키마에 없음 — 재확정 필요
+  스키마변경      DB_DIST_LOG.NO_IMAGE -> STD_DB_DIST_LOG.NO_IMAGE : 확정본이 가리키는 대상 컬럼 NO_IMAGE 가 현재 STD_DB_DIST_LOG 스키마에 없음 — 재확정 필요

@@ -22,7 +22,7 @@ namespace DBImplant_N1toN2.Features.ShortPeriod.ViewModels
         public string RootPath
         {
             get => _rootPath;
-            private set => Set(ref _rootPath, value);
+            set => Set(ref _rootPath, value);
         }
 
         public RelayCommand SelectRootPathCommand { get; }
@@ -149,6 +149,7 @@ namespace DBImplant_N1toN2.Features.ShortPeriod.ViewModels
         public AsyncRelayCommand ScanParseCommand { get; }
         public AsyncRelayCommand DbImportCommand { get; }
         public RelayCommand CancelCommand { get; }
+        public RelayCommand<object> OpenGramCompareCommand { get; }
 
         private CancellationTokenSource? _cts;
 
@@ -159,6 +160,20 @@ namespace DBImplant_N1toN2.Features.ShortPeriod.ViewModels
             ScanParseCommand = new AsyncRelayCommand(ScanParseAsync, () => !IsRunning);
             DbImportCommand = new AsyncRelayCommand(DbImportAsync, () => !IsRunning && Packages.Any(p => p.IsChecked));
             CancelCommand = new RelayCommand(() => _cts?.Cancel(), () => IsRunning);
+            OpenGramCompareCommand = new RelayCommand<object>(o =>
+            {
+                string? path = null;
+                if (o != null)
+                {
+                    var prop = o.GetType().GetProperty("FullPath");
+                    path = prop?.GetValue(o) as string;
+                }
+                if (!string.IsNullOrEmpty(path) && path!.EndsWith(".grm", StringComparison.OrdinalIgnoreCase))
+                {
+                    var win = new Features.Migration.Views.GramCompareWindow(path);
+                    win.Show();
+                }
+            });
             SelectRootPathCommand = new RelayCommand(SelectRootPath, () => !IsRunning);
         }
 

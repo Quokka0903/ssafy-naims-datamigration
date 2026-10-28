@@ -10,6 +10,7 @@ namespace DBImplant_N1toN2.Features.Raw.Models
 {
     public enum RawPackageKind
     {
+        CollectionFolder,    // 임무 폴더 전체 (→ RAW_COLLECT_SIG)
         SdPackage,
         NarrowBandGroup
     }
@@ -20,6 +21,9 @@ namespace DBImplant_N1toN2.Features.Raw.Models
         public string CollectionDir { get; }
         public string PackageDir { get; }     // sdDir or nbDir
         public string DisplayName { get; }    // UI 표기용
+
+        /// <summary>트리 구조: CollectionFolder 아래 SD/NB 자식 노드</summary>
+        public ObservableCollection<RawPackageItem> Children { get; } = new();
 
         private ShortPeriodSdPackage? _sd;
         private ObservableCollection<NarrowBandGroup> _nbGroups;
@@ -74,6 +78,89 @@ namespace DBImplant_N1toN2.Features.Raw.Models
         {
             get => _error;
             set => Set(ref _error, value);
+        }
+
+        /// <summary>폴더 요약 행을 만들 때 쓰는 스캔 집계값(생성자 인자 보관).</summary>
+        private readonly int _sdCount, _nbWavCount;
+
+        // 생성자 (임무 폴더 — RAW_COLLECT_SIG 대응)
+        // 폴더 탐색·재귀 파일 카운트 같은 IO 는 생성자에서 하지 않는다(UI 스레드 프리징 방지).
+        // 실제 요약 행은 BuildFolderSummaryRows 가 백그라운드에서 만든다.
+        public RawPackageItem(string collectionDir, int sdCount, int nbWavCount)
+        {
+            Kind = RawPackageKind.CollectionFolder;
+            CollectionDir = collectionDir;
+            PackageDir = collectionDir;
+            _sdCount = sdCount;
+            _nbWavCount = nbWavCount;
+            var folderName = Path.GetFileName(collectionDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+            DisplayName = $"📁 {folderName}";
+            Status = "폴더";
+        }
+
+        /// <summary>
+        /// 임무 폴더 요약 행(폴더구조 + 협대역 파일 + .sd 하위)을 만든다.
+        /// 재귀 파일 카운트를 포함한 파일시스템 IO 라 반드시 백그라운드 스레드에서 호출한다.
+        /// </summary>
+        public void BuildFolderSummaryRows(List<FileParseRow> rows)
+        {
+            var folderName = Path.GetFileName(CollectionDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+
+            rows.Add(new FileParseRow("폴더구조", folderName, CollectionDir, 0,
+                Directory.GetLastWriteTime(CollectionDir),
+                $"→ RAW_COLLECT_SIG | SD패키지: {_sdCount}개, 협대역 WAV: {_nbWavCount}개",
+                null));
+
+            // 협대역 하위 폴더 탐색
+            var nbDir = Path.Combine(CollectionDir, "협대역");
+            if (Directory.Exists(nbDir))
+            {
+                try
+                {
+                    foreach (var f in Directory.GetFiles(nbDir, "*.*", SearchOption.TopDirectoryOnly).OrderBy(x => x))
+                    {
+                        var fi = new FileInfo(f);
+                        var ext = fi.Extension.ToUpperInvariant();
+                        string target = ext switch
+                        {
+                            ".WAV" => "→ RAW_SCHANNEL_SS_EVENT",
+                            ".GRM" when fi.Name.Contains("_Lofar") => "→ RAW_SCHANNEL_SS_SEGMENT.ANLAY_LOFAR_GRAM_FILE",
+                            ".GRM" when fi.Name.Contains("_Demon") => "→ RAW_SCHANNEL_SS_SEGMENT.ANLAY_DEMON_GRAM_FILE",
+                            ".GRM" when fi.Name.Contains("_Event") => "→ EXTRACT_DATA_STORE.DATA",
+                            ".TXT" when fi.Name.Contains("_NBlist") => "→ 발췌구간 참조",
+                            ".TXT" when fi.Name.Contains("_SPSlist") => "→ RAW_SCHANNEL_SS_EVENT (SPS)",
+                            ".DAT" when fi.Name.Contains("_Detect") => "→ 탐지 임계값",
+                            ".TXT" when fi.Name.Contains("Drawing") => "→ 커서 마크 참조",
+                            _ => ""
+                        };
+                        rows.Add(new FileParseRow($"협대역/{ext}", fi.Name, fi.FullName,
+                            fi.Length, fi.LastWriteTime, target, null));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rows.Add(new FileParseRow("협대역", "(탐색 실패)", nbDir, 0,
+                        DateTime.MinValue, "", ex.Message));
+                }
+            }
+
+            // .sd 하위 폴더 탐색
+            try
+            {
+                foreach (var d in Directory.GetDirectories(CollectionDir, "*.sd"))
+                {
+                    var sdName = Path.GetFileName(d);
+                    var fileCount = Directory.GetFiles(d, "*", SearchOption.AllDirectories).Length;
+                    rows.Add(new FileParseRow("SD폴더", sdName, d, 0,
+                        Directory.GetLastWriteTime(d),
+                        $"→ 단주기 파싱 (파일 {fileCount}개)", null));
+                }
+            }
+            catch (Exception ex)
+            {
+                rows.Add(new FileParseRow("SD폴더", "(탐색 실패)", CollectionDir, 0,
+                    DateTime.MinValue, "", ex.Message));
+            }
         }
 
         // 생성자 (SD Package)

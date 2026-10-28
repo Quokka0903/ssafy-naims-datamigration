@@ -413,45 +413,18 @@ namespace DBImplant_N1toN2.Features.ShortPeriod.Parsers
 
 
         /*──────────────────────── Copy / Fill 헬퍼 ─────────────────────*/
-        public static void CopyIfZero(long tgt, long src, [CallerMemberName] string propertyName = null)
-        {
-            if (tgt == 0)
-            {
-                tgt = src;
-            }
-        }
+        // (수정) 기존 구현은 값 전달 파라미터에 대입만 하는 no-op이라 병합 결과가 유실되었음.
+        // 속성(property)은 ref 파라미터로 전달할 수 없으므로,
+        // "병합 결과를 반환 → 호출부에서 대상 속성에 대입" 방식으로 변경.
+        public static long CopyIfZero(long tgt, long src) => tgt == 0 ? src : tgt;
 
-        public static void CopyIfZero(int tgt, int src, [CallerMemberName] string propertyName = null)
-        {
-            if (tgt == 0)
-            {
-                tgt = src;
-            }
-        }
+        public static int CopyIfZero(int tgt, int src) => tgt == 0 ? src : tgt;
 
-        public static void CopyIfZero(double tgt, double src, [CallerMemberName] string propertyName = null)
-        {
-            if (Math.Abs(tgt) < 1e-6)
-            {
-                tgt = src;
-            }
-        }
+        public static double CopyIfZero(double tgt, double src) => Math.Abs(tgt) < 1e-6 ? src : tgt;
 
-        public static void CopyIfZero(byte tgt, byte src, [CallerMemberName] string propertyName = null)
-        {
-            if (tgt == 0)
-            {
-                tgt = src;
-            }
-        }
+        public static byte CopyIfZero(byte tgt, byte src) => tgt == 0 ? src : tgt;
 
-        public static void CopyIfEmpty(string tgt, string src, [CallerMemberName] string propertyName = null)
-        {
-            if (string.IsNullOrWhiteSpace(tgt))
-            {
-                tgt = src;
-            }
-        }
+        public static string CopyIfEmpty(string tgt, string src) => string.IsNullOrWhiteSpace(tgt) ? src : tgt;
 
         /*──────────────────────── FillIfEmpty(Event) ──────────────────*/
         private static void FillIfEmpty(ShortPeriodEvent tgt, ShortPeriodEvent src)

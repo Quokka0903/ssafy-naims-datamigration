@@ -1,0 +1,32 @@
+구분	내용
+공통1	IS_TRAINING은 신규 체계 생성 필드로 모두 0 입력
+공통2	DELETED는 신규 체계 생성 필드로 모두 0 입력
+공통3	레거시 PK는 신규 RECORD_ID로 승계하지 않고 신규 DB에서 IDENTITY 자동 생성
+226~228	TRFrameResult.byteAppliedState/byteSnippetAppliedState 제외, lDBApplyID는 조건부로 PREC_SS_SEGMENT.DB_SEG_ID 및 현재 시각 DB_APPLIED_DATETIME 처리
+303~305	HarmonicList 공백 분리, HARM_NO=숫자부, PREDOMINANCE=p/P suffix 여부, FREQ=0
+318,391	거리 단위는 우선 nm 가정, 프로그램 내 단위 sync/변환 지원
+319~322	헤더 DET_*는 varchar 직접 매핑, DET_DATETIME은 날짜 변환
+330,333	ALG의 대표 DET_SONAR는 Detection 값 사용
+331,334	SUPPLEMENT_DATA는 구조체 유지 후 추후 binary 가공 메서드로 저장 (TODO)
+339~343	그램 변환 작업 후 FREQ/BIN/FRAME/RESOLUTION 산출
+344~346	Snippet wav 헤더에서 A_START/A_END/SAMPLING_RATE 산출
+347	fea GramFileName/AudioFileName과 snippet 매핑, GRAM_TYPE 코드: L=101,D=201,V1~V4=301~304
+348	DET_DATETIME 생성날짜 없으면 현재 시각
+433~445 일부	파싱만 수행, 저장 위치 또는 미반영 여부 추후 결정
+556	FLAG_FILE은 경로가 아닌 파일 바이트 저장
+584,596	지정 파일 내부 값을 파싱해 STD_DB_DIST_GROUP에 재매핑 (세부 컬럼 TBD)
+318,391	거리 단위는 우선 nm로 가정하고 값 저장, 프로그램 내 단위 동기화/변환 가능하도록 처리
+319~322	DET_SONAR/DET_SHIP/DET_PLATFORM은 varchar 직접 매핑, DET_DATETIME은 날짜 변환 후 매핑
+330	보조정보.alg는 Detection 기준으로 DetSonar를 사용; alg 전체는 구조체로 유지 후 추후 binary 가공
+339~343	NB snippet의 FREQ/BIN/RESOLUTION 메타는 기존 .grm -> 신규 .grm 변환 작업에서 산출; 현재는 체크포인트로 보류
+344~346	NB snippet의 A_START_MILLISEC/A_END_MILLISEC/SAMPLING_RATE는 wav 헤더에서 추출
+347	.fea의 GramFileName/AudioFileName으로 snippet 매핑; gram_type: L=101, D=201, V1~V4=301~304
+348	생성날짜가 없으면 현재 시각 사용
+398	CCF2CD_LOG.DATASET_ID는 STD_CCF2CD_LOG.APPL_DATETIME에 매핑
+408	CD_BACKUP_LOG.BACKUP_DATE는 STD_CD_BACKUP_LOG.BACKUP_DATETIME에 매핑
+433~445	파싱만 우선 확정하고 저장 위치/미반영 여부는 추후 결정
+556	FLAG_FILE에는 경로가 아니라 파일 자체 저장
+578	DB_DIST_GROUP.FINAL_DIST_DATE는 FINAL_DIST_DATETIME에 매핑
+584,596	해당 경로의 파일을 읽고 내부 값을 파싱하여 STD_DB_DIST_GROUP 세부 컬럼에 재매핑
+605	DIST_TO.COMPLT_DATE는 최종 제외
+606	DIST_TO.COMPLT_OPTR는 RECEIVE_OPERATOR로 매핑

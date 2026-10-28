@@ -13,10 +13,14 @@ namespace DBImplant_N1toN2.DataAccess
     {
         public string DbTypeName => "Oracle";
         public string ConnectionString { get; }
+        private readonly LegacyConnectionMode _mode;
         private const string SchemaPrefix = "SYSTEM.";
 
-        public OracleLegacyConnection(string connectionString)
-            => ConnectionString = connectionString;
+        public OracleLegacyConnection(string connectionString, LegacyConnectionMode mode = LegacyConnectionMode.Odbc)
+        {
+            ConnectionString = connectionString;
+            _mode = mode;
+        }
 
         public async Task<bool> TestConnectionAsync()
         {
@@ -34,9 +38,11 @@ namespace DBImplant_N1toN2.DataAccess
             using var conn = CreateConnection();
             conn.Open();
 
+            // ODBC 는 위치 기반 '?', 다이렉트(관리형)는 명명 ':v'.
+            string marker = _mode == LegacyConnectionMode.Odbc ? "?" : ":v";
             string fullTable = SchemaPrefix + tableName;
             string where = filterColumn != null
-                ? $" WHERE {filterColumn} = :v AND ROWNUM <= {maxRows}"
+                ? $" WHERE {filterColumn} = {marker} AND ROWNUM <= {maxRows}"
                 : $" WHERE ROWNUM <= {maxRows}";
 
             // CRYPTO.DECRYPT 대상 컬럼이 있으면 명시적 SELECT 구성
@@ -48,7 +54,7 @@ namespace DBImplant_N1toN2.DataAccess
             if (filterColumn != null)
             {
                 var param = cmd.CreateParameter();
-                param.ParameterName = ":v";
+                param.ParameterName = "v";
                 param.Value = filterValue;
                 cmd.Parameters.Add(param);
             }
@@ -80,26 +86,13 @@ namespace DBImplant_N1toN2.DataAccess
 
         // ── Private helpers ──────────────────────────────────────────────────
 
-        private DbConnection CreateConnection()
+        private DbConnection CreateConnection() => _mode switch
         {
-            // Oracle.ManagedDataAccess.Core — OracleConnection
-            // 런타임에 어셈블리가 없으면 DbProviderFactories 폴백
-            try
-            {
-                var factory = DbProviderFactories.GetFactory("Oracle.ManagedDataAccess.Client");
-                var conn = factory.CreateConnection()!;
-                conn.ConnectionString = ConnectionString;
-                return conn;
-            }
-            catch
-            {
-                // 폴백: System.Data.OracleClient (deprecated but available)
-                var factory = DbProviderFactories.GetFactory("System.Data.OracleClient");
-                var conn = factory.CreateConnection()!;
-                conn.ConnectionString = ConnectionString;
-                return conn;
-            }
-        }
+            // 폐쇄망 기본: Windows ODBC 드라이버/DSN 경유
+            LegacyConnectionMode.Odbc => new System.Data.Odbc.OdbcConnection(ConnectionString),
+            // 다이렉트: Oracle.ManagedDataAccess.Core (관리형, 클라이언트 설치 불필요)
+            _ => new Oracle.ManagedDataAccess.Client.OracleConnection(ConnectionString),
+        };
 
         /// <summary>CRYPTO.DECRYPT 래핑이 필요한 컬럼을 처리한 SELECT 컬럼 목록</summary>
         private static string BuildColumnList(string tableName)

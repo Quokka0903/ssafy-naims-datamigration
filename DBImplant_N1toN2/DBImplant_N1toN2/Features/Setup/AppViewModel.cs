@@ -14,6 +14,13 @@ namespace DBImplant_N1toN2.Features.Setup
             set => Set(ref _currentView, value);
         }
 
+        private string _statusText = "준비";
+        public string StatusText
+        {
+            get => _statusText;
+            set => Set(ref _statusText, value);
+        }
+
         public AppViewModel()
         {
             var setup = new SetupViewModel();

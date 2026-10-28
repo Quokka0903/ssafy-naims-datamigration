@@ -1,0 +1,592 @@
+﻿<UserControl x:Class="RawCollectMigrator.Features.DbToDb.DbToDbView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgBrush}">
+    <UserControl.Resources>
+        <!-- 좌측 목록의 분류 그룹 헤더 -->
+        <Style x:Key="GroupHeaderStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="6,10,0,4"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ══════════ 헤더 ══════════ -->
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="🗄️ DB → DB 마이그레이션 (구 NAIMS 기준식별 → NAIMS2 STD_*)"
+                       FontSize="18" FontWeight="Bold"/>
+            <Border Grid.Column="1" Background="#223322" BorderBrush="#55aa55" BorderThickness="1"
+                    Padding="10,4" CornerRadius="3">
+                <TextBlock Text="✅ 실제 이관 지원 (기준정보·수동신호·능동소나·순간소음·스니펫·영상·무장 / 배포·이력 제외)"
+                           Foreground="{StaticResource BrushSuccess}" FontSize="12" FontWeight="SemiBold"/>
+            </Border>
+        </Grid>
+
+        <!-- ══════════ 연결 설정 (접기 가능) ══════════ -->
+        <Expander Grid.Row="1" x:Name="ConnExpander" IsExpanded="True" Margin="0,0,0,8"
+                  Foreground="{StaticResource TextBrush}"
+                  Background="{StaticResource PanelBrush}"
+                  BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+            <Expander.Header>
+                <TextBlock Text="연결 · 파일 경로 (시작 화면에서 설정한 값)" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextBrush}"/>
+            </Expander.Header>
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- [찾기:접속설정] 접속·경로의 단일 원본은 AppSession(시작 화면)이다.
+                     이 패널은 "지금 무엇에 붙어 있는지"를 보여주기만 하고, 수정은 시작 화면으로 보낸다.
+                     예전처럼 탭마다 접속칸을 두면 탭별로 다른 서버를 가리켜도 아무도 모른다. -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="소스 (구 NAIMS):" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="SrcConnBox" Margin="6,0,0,0" IsReadOnly="True"/>
+                <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="연결 시험" Click="OnTestSource" Width="100" Margin="6,0,0,0"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="타겟 (NAIMS2):" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="DstConnBox" Margin="6,6,0,0" IsReadOnly="True"/>
+                <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="연결 시험" Click="OnTestTarget" Width="100" Margin="6,6,0,0"/>
+
+                <!-- [NAIMS-ISSUE:SNIPPET-ROOTS] 1~3순위 폴백 폐지 — CLASSIFICATIONDB 한 곳만 본다. -->
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="CLASSIFICATION:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="NbRootBox" Margin="6,6,0,0"
+                         TextChanged="OnRootTextChanged"/>
+                <Button Grid.Row="2" Grid.Column="2" Content="📁 변경" Click="OnPickNbRoot" Width="100" Margin="6,6,0,0"/>
+
+                <TextBlock Grid.Row="3" Grid.ColumnSpan="3" Margin="0,8,0,0"
+                           Text="※ DB에는 파일명만 있습니다. 스니펫·영상 파일은 위 CLASSIFICATIONDB 폴더에서만 찾습니다(종류별 하위 폴더 SNIPPET / IMAGE / CTRYIMAGE 로 자동 분기). 접속·경로를 바꾸려면 상단 [⚙ 연결 설정] 을 누르세요."
+                           Foreground="{StaticResource BrushTextHelp}" FontSize="11" TextWrapping="Wrap"/>
+
+                <TextBlock Grid.Row="4" Grid.ColumnSpan="3" x:Name="RootProbeInfo" Margin="0,6,0,0"
+                           Foreground="{StaticResource BrushTextHelp}" FontSize="11" TextWrapping="Wrap"/>
+            </Grid>
+        </Expander>
+
+        <!-- ══════════ 덤프 복구 패널 (오프라인 DB 반입) [찾기:덤프복구] ══════════ -->
+        <Expander Grid.Row="2" x:Name="RestoreExpander" IsExpanded="False" Margin="0,0,0,8"
+                  Foreground="{StaticResource TextBrush}"
+                  Background="{StaticResource PanelBrush}"
+                  BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+            <Expander.Header>
+                <TextBlock Text="💾 덤프 복구 (오프라인 Oracle .dmp → 대상 스키마)" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextBrush}"/>
+            </Expander.Header>
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="110"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="Wrap" Foreground="{StaticResource BrushTextHelp}" FontSize="11"
+                           Text="※ .dmp 복구는 Oracle 도구(imp/impdp)를 프로그램이 대리 실행합니다(순수 코드로는 불가). 파일 헤더로 classic exp/Data Pump 를 자동 판별해 알맞은 도구를 씁니다. 선행: 대상 DB·스키마·복호화 패키지가 준비돼 있어야 함."/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="덤프(.dmp/폴더):" VerticalAlignment="Center" Margin="0,8,0,0"
+                           ToolTip="파일 하나 또는 테이블별 .DMP 가 든 폴더(예: backup.bat 산출 34개). 폴더면 안의 *.dmp 를 이름순으로 일괄 복구."/>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="DumpPathBox" Margin="6,8,0,0"/>
+                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Margin="6,8,0,0">
+                    <Button Content="📂 파일" Click="OnPickDump" Width="72"/>
+                    <Button Content="📁 폴더" Click="OnPickDumpFolder" Width="72" Margin="6,0,0,0"
+                            ToolTip="테이블별 .DMP 가 든 폴더 선택(다중 imp 일괄 복구)."/>
+                </StackPanel>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="DBA 접속:" VerticalAlignment="Center" Margin="0,6,0,0"
+                           ToolTip="imp/impdp 접속. 형식: user/pwd@host:port/service (DBA 권한 필요)&#10;※ 비밀번호는 저장되지 않습니다 — 실행할 때 직접 채워 주세요."/>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="DbaConnBox" Margin="6,6,0,0"
+                         Text="system/Naims12#2026@localhost:1522/NAIMS12"/>
+                <Button Grid.Row="2" Grid.Column="2" Content="🔎 종류 판별" Click="OnDetectDumpKind" Width="100" Margin="6,6,0,0"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="스키마(원본→대상):" VerticalAlignment="Center" Margin="0,6,0,0"
+                           ToolTip="원본 스키마(비우면 대상과 동일 가정) / 재적재 대상 스키마"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="6,6,0,0">
+                    <TextBox x:Name="SrcSchemaBox" Width="180" ToolTip="원본 스키마. 현장 full 덤프면 보통 SYSTEM. 비우면 대상과 동일 가정."/>
+                    <TextBlock Text="→" VerticalAlignment="Center" Margin="8,0,8,0" Foreground="{StaticResource BrushTextHelp}"/>
+                    <TextBox x:Name="TgtSchemaBox" Width="180" Text="LEGACYNAIMS" ToolTip="재적재 대상 스키마(우리 도구가 붙는 스키마)."/>
+                    <ComboBox x:Name="DumpKindCombo" Width="180" Margin="16,0,0,0" SelectedIndex="0"
+                              ToolTip="자동=파일 헤더로 판별. 판별이 애매하면 직접 지정.">
+                        <ComboBoxItem Content="종류: 자동 판별"/>
+                        <ComboBoxItem Content="종류: classic exp (imp)"/>
+                        <ComboBoxItem Content="종류: Data Pump (impdp)"/>
+                    </ComboBox>
+                    <ComboBox x:Name="CleanModeCombo" Width="230" Margin="16,0,0,0" SelectedIndex="0"
+                              ToolTip="재실행 시 대상 스키마 선정리. classic imp 는 append 전용이라 재실행 중복을 막으려면 필요.&#10;DROP=recovery.bat 의 dropdb.txt 대응(구조까지 제거·imp 가 재생성). TRUNCATE=행만 비움. 보호 스키마(SYS/SYSTEM 등)는 거부됨.">
+                        <ComboBoxItem Content="재실행정리: 없음(빈 스키마 첫 복구)"/>
+                        <ComboBoxItem Content="재실행정리: TRUNCATE(행만 비움)"/>
+                        <ComboBoxItem Content="재실행정리: DROP(dropdb.txt 대응)"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,10,0,6">
+                    <Button x:Name="BtnRestoreDump" Content="💾 덤프 복구 실행" Click="OnRestoreDump"
+                            Padding="14,6" FontWeight="SemiBold" Background="#2a4a3a" Foreground="#bfe4cf"/>
+                    <Button x:Name="BtnRestoreStop" Content="■ 중지" Click="OnStopMigrate"
+                            Padding="14,6" Margin="10,0,0,0" IsEnabled="False"/>
+                    <TextBlock x:Name="RestoreStatus" VerticalAlignment="Center" Margin="16,0,0,0"
+                               Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold"/>
+                </StackPanel>
+
+                <TextBox Grid.Row="5" Grid.ColumnSpan="3" x:Name="RestoreLog" IsReadOnly="True"
+                         FontFamily="Consolas" FontSize="11"
+                         VerticalScrollBarVisibility="Auto" TextWrapping="NoWrap"
+                         Background="{StaticResource BgBrush}" Foreground="{StaticResource BrushTextPrimary}"
+                         BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"/>
+            </Grid>
+        </Expander>
+
+        <!-- ══════════ 이관 실행 패널 ══════════ -->
+        <Expander Grid.Row="3" x:Name="RunExpander" IsExpanded="True" Margin="0,0,0,8"
+                  Foreground="{StaticResource TextBrush}"
+                  Background="{StaticResource PanelBrush}"
+                  BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+            <Expander.Header>
+                <TextBlock Text="▶ 이관 실행" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}"/>
+            </Expander.Header>
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="120"/>
+                </Grid.RowDefinitions>
+
+                <!-- 실행 옵션 바 -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <CheckBox x:Name="ExcDist" Content=" 배포관리 제외" IsChecked="True" IsEnabled="False"
+                              Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="ExcLog" Content=" 변경이력 제외" IsChecked="True" IsEnabled="False"
+                              Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                    <TextBlock Text="테이블당 행 제한:" VerticalAlignment="Center" Margin="24,0,0,0"/>
+                    <TextBox x:Name="MaxRowsBox" Width="70" Text="0" Margin="6,0,0,0"
+                             VerticalAlignment="Center" ToolTip="0 = 전체"/>
+                    <TextBlock Text="(0=전체, 시험 시 3 등)" Foreground="{StaticResource BrushTextHelp}" FontSize="11"
+                               VerticalAlignment="Center" Margin="6,0,0,0"/>
+                    <Border Width="1" Background="{StaticResource BrushDivider}" Margin="16,2,16,2"/>
+                    <CheckBox x:Name="UseDecryptionChk" Content=" 🔓 복호화 불러오기" IsChecked="True"
+                              Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"
+                              Checked="OnUseDecryptionChanged" Unchecked="OnUseDecryptionChanged"
+                              ToolTip="켬(기본): 현장 암호문을 CRYPTO 로 복호해 이관.&#10;끔: 이미 평문으로 dump 된 소스처럼 복호화하지 않고 이름 컬럼을 원문 그대로 이관(CRYPTO 불필요)."/>
+                    <TextBlock Text="적재 방식" VerticalAlignment="Center" Margin="16,0,6,0"
+                               Foreground="{StaticResource TextBrush}"/>
+                    <ComboBox x:Name="LoadPolicyCombo" Width="230" SelectedIndex="0"
+                              SelectionChanged="OnLoadPolicyChanged"
+                              ToolTip="멱등 보충: 기존 행은 재사용하고 없는 것만 추가.&#10;전량 재구축: 대상 타겟을 비우고 처음부터 넣음 — 키가 없는 테이블도 정확히 이관됨.">
+                        <ComboBoxItem Content="멱등 보충 (기존 유지)"/>
+                        <ComboBoxItem Content="⚠ 전량 재구축 (타겟 비움)"/>
+                    </ComboBox>
+                    <TextBox x:Name="RebuildConfirmBox" Width="170" Margin="6,0,0,0"
+                             IsEnabled="False" VerticalContentAlignment="Center"
+                             ToolTip="전량 재구축을 실행하려면 지울 데이터베이스 이름을 그대로 입력하세요.&#10;타겟과 글자 그대로 같아야 삭제가 진행됩니다."/>
+                    <CheckBox x:Name="EmptyOnMissingChk" Content=" 파일 없어도 행 적재" IsChecked="True"
+                              Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" Margin="16,0,0,0"
+                              ToolTip="켬(기본): 그램·원음·영상 파일이 없으면 blob 을 빈 값으로 두고 행은 넣는다.&#10;끔: 그 행을 통째로 스킵한다(자식·링크가 연쇄로 함께 빠짐)."/>
+                </StackPanel>
+
+                <!-- ══ 이관 범위: CLASS(함정급) 단위 선택 ══ -->
+                <Border Grid.Row="1" Margin="0,8,0,0" Padding="8,6"
+                        Background="{StaticResource BgBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="3">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 범위 조작 바 -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="이관 범위:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <Button x:Name="BtnLoadClasses" Content="📋 CLASS 목록 불러오기"
+                                    Click="OnLoadClassList" Padding="10,4" Margin="10,0,0,0"/>
+                            <Button x:Name="BtnClassAll" Content="전체 선택" Click="OnSelectAllClasses"
+                                    Padding="10,4" Margin="8,0,0,0" IsEnabled="False"/>
+                            <Button x:Name="BtnClassNone" Content="해제" Click="OnClearClasses"
+                                    Padding="10,4" Margin="6,0,0,0" IsEnabled="False"/>
+                            <TextBlock x:Name="ClassScopeInfo" VerticalAlignment="Center" Margin="14,0,0,0"
+                                       Foreground="{StaticResource BrushTextHelp}" FontSize="11" TextWrapping="Wrap"
+                                       Text="선택하지 않으면 전체 이관(기존 동작). CLASS를 고르면 해당 함정급 서브트리 + 참조 공유데이터만 이관합니다."/>
+                        </StackPanel>
+
+                        <!-- CLASS 체크박스 목록 -->
+                        <Border Grid.Row="1" Margin="0,6,0,0" MaxHeight="120"
+                                Background="{StaticResource PanelBrush}"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                Visibility="Collapsed" x:Name="ClassListBorder">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl x:Name="ClassList" Margin="6,4">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Label}" IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                                      Foreground="{StaticResource TextBrush}"
+                                                      Margin="4,2" MinWidth="150"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- [찾기:원버튼] 세션 실행 — 리허설(①~④) → 승인 → 실제 이관(⑤~⑥) -->
+                <Border Grid.Row="2" Background="{StaticResource PanelBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        Padding="10,8" Margin="0,4,0,8" CornerRadius="3">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{StaticResource SuccessButton}" x:Name="BtnRehearsal" Content="▶ 리허설 전체 실행 (연결→매핑→DryRun→Trial)"
+                                    Click="OnRunRehearsal" Padding="16,7"
+                                   
+                                    ToolTip="연결 점검 · 매핑 리스트 생성 · DryRun · Trial(롤백)까지 한 번에 수행하고 게이트를 채점합니다. 타겟에 영구 반영되지 않습니다."/>
+                            <Button Style="{StaticResource DangerButton}" x:Name="BtnCommitSession" Content="⚠ 승인 후 실제 이관 (커밋→검증→매핑)"
+                                    Click="OnCommitSession" Padding="16,7" Margin="10,0,0,0"
+                                    IsEnabled="False"
+                                   
+                                    ToolTip="리허설을 통과해야 열립니다. 승인 창에서 타겟 확인 후 진행합니다."/>
+                            <CheckBox x:Name="SkipDryRunChk" Content=" DryRun 생략" Margin="14,0,0,0"
+                                      VerticalAlignment="Center" Foreground="{StaticResource TextBrush}"
+                                      ToolTip="Trial 이 읽기 경로를 포함하므로 시간을 줄이려면 생략할 수 있습니다."/>
+                            <CheckBox x:Name="VerifyRerunChk" Content=" 커밋 후 멱등 재검증" Margin="12,0,0,0"
+                                      VerticalAlignment="Center" Foreground="{StaticResource TextBrush}"
+                                      ToolTip="커밋 후 Trial 을 한 번 더 돌려 '적재 0 / 재사용 전량'인지 확인합니다. 타겟 IDENTITY 를 한 번 더 소비합니다."/>
+                            <Button Content="📁 세션 폴더" Click="OnOpenSessionFolder" Padding="10,5"
+                                    Margin="12,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock x:Name="StepText" Margin="2,7,0,0" FontSize="11"
+                                   FontFamily="Consolas" Foreground="{StaticResource BrushTextInfo}"
+                                   Text="① 연결   ②매핑   ③DryRun   ④Trial   ⑤게이트   ⑥커밋   ⑦검증      — 대기"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 실행 버튼 + 상태 (단계별 수동 실행) -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,6">
+                    <Button x:Name="BtnPreflight" Content="🩺 환경 점검" Click="OnPreflight"
+                            Padding="14,6" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                    <Button x:Name="BtnPastResult" Content="📂 지난 이관 결과 열기" Click="OnOpenPastResult"
+                            Margin="0,0,6,0" Padding="10,3"
+                            ToolTip="지난 세션 폴더의 기록으로 결과 창을 다시 엽니다.&#10;커밋까지 끝난 세션만 되살릴 수 있습니다."/>
+                    <Button x:Name="BtnOracleCrypto" Content="🔐 Oracle 암호화 추출" Click="OnOracleCryptoDiscover"
+                            Padding="14,6" FontWeight="SemiBold" Margin="0,0,10,0"
+                            ToolTip="현장 Oracle 접속 시: CLASSES/VESSEL 이름의 복호화 함수를 찾아 이관에 적용"/>
+                    <Button x:Name="BtnDryRun" Content="🔍 미리보기 (DryRun)" Click="OnDryRunPreview"
+                            Padding="14,6" FontWeight="SemiBold"/>
+                    <Button Style="{StaticResource PrimaryButton}" x:Name="BtnTrial" Content="🧪 시험 실행 (롤백)" Click="OnTrialMigrate"
+                            Padding="14,6" Margin="10,0,0,0"
+                           />
+                    <Button Style="{StaticResource DangerButton}" x:Name="BtnRealRun" Content="⚠ 실제 이관 (커밋)" Click="OnRealMigrate"
+                            Padding="14,6" Margin="10,0,0,0"
+                           />
+                    <Button x:Name="BtnStop" Content="■ 중지" Click="OnStopMigrate"
+                            Padding="14,6" Margin="10,0,0,0" IsEnabled="False"/>
+                    <TextBlock x:Name="RunStatus" VerticalAlignment="Center" Margin="16,0,0,0"
+                               Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold"/>
+                </StackPanel>
+
+                <!-- 복호화 규칙 표시 -->
+                <Border Grid.Row="4" Margin="0,0,0,6" Padding="8,4"
+                        Background="{StaticResource BgBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="3">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔓 복호화 규칙:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="CryptoRuleInfo" VerticalAlignment="Center" Margin="8,0,0,0"
+                                   Foreground="{StaticResource BrushTextInfo}" FontFamily="Consolas" FontSize="11"
+                                   TextWrapping="Wrap"
+                                   Text="아직 확인 전 — 소스 종류 선택 후 [🔐 Oracle 암호화 추출] 또는 테이블 선택 시 자동 확인됩니다."/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 진행 로그 -->
+                <TextBox Grid.Row="5" x:Name="RunLog" IsReadOnly="True" FontFamily="Consolas" FontSize="11"
+                         VerticalScrollBarVisibility="Auto" TextWrapping="NoWrap"
+                         Background="{StaticResource BgBrush}" Foreground="{StaticResource BrushTextPrimary}"
+                         BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"/>
+            </Grid>
+        </Expander>
+
+        <!-- ══════════ 본문: 좌 목록 / 우 워크스페이스 ══════════ -->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="340" MinWidth="260"/>
+                <ColumnDefinition Width="4"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ─── 좌: 테이블 목록 ─── -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,4">
+                    <Button Style="{StaticResource PrimaryButton}" Content="📊 전체 카운트 조회" Click="OnLoadCounts"
+                            Padding="10,5"/>
+                    <Button Content="🔄" Click="OnReloadMap" Margin="6,0,0,0" Padding="10,5"
+                            ToolTip="매핑 프리셋 새로고침"/>
+                </StackPanel>
+
+                <Border Grid.Row="1" Background="{StaticResource PanelBrush}" Padding="8,4" Margin="0,0,0,4">
+                    <TextBlock x:Name="CountSummary" Text="테이블을 선택하세요" FontSize="11"
+                               Foreground="{StaticResource BrushTextHelp}" TextWrapping="Wrap"/>
+                </Border>
+
+                <ListBox Grid.Row="2" x:Name="TableList"
+                         Background="{StaticResource BgBrush}"
+                         BorderBrush="{StaticResource BorderBrush}"
+                         Foreground="{StaticResource TextBrush}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         SelectionChanged="OnTableSelected">
+                    <ListBox.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource GroupHeaderStyle}"/>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListBox.GroupStyle>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="6,4"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#3a4a70"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SourceTable}"
+                                           FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SourceCountText}"
+                                           Foreground="{StaticResource BrushSuccess}" FontSize="11" Margin="6,0,0,0"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding TargetTable}"
+                                           Foreground="#8888a0" FontSize="11"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FileKindText}"
+                                           Foreground="{StaticResource BrushWarning}" FontSize="10" Margin="6,0,0,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch"
+                          Background="{StaticResource BorderBrush}"/>
+
+            <!-- ─── 우: 선택 테이블 워크스페이스 ─── -->
+            <Grid Grid.Column="2" Margin="8,0,0,0">
+                <!-- 미선택 안내 -->
+                <TextBlock x:Name="NoSelectionHint"
+                           Text="◀ 좌측에서 테이블을 선택하면 컬럼 매핑과 레코드를 확인할 수 있습니다."
+                           Foreground="{StaticResource BrushTextDisabled}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <Grid x:Name="WorkspacePanel" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 선택 테이블 헤더 -->
+                    <Border Grid.Row="0" Background="{StaticResource PanelBrush}"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                            Padding="10,6" Margin="0,0,0,6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" x:Name="WsTitle" FontSize="14" FontWeight="Bold"
+                                       Foreground="{StaticResource TextBrush}"/>
+                            <TextBlock Grid.Row="1" x:Name="WsSubtitle" FontSize="11"
+                                       Foreground="{StaticResource BrushTextHelp}" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+
+                    <TabControl Grid.Row="1" Background="{StaticResource BgBrush}"
+                                BorderBrush="{StaticResource BorderBrush}">
+
+                        <!-- 탭 1: 컬럼 매핑 -->
+                        <TabItem Header="🔗 컬럼 매핑">
+                            <Grid Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" x:Name="MappingSummaryText"
+                                           Foreground="{StaticResource BrushTextHelp}" FontSize="11" Margin="2,0,0,6"
+                                           TextWrapping="Wrap"/>
+                                <DataGrid Grid.Row="1" x:Name="MappingGrid"
+                                          Style="{StaticResource DetailGrid}">
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StatusKey}" Value="SourceOnly">
+                                                    <Setter Property="Foreground" Value="#ffaa44"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding StatusKey}" Value="TargetOnly">
+                                                    <Setter Property="Foreground" Value="#6699cc"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding StatusKey}" Value="Renamed">
+                                                    <Setter Property="Foreground" Value="#88cc88"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="상태"       Binding="{Binding StatusText}" Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="소스 컬럼"  Binding="{Binding SourceText}" Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="→"          Binding="{Binding Rule}"       Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="타겟 컬럼"  Binding="{Binding TargetText}" Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="비고"       Binding="{Binding Note}"       Width="*" MinWidth="200"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- 탭 2: 소스 레코드 -->
+                        <TabItem Header="📤 소스 레코드">
+                            <Grid Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="표시 행 수:" VerticalAlignment="Center"/>
+                                    <ComboBox x:Name="SrcRowLimit" Width="80" Margin="6,0,0,0"
+                                              SelectedIndex="1" SelectionChanged="OnRowLimitChanged">
+                                        <ComboBoxItem Content="10"/>
+                                        <ComboBoxItem Content="50"/>
+                                        <ComboBoxItem Content="200"/>
+                                        <ComboBoxItem Content="1000"/>
+                                    </ComboBox>
+                                    <Button Content="🔄 다시 조회" Click="OnReloadSourceRows" Margin="10,0,0,0"/>
+                                    <TextBlock x:Name="SrcRowInfo" Foreground="{StaticResource BrushTextHelp}" FontSize="11"
+                                               VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                </StackPanel>
+                                <DataGrid Grid.Row="1" x:Name="SrcRowGrid"
+                                          Style="{StaticResource DetailGrid}"
+                                          AutoGenerateColumns="True"/>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- 탭 3: 타겟 레코드 -->
+                        <TabItem Header="📥 타겟 레코드">
+                            <Grid Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
+                                    <Button Content="🔄 타겟 조회" Click="OnReloadTargetRows"/>
+                                    <TextBlock x:Name="TgtRowInfo" Foreground="{StaticResource BrushTextHelp}" FontSize="11"
+                                               VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                </StackPanel>
+                                <DataGrid Grid.Row="1" x:Name="TgtRowGrid"
+                                          Style="{StaticResource DetailGrid}"
+                                          AutoGenerateColumns="True"/>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- 탭 4: 동반 파일 -->
+                        <TabItem Header="📎 동반 파일">
+                            <Grid Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
+                                    <Button Style="{StaticResource PrimaryButton}" x:Name="BtnCheckFiles" Content="🔍 파일 대조" Click="OnCheckFiles"
+                                           
+                                            ToolTip="DB가 참조하는 파일이 실제로 있는지, 반대로 DB에 없는 파일이 있는지 대조합니다."/>
+                                    <Button Style="{StaticResource PrimaryButton}" Content="🔎 .grm 미리보기" Click="OnOpenGramPreview" Margin="6,0,0,0"
+                                           />
+                                    <CheckBox x:Name="ShowOrphans" Content=" 고아 파일 포함" Margin="12,0,0,0"
+                                              Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"
+                                              ToolTip="디스크에 있으나 DB가 참조하지 않는 파일도 목록에 표시합니다."/>
+                                    <TextBlock x:Name="FileCheckInfo" Foreground="{StaticResource BrushTextHelp}" FontSize="11"
+                                               VerticalAlignment="Center" Margin="12,0,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <DataGrid Grid.Row="1" x:Name="FileGrid"
+                                          Style="{StaticResource DetailGrid}">
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StateKey}" Value="Missing">
+                                                    <Setter Property="Foreground" Value="#ff6666"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding StateKey}" Value="Orphan">
+                                                    <Setter Property="Foreground" Value="#888888"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="상태"      Binding="{Binding StateText}"   Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="ID"        Binding="{Binding RecordId}"    Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="종류"      Binding="{Binding Kind}"        Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="파일명"    Binding="{Binding FileName}"    Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="출처"      Binding="{Binding SourceLabel}" Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="크기"      Binding="{Binding SizeText}"    Width="Auto" MinWidth="80"/>
+                                        <DataGridTextColumn Header="전체 경로" Binding="{Binding FullPath}"    Width="*" MinWidth="240"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

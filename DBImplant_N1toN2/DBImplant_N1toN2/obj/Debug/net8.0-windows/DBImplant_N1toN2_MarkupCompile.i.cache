@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\App.xaml
-20-502449042
+23-853853851
 
-78-1400798858
-217259738372
-Features\DbBrowser\DbBrowserView.xaml;Features\DbBrowser\RelationPanelView.xaml;Features\FileBrowser\FileBrowserView.xaml;Features\Migration\Views\MigrationExecuteView.xaml;Features\Migration\Views\MigrationPreviewView.xaml;Features\Setup\SetupView.xaml;Features\Workspace\WorkspaceView.xaml;MainWindow.xaml;Themes\ButtonStyles.xaml;Themes\CheckBoxStyles.xaml;Themes\Colors.xaml;Themes\ComboBoxStyles.xaml;Themes\DataGridStyles.xaml;Themes\PanelStyles.xaml;Themes\ProgressBarStyles.xaml;Themes\ScrollBarStyles.xaml;Themes\Styles.xaml;Themes\TabControlStyles.xaml;Themes\TextBoxStyles.xaml;Themes\Typography.xaml;
+841230484879
+220-244778221
+Features\DbBrowser\DbBrowserView.xaml;Features\DbBrowser\RelationPanelView.xaml;Features\FileBrowser\FileBrowserView.xaml;Features\Migration\Views\GramCompareView.xaml;Features\Migration\Views\GramCompareWindow.xaml;Features\Migration\Views\MigrationExecuteView.xaml;Features\Migration\Views\MigrationPreviewView.xaml;Features\Setup\OdbcBrowserWindow.xaml;Features\Setup\SetupView.xaml;Features\Workspace\WorkspaceView.xaml;MainWindow.xaml;Themes\ButtonStyles.xaml;Themes\CheckBoxStyles.xaml;Themes\Colors.xaml;Themes\ComboBoxStyles.xaml;Themes\DataGridStyles.xaml;Themes\PanelStyles.xaml;Themes\ProgressBarStyles.xaml;Themes\ScrollBarStyles.xaml;Themes\Styles.xaml;Themes\TabControlStyles.xaml;Themes\TextBoxStyles.xaml;Themes\Typography.xaml;
 
-False
+True
 

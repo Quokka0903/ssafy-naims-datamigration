@@ -41,4 +41,38 @@ namespace DBImplant_N1toN2.Infrastructure.Behaviors
                 command.Execute(e.NewValue);
         }
     }
+
+    /// <summary>
+    /// TreeView.SelectedItem を TwoWay バインドするための Attached Property.
+    /// 使用法: beh:TreeViewSelectedItemBehavior.SelectedItem="{Binding SelectedPackage}"
+    /// </summary>
+    public static class TreeViewSelectedItemBehavior
+    {
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.RegisterAttached(
+                "SelectedItem",
+                typeof(object),
+                typeof(TreeViewSelectedItemBehavior),
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemChanged));
+
+        public static object GetSelectedItem(DependencyObject obj)
+            => obj.GetValue(SelectedItemProperty);
+
+        public static void SetSelectedItem(DependencyObject obj, object value)
+            => obj.SetValue(SelectedItemProperty, value);
+
+        private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is not TreeView tv) return;
+
+            tv.SelectedItemChanged -= TreeView_SelectedItemChanged;
+            tv.SelectedItemChanged += TreeView_SelectedItemChanged;
+        }
+
+        private static void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (sender is TreeView tv)
+                SetSelectedItem(tv, e.NewValue);
+        }
+    }
 }

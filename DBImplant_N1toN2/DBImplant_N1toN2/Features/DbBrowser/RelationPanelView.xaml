@@ -1,4 +1,4 @@
-<UserControl x:Class="DBImplant_N1toN2.Features.DbBrowser.RelationPanelView"
+﻿<UserControl x:Class="DBImplant_N1toN2.Features.DbBrowser.RelationPanelView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -27,7 +27,7 @@
                 <StackPanel>
                     <TextBlock Text="{Binding TableName}"
                                FontWeight="Bold" Foreground="White" FontSize="13"/>
-                    <TextBlock Foreground="#aaaacc" FontSize="10"
+                    <TextBlock Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"
                                Visibility="{Binding FilterColumn, Converter={StaticResource NullToCollapsedConverter}}">
                         <Run Text="{Binding FilterColumn, Mode=OneWay}"/>
                         <Run Text=" = "/>
@@ -48,7 +48,7 @@
                       GridLinesVisibility="Horizontal"
                       Background="Transparent"
                       RowBackground="#252525"
-                      AlternatingRowBackground="#2a2a2a">
+                      AlternatingRowBackground="{StaticResource ShellBackgroundBrush}">
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="Background" Value="#3a3a5a"/>
@@ -70,7 +70,7 @@
             </DataGrid>
 
             <!-- 상태 표시줄 -->
-            <Border Grid.Row="2" Background="#2a2a2a" Padding="6,3">
+            <Border Grid.Row="2" Background="{StaticResource ShellBackgroundBrush}" Padding="6,3">
                 <TextBlock Text="{Binding StatusText}"
                            Foreground="#999999" FontSize="11"/>
             </Border>

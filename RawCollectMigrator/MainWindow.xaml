@@ -1,0 +1,242 @@
+﻿<Window x:Class="RawCollectMigrator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:extract="clr-namespace:RawCollectMigrator.Features.ExtractRaw"
+        xmlns:dbdb="clr-namespace:RawCollectMigrator.Features.DbToDb"
+        Title="NAIMS Data Migrator — 수집원음 / 발췌원음 / DB→DB"
+        Height="920" Width="1560"
+        xmlns:startup="clr-namespace:RawCollectMigrator.Features.Startup"
+        Background="{StaticResource BgBrush}">
+    <Grid>
+        <!-- ══════════ 작업 화면 (연결 설정 완료 후 표시) ══════════ -->
+        <Grid x:Name="WorkRoot" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- [찾기:접속바] 지금 어디에 붙어 있는지를 항상 보이게 둔다.
+                 접속·경로는 AppSession 한 곳에만 있고, 바꾸려면 [연결 설정] 으로 돌아간다. -->
+            <Border Grid.Row="0" Background="{StaticResource BrushBGDeep}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+                    Padding="14,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" x:Name="ConnBar" VerticalAlignment="Center"
+                               FontFamily="{StaticResource FontFamily_Mono}" FontSize="11"
+                               TextTrimming="CharacterEllipsis"
+                               Foreground="{StaticResource BrushTextInfo}"/>
+                    <Button Grid.Column="1" Content="⚙ 연결 설정" Click="OnOpenSetup"
+                            Width="120" Margin="12,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <TabControl Grid.Row="1" Background="{StaticResource BgBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        Foreground="{StaticResource TextBrush}">
+
+        <!-- ═════════════════════════════════════════════════════════════ -->
+        <!-- 탭 1 : 수집 원음 자료 → RAW_COLLECT_SIG/SUPPLEMENT/SCHANNEL_INFO -->
+        <!-- ═════════════════════════════════════════════════════════════ -->
+        <TabItem Header="📦  수집 원음 자료">
+            <Grid Margin="12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="📦 수집원음자료 → DB 마이그레이션"
+                           FontSize="18" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                <Border Grid.Row="1" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" Padding="12" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- [NAIMS-ISSUE:TARGET-CONNSTR] 적재 대상은 이 탭이 갖지 않는다.
+                             AppSession(시작 화면)의 값을 상단 바에서 확인하고, 바꾸려면 [⚙ 연결 설정]. -->
+                        <TextBlock Grid.Column="0" Text="수집원음자료 경로:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="PathBox" Margin="6,0"
+                                 TextChanged="OnCollectPathChanged"/>
+                        <Button Grid.Column="2" Content="📁 변경" Click="OnSelectFolder" Width="80"/>
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Style="{StaticResource PrimaryButton}" x:Name="BtnScan" Content="🔍 폴더 스캔" Click="OnScan"/>
+                    <Button Content="✅ 모두 선택" Click="OnSelectAll" Margin="6,0,0,0"/>
+                    <Button Content="❌ 모두 해제" Click="OnDeselectAll" Margin="6,0,0,0"/>
+                    <CheckBox x:Name="IncludeEmpty" Content=" 빈 폴더 포함"
+                              Foreground="{StaticResource TextBrush}" Margin="12,0,0,0"
+                              VerticalAlignment="Center"
+                              Checked="OnIncludeEmptyChanged" Unchecked="OnIncludeEmptyChanged"/>
+                    <CheckBox x:Name="SkipDup" Content=" 중복 건너뛰기" IsChecked="True"
+                              Foreground="{StaticResource TextBrush}" Margin="12,0,0,0"
+                              VerticalAlignment="Center"
+                              ToolTip="RAW_SIG_NAME 이 이미 존재하는 임무폴더는 이관하지 않습니다."/>
+                    <Border Background="{StaticResource PanelBrush}" Padding="8,4" Margin="16,0,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="SummaryText" Text="대기" FontSize="12"/>
+                    </Border>
+                    <Button Style="{StaticResource PrimaryButton}" x:Name="BtnPreflight" Content="🩺 사전 점검" Click="OnPreflight" Margin="16,0,0,0"
+                            Padding="12,6"
+                            ToolTip="연결·권한·중복·파일을 확인합니다. DB를 변경하지 않습니다."/>
+                    <Button Style="{StaticResource WarningButton}" x:Name="BtnDryRun" Content="🧪 시험 실행" Click="OnDryRun" Margin="6,0,0,0"
+                            Padding="12,6"
+                            ToolTip="실제 INSERT 를 수행한 뒤 롤백합니다. DB에 반영되지 않습니다."/>
+                    <Button Style="{StaticResource SuccessButton}" x:Name="BtnRun" Content="▶ 마이그레이션 실행" Click="OnRunMigration" Margin="10,0,0,0"
+                            Padding="16,6"/>
+                    <Button Style="{StaticResource DangerButton}" Content="■ 취소" Click="OnCancel" Margin="6,0,0,0"/>
+                </StackPanel>
+
+                <DataGrid Grid.Row="3" x:Name="Grid" AutoGenerateColumns="False" CanUserAddRows="False"
+                          IsReadOnly="False" SelectionMode="Single"
+                          RowDetailsVisibilityMode="Collapsed"
+                          PreviewMouseDoubleClick="OnGridRowDoubleClick">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CanBeSelected}" Value="False">
+                                    <Setter Property="Foreground" Value="#666666"/>
+                                    <Setter Property="Background" Value="#1a1a2a"/>
+                                    <Setter Property="ToolTip" Value="Signal_*.wav가 없어 마이그레이션 대상에서 제외됩니다."/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Header="대상"
+                                                Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                                Width="50">
+                            <DataGridCheckBoxColumn.ElementStyle>
+                                <Style TargetType="CheckBox">
+                                    <Setter Property="IsEnabled" Value="{Binding CanBeSelected}"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridCheckBoxColumn.ElementStyle>
+                            <DataGridCheckBoxColumn.EditingElementStyle>
+                                <Style TargetType="CheckBox">
+                                    <Setter Property="IsEnabled" Value="{Binding CanBeSelected}"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridCheckBoxColumn.EditingElementStyle>
+                        </DataGridCheckBoxColumn>
+                        <DataGridTextColumn Header="임무 폴더명" Binding="{Binding MissionName}" Width="Auto" MinWidth="80" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="보조정보.alg" Binding="{Binding SupplementText}" Width="Auto" MinWidth="80" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Signal_*.wav" Binding="{Binding WavCount}" Width="Auto" MinWidth="80" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="총 크기" Binding="{Binding SizeText}" Width="Auto" MinWidth="80" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="수정일" Binding="{Binding LastWriteTime, StringFormat=yyyy-MM-dd HH:mm}" Width="Auto" MinWidth="80" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="상태" Binding="{Binding Status}" Width="Auto" MinWidth="80" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="결과 / 오류" Binding="{Binding ResultSummary}" Width="*" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+
+                    <DataGrid.RowDetailsTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource BrushBGSubtle}" Padding="12"
+                                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,1">
+                                <TabControl Background="{StaticResource BgBrush}"
+                                            BorderBrush="{StaticResource BorderBrush}"
+                                            Height="400">
+
+                                    <!-- 보조정보 (발췌 원음 탭과 공용 템플릿) -->
+                                    <TabItem Header="📄 보조정보.alg">
+                                        <ContentControl Content="{Binding Supplement}"
+                                                        ContentTemplate="{StaticResource SupplementDetailTemplate}"/>
+                                    </TabItem>
+
+                                    <!-- WAV 목록 -->
+                                    <TabItem Header="🎵 Signal_*.wav 목록">
+                                        <Grid Margin="6">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Margin="2,0,0,6"
+                                                       Text="RAW_SCHANNEL_INFO 삽입 대상 — CHANNEL_AUDIO_FILE(FILESTREAM)에 WAV 바이너리 적재"
+                                                       Foreground="{StaticResource BrushTextHelp}" FontSize="11"/>
+                                            <DataGrid Grid.Row="1" ItemsSource="{Binding WavDetails}"
+                                                      Style="{StaticResource DetailGrid}"
+                                                      GridLinesVisibility="Horizontal"
+                                                      HorizontalGridLinesBrush="{StaticResource BorderBrush}">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="파일명" Binding="{Binding FileName}"        Width="Auto" MinWidth="80"/>
+                                                    <DataGridTextColumn Header="크기"   Binding="{Binding SizeText}"        Width="Auto" MinWidth="80"/>
+                                                    <DataGridTextColumn Header="헤더"   Binding="{Binding HeaderText}"      Width="Auto" MinWidth="80"/>
+                                                    <DataGridTextColumn Header="길이"   Binding="{Binding AudioLengthText}" Width="Auto" MinWidth="80"/>
+                                                    <DataGridTextColumn Header="경로"   Binding="{Binding FullPath}"        Width="*" MinWidth="200"/>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Grid>
+                                    </TabItem>
+
+                                    <!-- 경로 정보 -->
+                                    <TabItem Header="📁 경로">
+                                        <Grid Margin="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" MinWidth="140"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="임무 폴더"     Style="{StaticResource AlgKey}"/>
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding MissionFolderPath}" Style="{StaticResource AlgVal}"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="보조정보.alg" Style="{StaticResource AlgKey}"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SupplementAlgPath}" Style="{StaticResource AlgVal}"/>
+                                        </Grid>
+                                    </TabItem>
+                                </TabControl>
+                            </Border>
+                        </DataTemplate>
+                    </DataGrid.RowDetailsTemplate>
+                </DataGrid>
+
+                <Border Grid.Row="4" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" Padding="10,6" Margin="0,8,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" x:Name="ProgressText" Text="대기" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <ProgressBar Grid.Column="1" x:Name="ProgressBar" Minimum="0" Maximum="100" Height="20"
+                                     Background="{StaticResource BrushBGDeep}" Foreground="{StaticResource BrushPrimary}"/>
+                        <TextBlock Grid.Column="2" x:Name="ProgressPctText" Text="0 %" Margin="12,0,0,0" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </TabItem>
+
+        <!-- ═════════════════════════════════════════════════════════════ -->
+        <!-- 탭 2 : 발췌 원음 자료 (협대역원음자료 / 단주기원음자료)          -->
+        <!-- ═════════════════════════════════════════════════════════════ -->
+        <TabItem Header="🎧  발췌 원음 자료">
+            <extract:ExtractRawView x:Name="ExtractTab"/>
+        </TabItem>
+
+        <!-- ═════════════════════════════════════════════════════════════ -->
+        <!-- 탭 3 : DB → DB 마이그레이션                                      -->
+        <!-- ═════════════════════════════════════════════════════════════ -->
+        <TabItem Header="🗄️  DB → DB 마이그레이션">
+            <dbdb:DbToDbView x:Name="DbToDbTab"/>
+            </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- ══════════ 시작 화면 (연결 · 경로 설정) ══════════ -->
+        <startup:StartupView x:Name="Setup"/>
+    </Grid>
+</Window>

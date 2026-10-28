@@ -1,0 +1,97 @@
+﻿<Window x:Class="RawCollectMigrator.Features.DbToDb.OrphanResolveWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="🔗 고아 레코드 해결 — 붙일 부모를 고르거나 버립니다"
+        Width="1180" Height="760" WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BgBrush}" Foreground="{StaticResource TextBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="HeaderText" FontSize="15" FontWeight="Bold" Margin="0,0,0,6"/>
+
+        <Border Grid.Row="1" Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                Padding="10,8" Margin="0,0,0,10" CornerRadius="3">
+            <StackPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="#ccccdd">
+                    부모를 찾지 못한 행입니다. 소스 FK 가 0(참조 없음)이거나, 부모가 지워졌는데 자식만 남은 경우입니다.
+                    <LineBreak/>
+                    <Bold>기본은 '버림'</Bold> 입니다. 살릴 행만 부모를 골라 주세요 — 고른 행은 그 부모 밑으로 이관됩니다.
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <TextBlock Text="테이블" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="TableCombo" Width="260" SelectionChanged="OnTableChanged"/>
+                    <TextBlock Text="보기" VerticalAlignment="Center" Margin="16,0,6,0"/>
+                    <ComboBox x:Name="FilterCombo" Width="130" SelectedIndex="0" SelectionChanged="OnFilterChanged">
+                        <ComboBoxItem Content="전체"/>
+                        <ComboBoxItem Content="버림만"/>
+                        <ComboBoxItem Content="연결됨만"/>
+                    </ComboBox>
+                    <TextBlock Text="선택 행 일괄 →" VerticalAlignment="Center" Margin="20,0,6,0"/>
+                    <ComboBox x:Name="BulkParentCombo" Width="240"
+                              DisplayMemberPath="Label" ToolTip="선택한 행 전부를 이 부모로 연결합니다."/>
+                    <Button Content="일괄 연결" Click="OnBulkAssign" Margin="6,0,0,0" Padding="10,3"/>
+                    <Button Content="일괄 버림" Click="OnBulkDiscard" Margin="6,0,0,0" Padding="10,3"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 공용 DetailGrid 스타일은 RowHeight=24 라 콤보(기본 22 + 여백)가 잘린다.
+             이 창은 셀 안에 편집 컨트롤이 들어가므로 행 높이를 콤보에 맞춰 덮어쓴다. -->
+        <DataGrid Grid.Row="2" x:Name="Grid" Style="{StaticResource DetailGrid}"
+                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="False"
+                  SelectionMode="Extended" HeadersVisibility="Column"
+                  RowHeight="34" MinRowHeight="34" VerticalGridLinesBrush="Transparent">
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Padding" Value="4,0"/>
+                </Style>
+            </DataGrid.CellStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="소스 테이블" Binding="{Binding SourceTable}" IsReadOnly="True" Width="Auto" MinWidth="130"/>
+                <DataGridTextColumn Header="소스 PK"     Binding="{Binding SourcePk}"    IsReadOnly="True" Width="Auto" MinWidth="80"/>
+                <DataGridTextColumn Header="FK 컬럼"     Binding="{Binding FkColumn}"    IsReadOnly="True" Width="Auto" MinWidth="120"/>
+                <DataGridTextColumn Header="원래 값"     Binding="{Binding RawFk}"       IsReadOnly="True" Width="Auto" MinWidth="70"/>
+                <DataGridTextColumn Header="사유"        Binding="{Binding Reason}"      IsReadOnly="True" Width="Auto" MinWidth="90"/>
+                <DataGridTextColumn Header="행 내용(요약)" Binding="{Binding Preview}"   IsReadOnly="True" Width="*"    MinWidth="160"/>
+                <DataGridTemplateColumn Header="붙일 부모" Width="340" MinWidth="340">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding Candidates}"
+                                      SelectedItem="{Binding Chosen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      DisplayMemberPath="Label"
+                                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                      VerticalAlignment="Center" MinHeight="26"
+                                      Padding="6,2" Margin="2,0"
+                                      ToolTip="{Binding Chosen.Label}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsDiscarded}" Value="True">
+                            <Setter Property="Foreground" Value="#8888a0"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+        </DataGrid>
+
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <TextBlock x:Name="SummaryText" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Foreground="#8888a0" FontSize="11" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="저장하고 닫기" Click="OnSave" Width="140" Margin="0,0,8,0"/>
+                <Button Content="취소" Click="OnCancel" Width="100"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

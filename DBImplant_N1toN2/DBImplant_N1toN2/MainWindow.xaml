@@ -7,6 +7,7 @@
         xmlns:ws="clr-namespace:DBImplant_N1toN2.Features.Workspace"
         xmlns:folder="clr-namespace:DBImplant_N1toN2.Features.FolderExplorer"
         xmlns:rawvm="clr-namespace:DBImplant_N1toN2.Features.Raw.ViewModels"
+        xmlns:rawm="clr-namespace:DBImplant_N1toN2.Features.Raw.Models"
         xmlns:nbvm="clr-namespace:DBImplant_N1toN2.Features.NarrowBand.ViewModels"
         xmlns:sdvm="clr-namespace:DBImplant_N1toN2.Features.ShortPeriod.ViewModels"
         xmlns:conv="clr-namespace:DBImplant_N1toN2.Infrastructure.Converters"
@@ -39,12 +40,16 @@
                 <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,8">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                         <Button Content="경로 선택" Width="90" Margin="0,0,8,0"
+                                Style="{DynamicResource ButtonOutlineStyle}"
                                 Command="{Binding SelectRootPathCommand}"/>
                         <Button Content="루트 로드" Width="90" Margin="0,0,8,0"
+                                Style="{DynamicResource ButtonOutlineStyle}"
                                 Command="{Binding LoadRootCommand}"/>
                         <Button Content="전체 인덱스 스캔" Width="130" Margin="0,0,8,0"
+                                Style="{DynamicResource ButtonOutlineStyle}"
                                 Command="{Binding BuildIndexCommand}"/>
                         <Button Content="취소" Width="70"
+                                Style="{DynamicResource ButtonOutlineStyle}"
                                 Command="{Binding CancelCommand}"/>
 
                         <TextBlock Margin="16,0,0,0" VerticalAlignment="Center"
@@ -53,6 +58,7 @@
 
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                         <ProgressBar Width="260" Height="18" Minimum="0" Maximum="1"
+                                     Style="{DynamicResource ProgressBarDefaultStyle}"
                                      Value="{Binding Progress}" Margin="0,0,10,0"/>
                         <TextBlock VerticalAlignment="Center" Text="{Binding StatusText}"/>
                     </StackPanel>
@@ -77,7 +83,7 @@
                     </Border>
 
                     <!-- Right: selected folder details + full index -->
-                    <TabControl Grid.Column="1" Margin="10,0,0,0">
+                    <TabControl Grid.Column="1" Margin="10,0,0,0" Style="{DynamicResource TabControlDefaultStyle}">
                         <TabItem Header="선택 폴더 상세">
                             <Grid Margin="6">
                                 <Grid.RowDefinitions>
@@ -90,22 +96,26 @@
 
                                 <GroupBox Grid.Row="1" Header="하위 폴더(1-depth)" Margin="0,0,0,6">
                                     <DataGrid ItemsSource="{Binding SelectedSubDirs}" AutoGenerateColumns="False"
-                                              IsReadOnly="True" EnableRowVirtualization="True">
+                                              IsReadOnly="True" EnableRowVirtualization="True"
+                                              CanUserResizeColumns="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="이름" Binding="{Binding Name}" Width="220"/>
-                                            <DataGridTextColumn Header="경로" Binding="{Binding FullPath}" Width="auto"/>
+                                            <DataGridTextColumn Header="경로" Binding="{Binding FullPath}" Width="*"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </GroupBox>
 
                                 <GroupBox Grid.Row="2" Header="파일(1-depth)">
                                     <DataGrid ItemsSource="{Binding SelectedFiles}" AutoGenerateColumns="False"
-                                              IsReadOnly="True" EnableRowVirtualization="True">
+                                              IsReadOnly="True" EnableRowVirtualization="True"
+                                              CanUserResizeColumns="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="이름" Binding="{Binding Name}" Width="220"/>
                                             <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="90"/>
                                             <DataGridTextColumn Header="수정" Binding="{Binding LastWriteTime}" Width="160"/>
-                                            <DataGridTextColumn Header="경로" Binding="{Binding FullPath}" Width="auto"/>
+                                            <DataGridTextColumn Header="경로" Binding="{Binding FullPath}" Width="*"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </GroupBox>
@@ -115,10 +125,12 @@
                         <TabItem Header="전체 인덱스(스캔 결과)">
                             <DataGrid ItemsSource="{Binding IndexRows}" AutoGenerateColumns="False"
                                       IsReadOnly="True" EnableRowVirtualization="True"
+                                      CanUserResizeColumns="True"
+                                      Style="{DynamicResource DataGridDefaultStyle}"
                                       VirtualizingPanel.IsVirtualizing="True"
                                       VirtualizingPanel.VirtualizationMode="Recycling">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="폴더" Binding="{Binding FullPath}" Width="auto"/>
+                                    <DataGridTextColumn Header="폴더" Binding="{Binding FullPath}" Width="*"/>
                                     <DataGridTextColumn Header="하위폴더수" Binding="{Binding SubDirCount}" Width="90"/>
                                     <DataGridTextColumn Header="파일수" Binding="{Binding FileCount}" Width="70"/>
                                 </DataGrid.Columns>
@@ -144,19 +156,15 @@
                 <!-- Top Bar -->
                 <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,8">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Button Content="경로 선택" Width="90" Margin="0,0,8,0"
-     Command="{Binding SelectRootPathCommand}"/>
-                        <Button Content="스캔+파싱" Width="110" Margin="0,0,8,0"
-     Command="{Binding ScanParseCommand}"/>
-                        <Button Content="DB Import(TODO)" Width="130" Margin="0,0,8,0"
-     Command="{Binding DbImportCommand}"/>
                         <Button Content="취소" Width="70" Margin="0,0,16,0"
+     Style="{DynamicResource ButtonOutlineStyle}"
      Command="{Binding CancelCommand}"/>
                         <TextBlock VerticalAlignment="Center" Text="{Binding RootPath}" Opacity="0.8"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                         <ProgressBar Height="18" Width="300" Minimum="0" Maximum="1"
+          Style="{DynamicResource ProgressBarDefaultStyle}"
           Value="{Binding Progress}" Margin="0,0,10,0"/>
                         <TextBlock VerticalAlignment="Center" Text="{Binding StatusText}"/>
                     </StackPanel>
@@ -168,53 +176,82 @@
                         <ColumnDefinition Width="3.8*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Left: package list -->
-                    <DataGrid Grid.Column="0"
-   ItemsSource="{Binding Packages}"
-   SelectedItem="{Binding SelectedPackage}"
-   AutoGenerateColumns="False"
-   IsReadOnly="False"
-   EnableRowVirtualization="True"
-   VirtualizingPanel.IsVirtualizing="True"
-   VirtualizingPanel.VirtualizationMode="Recycling">
-                        <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Header="Import" Binding="{Binding IsChecked}" Width="auto"/>
-                            <DataGridTextColumn Header="상태"   Binding="{Binding Status}"      IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="패키지" Binding="{Binding DisplayName}"  IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="에러"   Binding="{Binding Error}"        IsReadOnly="True" Width="auto"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <!-- Left: package tree (임무폴더 → SD/NB 자식) -->
+                    <TreeView Grid.Column="0"
+                              ItemsSource="{Binding Packages}"
+                              beh:TreeViewSelectedItemBehavior.SelectedItem="{Binding SelectedPackage}"
+                              Background="{StaticResource SurfaceBrush}"
+                              Foreground="{StaticResource TextPrimaryBrush}"
+                              BorderBrush="{StaticResource SurfaceOverlayBrush}" BorderThickness="1"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling">
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type rawm:RawPackageItem}"
+                                                      ItemsSource="{Binding Children}">
+                                <StackPanel Orientation="Horizontal" Margin="2">
+                                    <CheckBox IsChecked="{Binding IsChecked}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="{Binding Status}" Foreground="{StaticResource SuccessBrush}" FontSize="11" Margin="0,0,6,0"/>
+                                    <TextBlock Text="{Binding Error}" Foreground="#ff6666" FontSize="11"
+                                               Visibility="{Binding Error, Converter={StaticResource NullToCollapsedConverter}}"/>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsExpanded" Value="True"/>
+                                <Setter Property="Foreground" Value="#e0e0e0"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
 
                     <!-- Right: details -->
-                    <TabControl Grid.Column="1" Margin="10,0,0,0">
+                    <TabControl Grid.Column="1" Margin="10,0,0,0" Style="{DynamicResource TabControlDefaultStyle}">
                         <TabItem Header="Root WAV(Signal_*)">
                             <DataGrid ItemsSource="{Binding SelectedPackage.Sd.WavFiles}"
            AutoGenerateColumns="False"
            IsReadOnly="True"
            EnableRowVirtualization="True"
+           CanUserResizeColumns="True"
+           Style="{DynamicResource DataGridDefaultStyle}"
            VirtualizingPanel.IsVirtualizing="True"
            VirtualizingPanel.VirtualizationMode="Recycling">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="파일" Binding="{Binding}" Width="auto"/>
+                                    <DataGridTextColumn Header="파일" Binding="{Binding}" Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </TabItem>
 
                         <TabItem Header="파싱 파일 목록">
-                            <DataGrid
-               ItemsSource="{Binding SelectedPackage.Files}"
-               AutoGenerateColumns="False"
-               IsReadOnly="True"
-               EnableRowVirtualization="True">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="종류" Binding="{Binding Kind}" Width="auto"/>
-                                    <DataGridTextColumn Header="파일명" Binding="{Binding FileName}" Width="auto"/>
-                                    <DataGridTextColumn Header="크기" Binding="{Binding Size}" Width="auto"/>
-                                    <DataGridTextColumn Header="수정일" Binding="{Binding LastWriteTime}" Width="auto"/>
-                                    <DataGridTextColumn Header="요약" Binding="{Binding Summary}" Width="auto"/>
-                                    <DataGridTextColumn Header="에러" Binding="{Binding Error}" Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <DataGrid Grid.Row="0" x:Name="RawFileGrid"
+                                   ItemsSource="{Binding SelectedPackage.Files}"
+                                   AutoGenerateColumns="False"
+                                   IsReadOnly="True"
+                                   EnableRowVirtualization="True"
+                                   CanUserResizeColumns="True"
+                                   Style="{DynamicResource DataGridDefaultStyle}">
+                                    <DataGrid.InputBindings>
+                                        <MouseBinding Gesture="LeftDoubleClick"
+                                                      Command="{Binding OpenGramCompareCommand}"
+                                                      CommandParameter="{Binding SelectedItem, ElementName=RawFileGrid}"/>
+                                    </DataGrid.InputBindings>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="종류" Binding="{Binding Kind}" Width="Auto"/>
+                                        <DataGridTextColumn Header="파일명" Binding="{Binding FileName}" Width="Auto"/>
+                                        <DataGridTextColumn Header="크기" Binding="{Binding Size}" Width="Auto"/>
+                                        <DataGridTextColumn Header="수정일" Binding="{Binding LastWriteTime}" Width="Auto"/>
+                                        <DataGridTextColumn Header="요약" Binding="{Binding Summary}" Width="Auto"/>
+                                        <DataGridTextColumn Header="에러" Binding="{Binding Error}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <TextBlock Grid.Row="1" Margin="4,2" Opacity="0.6" FontSize="11"
+                                           Text="※ .grm 파일 행을 더블클릭하면 레거시↔신규 변환 비교 뷰가 열립니다."/>
+                            </Grid>
                         </TabItem>
                     </TabControl>
                 </Grid>
@@ -232,15 +269,12 @@
                 <!-- Top Bar -->
                 <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,8">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Button Content="경로 선택" Width="90" Margin="0,0,8,0" Command="{Binding SelectRootPathCommand}"/>
-                        <Button Content="스캔+파싱" Width="110" Margin="0,0,8,0" Command="{Binding ScanParseCommand}"/>
-                        <Button Content="DB Import(TODO)" Width="130" Margin="0,0,8,0" Command="{Binding DbImportCommand}"/>
-                        <Button Content="취소" Width="70" Margin="0,0,16,0" Command="{Binding CancelCommand}"/>
+                        <Button Content="취소" Width="70" Margin="0,0,16,0" Style="{DynamicResource ButtonOutlineStyle}" Command="{Binding CancelCommand}"/>
                         <TextBlock VerticalAlignment="Center" Text="{Binding RootPath}" Opacity="0.8"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                        <ProgressBar Height="18" Width="300" Minimum="0" Maximum="1" Value="{Binding Progress}" Margin="0,0,10,0"/>
+                        <ProgressBar Height="18" Width="300" Minimum="0" Maximum="1" Style="{DynamicResource ProgressBarDefaultStyle}" Value="{Binding Progress}" Margin="0,0,10,0"/>
                         <TextBlock VerticalAlignment="Center" Text="{Binding StatusText}"/>
                     </StackPanel>
                 </DockPanel>
@@ -272,18 +306,20 @@
               AutoGenerateColumns="False"
               IsReadOnly="False"
               EnableRowVirtualization="True"
+              CanUserResizeColumns="True"
+              Style="{DynamicResource DataGridDefaultStyle}"
               VirtualizingPanel.IsVirtualizing="True"
               VirtualizingPanel.VirtualizationMode="Recycling">
                             <DataGrid.Columns>
-                                <DataGridCheckBoxColumn Header="Import" Binding="{Binding IsChecked}" Width="auto"/>
-                                <DataGridTextColumn Header="상태"    Binding="{Binding Status}"       IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Header="패키지"  Binding="{Binding PackageName}"   IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Header="RootWav" Binding="{Binding RootWavCount}"  IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Header="RootGrm" Binding="{Binding RootGrmCount}"  IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Header="정밀분석" Binding="{Binding HasPreciseDir}" IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Header="Snip"   Binding="{Binding Snippets.Count}"    IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Header="Tmp"    Binding="{Binding TmpSnippets.Count}" IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Header="에러"   Binding="{Binding Error}"             IsReadOnly="True" Width="auto"/>
+                                <DataGridCheckBoxColumn Header="Import" Binding="{Binding IsChecked}" Width="Auto"/>
+                                <DataGridTextColumn Header="상태"    Binding="{Binding Status}"       IsReadOnly="True" Width="Auto"/>
+                                <DataGridTextColumn Header="패키지"  Binding="{Binding PackageName}"   IsReadOnly="True" Width="Auto"/>
+                                <DataGridTextColumn Header="RootWav" Binding="{Binding RootWavCount}"  IsReadOnly="True" Width="Auto"/>
+                                <DataGridTextColumn Header="RootGrm" Binding="{Binding RootGrmCount}"  IsReadOnly="True" Width="Auto"/>
+                                <DataGridTextColumn Header="정밀분석" Binding="{Binding HasPreciseDir}" IsReadOnly="True" Width="Auto"/>
+                                <DataGridTextColumn Header="Snip"   Binding="{Binding Snippets.Count}"    IsReadOnly="True" Width="Auto"/>
+                                <DataGridTextColumn Header="Tmp"    Binding="{Binding TmpSnippets.Count}" IsReadOnly="True" Width="Auto"/>
+                                <DataGridTextColumn Header="에러"   Binding="{Binding Error}"             IsReadOnly="True" Width="Auto"/>
                                 <DataGridTextColumn Header="경로"   Binding="{Binding NbDir}"             IsReadOnly="True" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
@@ -356,6 +392,8 @@
                                                             <DataGrid ItemsSource="{Binding Records}"
                                               AutoGenerateColumns="True"
                                               IsReadOnly="True"
+                                              CanUserResizeColumns="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}"
                                               CanUserAddRows="False"/>
                                                         </Expander>
                                                     </DataTemplate>
@@ -369,15 +407,17 @@
                               ItemsSource="{Binding ParsedAlg.NaviSeaInfos}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
+                              CanUserResizeColumns="True"
+                              Style="{DynamicResource DataGridDefaultStyle}"
                               CanUserAddRows="False">
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="DetDate" Binding="{Binding DetDate}" Width="auto"/>
-                                                    <DataGridTextColumn Header="DetTime" Binding="{Binding DetTime}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Depth" Binding="{Binding Depth}" Width="auto"/>
-                                                    <DataGridTextColumn Header="TADepth" Binding="{Binding TADepth}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Lat" Binding="{Binding Latitude}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Lon" Binding="{Binding Longitude}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Speed" Binding="{Binding Speed}" Width="auto"/>
+                                                    <DataGridTextColumn Header="DetDate" Binding="{Binding DetDate}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="DetTime" Binding="{Binding DetTime}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Depth" Binding="{Binding Depth}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="TADepth" Binding="{Binding TADepth}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Lat" Binding="{Binding Latitude}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Lon" Binding="{Binding Longitude}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Speed" Binding="{Binding Speed}" Width="Auto"/>
                                                     <DataGridTextColumn Header="Situation" Binding="{Binding Situation}" Width="*"/>
                                                 </DataGrid.Columns>
 
@@ -387,6 +427,8 @@
                                                             <DataGrid ItemsSource="{Binding Temperatures}"
                                               AutoGenerateColumns="True"
                                               IsReadOnly="True"
+                                              CanUserResizeColumns="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}"
                                               CanUserAddRows="False"/>
                                                         </GroupBox>
                                                     </DataTemplate>
@@ -410,6 +452,8 @@
                                                             <DataGrid ItemsSource="{Binding Machines}"
                                               AutoGenerateColumns="True"
                                               IsReadOnly="True"
+                                              CanUserResizeColumns="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}"
                                               CanUserAddRows="False"/>
                                                         </Expander>
                                                     </DataTemplate>
@@ -433,6 +477,8 @@
                                                             <DataGrid ItemsSource="{Binding Targets}"
                                               AutoGenerateColumns="True"
                                               IsReadOnly="True"
+                                              CanUserResizeColumns="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}"
                                               CanUserAddRows="False"/>
                                                         </Expander>
                                                     </DataTemplate>
@@ -456,16 +502,18 @@
                                                             <DataGrid ItemsSource="{Binding NbDetections}"
                                               AutoGenerateColumns="False"
                                               IsReadOnly="True"
+                                              CanUserResizeColumns="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}"
                                               CanUserAddRows="False">
                                                                 <DataGrid.Columns>
-                                                                    <DataGridTextColumn Header="Target#" Binding="{Binding TargetNumber}" Width="auto"/>
-                                                                    <DataGridTextColumn Header="DetTimeFr" Binding="{Binding DetTimeFr}" Width="auto"/>
-                                                                    <DataGridTextColumn Header="DetTimeTo" Binding="{Binding DetTimeTo}" Width="auto"/>
-                                                                    <DataGridTextColumn Header="Class" Binding="{Binding DetVesselClass}" Width="auto"/>
-                                                                    <DataGridTextColumn Header="Name" Binding="{Binding DetVesselName}" Width="auto"/>
-                                                                    <DataGridTextColumn Header="Dist" Binding="{Binding Distance}" Width="auto"/>
-                                                                    <DataGridTextColumn Header="Speed" Binding="{Binding Speed}" Width="auto"/>
-                                                                    <DataGridTextColumn Header="FeatureFreq" Binding="{Binding FeatureFreq}" Width="auto"/>
+                                                                    <DataGridTextColumn Header="Target#" Binding="{Binding TargetNumber}" Width="Auto"/>
+                                                                    <DataGridTextColumn Header="DetTimeFr" Binding="{Binding DetTimeFr}" Width="Auto"/>
+                                                                    <DataGridTextColumn Header="DetTimeTo" Binding="{Binding DetTimeTo}" Width="Auto"/>
+                                                                    <DataGridTextColumn Header="Class" Binding="{Binding DetVesselClass}" Width="Auto"/>
+                                                                    <DataGridTextColumn Header="Name" Binding="{Binding DetVesselName}" Width="Auto"/>
+                                                                    <DataGridTextColumn Header="Dist" Binding="{Binding Distance}" Width="Auto"/>
+                                                                    <DataGridTextColumn Header="Speed" Binding="{Binding Speed}" Width="Auto"/>
+                                                                    <DataGridTextColumn Header="FeatureFreq" Binding="{Binding FeatureFreq}" Width="Auto"/>
                                                                     <DataGridTextColumn Header="Machine" Binding="{Binding Machine}" Width="*"/>
                                                                 </DataGrid.Columns>
 
@@ -475,7 +523,8 @@
                                                                             <DataGrid ItemsSource="{Binding Indices}"
                                                               AutoGenerateColumns="True"
                                                               IsReadOnly="True"
-                                                              CanUserAddRows="False"/>
+                                                              CanUserAddRows="False"
+                                                              Style="{DynamicResource DataGridDefaultStyle}"/>
                                                                         </GroupBox>
                                                                     </DataTemplate>
                                                                 </DataGrid.RowDetailsTemplate>
@@ -503,13 +552,20 @@
                         </Grid.RowDefinitions>
 
                         <!-- Root file list -->
-                        <GroupBox Grid.Row="0" Header="루트 파일 목록">
-                            <DataGrid ItemsSource="{Binding SelectedPackage.RootItems}" AutoGenerateColumns="False" IsReadOnly="True">
+                        <GroupBox Grid.Row="0" Header="루트 파일 목록 (*.grm 더블클릭 → 변환 비교)">
+                            <DataGrid x:Name="NbRootFileGrid"
+                                      ItemsSource="{Binding SelectedPackage.RootItems}" AutoGenerateColumns="False" IsReadOnly="True"
+                                      CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
+                                <DataGrid.InputBindings>
+                                    <MouseBinding Gesture="LeftDoubleClick"
+                                                  Command="{Binding OpenGramCompareCommand}"
+                                                  CommandParameter="{Binding SelectedItem, ElementName=NbRootFileGrid}"/>
+                                </DataGrid.InputBindings>
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="이름(상대)" Binding="{Binding RelativePath}" Width="auto"/>
-                                    <DataGridTextColumn Header="Dir" Binding="{Binding IsDirectory}" Width="auto"/>
-                                    <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="auto"/>
-                                    <DataGridTextColumn Header="수정" Binding="{Binding LastWriteTime}" Width="auto"/>
+                                    <DataGridTextColumn Header="이름(상대)" Binding="{Binding RelativePath}" Width="Auto"/>
+                                    <DataGridTextColumn Header="Dir" Binding="{Binding IsDirectory}" Width="Auto"/>
+                                    <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="Auto"/>
+                                    <DataGridTextColumn Header="수정" Binding="{Binding LastWriteTime}" Width="Auto"/>
                                     <DataGridTextColumn Header="전체경로" Binding="{Binding FullPath}" Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
@@ -595,6 +651,8 @@
                               ItemsSource="{Binding SelectedPackage.ParsedSet.VernierParameters}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
+                              CanUserResizeColumns="True"
+                              Style="{DynamicResource DataGridDefaultStyle}"
                               CanUserAddRows="False">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Band"      Binding="{Binding VernierBand, StringFormat={}{0:F7}}" Width="*"/>
@@ -611,6 +669,8 @@
                               ItemsSource="{Binding SelectedPackage.ParsedSet.DemonParameters}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
+                              CanUserResizeColumns="True"
+                              Style="{DynamicResource DataGridDefaultStyle}"
                               CanUserAddRows="False">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Band"       Binding="{Binding DemonBand,   StringFormat={}{0:F7}}" Width="*"/>
@@ -640,13 +700,20 @@
                     </Grid>
 
                     <!-- 3) Column3: PreciseDir top content -->
-                    <GroupBox Grid.Column="2" Header="정밀분석 폴더" Margin="10,0,0,0">
-                        <DataGrid ItemsSource="{Binding SelectedPackage.PreciseItems}" AutoGenerateColumns="False" IsReadOnly="True">
+                    <GroupBox Grid.Column="2" Header="정밀분석 폴더 (*.grm 더블클릭 → 변환 비교)" Margin="10,0,0,0">
+                        <DataGrid x:Name="NbPreciseFileGrid"
+                                  ItemsSource="{Binding SelectedPackage.PreciseItems}" AutoGenerateColumns="False" IsReadOnly="True"
+                                  CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
+                            <DataGrid.InputBindings>
+                                <MouseBinding Gesture="LeftDoubleClick"
+                                              Command="{Binding OpenGramCompareCommand}"
+                                              CommandParameter="{Binding SelectedItem, ElementName=NbPreciseFileGrid}"/>
+                            </DataGrid.InputBindings>
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="이름(상대)" Binding="{Binding RelativePath}" Width="auto"/>
-                                <DataGridTextColumn Header="Dir" Binding="{Binding IsDirectory}" Width="auto"/>
-                                <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="auto"/>
-                                <DataGridTextColumn Header="수정" Binding="{Binding LastWriteTime}" Width="auto"/>
+                                <DataGridTextColumn Header="이름(상대)" Binding="{Binding RelativePath}" Width="Auto"/>
+                                <DataGridTextColumn Header="Dir" Binding="{Binding IsDirectory}" Width="Auto"/>
+                                <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="Auto"/>
+                                <DataGridTextColumn Header="수정" Binding="{Binding LastWriteTime}" Width="Auto"/>
                                 <DataGridTextColumn Header="전체경로" Binding="{Binding FullPath}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
@@ -654,23 +721,26 @@
 
                     <!-- 4) Column4: Parsed results (fea/dat/cla tabs) -->
                     <GroupBox Grid.Column="3" Header="파싱 결과(.fea/.dat/.cla)" Margin="10,0,0,0">
-                        <TabControl>
+                        <TabControl Style="{DynamicResource TabControlDefaultStyle}">
                             <TabItem Header="nb_식별결과.fea">
                                 <Grid Margin="8">
                                     <TextBlock Opacity="0.8" Text="{Binding SelectedPackage.FeaPath, TargetNullValue=(fea 없음)}"/>
-                                    <DataGrid ItemsSource="{Binding SelectedPackage.ParsedFea.Features}" AutoGenerateColumns="True" IsReadOnly="True"/>
+                                    <DataGrid ItemsSource="{Binding SelectedPackage.ParsedFea.Features}" AutoGenerateColumns="True" IsReadOnly="True"
+                                              CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}"/>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="식별파라미터.dat">
                                 <Grid Margin="8">
                                     <TextBlock Opacity="0.8" Text="{Binding SelectedPackage.DatPath, TargetNullValue=(dat 없음)}"/>
-                                    <DataGrid ItemsSource="{Binding SelectedPackage.ParsedDat}" AutoGenerateColumns="True" IsReadOnly="True"/>
+                                    <DataGrid ItemsSource="{Binding SelectedPackage.ParsedDat}" AutoGenerateColumns="True" IsReadOnly="True"
+                                              CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}"/>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="nb_식별결과.cla">
                                 <Grid Margin="8">
                                     <TextBlock Opacity="0.8" Text="{Binding SelectedPackage.ClaPath, TargetNullValue=(cla 없음)}"/>
-                                    <DataGrid ItemsSource="{Binding SelectedPackage.ParsedCla.HypResults}" AutoGenerateColumns="True" IsReadOnly="True"/>
+                                    <DataGrid ItemsSource="{Binding SelectedPackage.ParsedCla.HypResults}" AutoGenerateColumns="True" IsReadOnly="True"
+                                              CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}"/>
                                 </Grid>
                             </TabItem>
                         </TabControl>
@@ -678,24 +748,42 @@
 
                     <!-- 5) Column5: Snippets / SnpTmp -->
                     <GroupBox Grid.Column="4" Header="Snippets / SnpTmp" Margin="10,0,0,0">
-                        <TabControl>
+                        <TabControl Style="{DynamicResource TabControlDefaultStyle}">
                             <TabItem Header="Snippets">
-                                <DataGrid ItemsSource="{Binding SelectedPackage.Snippets}" AutoGenerateColumns="False" IsReadOnly="True">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="BaseName" Binding="{Binding BaseName}" Width="auto"/>
-                                        <DataGridTextColumn Header="Wav" Binding="{Binding WavPath}" Width="*"/>
-                                        <DataGridTextColumn Header="Grm" Binding="{Binding GrmPath}" Width="*"/>
-                                        <DataGridTextColumn Header="Complete" Binding="{Binding IsComplete}" Width="auto"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" x:Name="NbSnippetGrid"
+                                              ItemsSource="{Binding SelectedPackage.Snippets}"
+                                              AutoGenerateColumns="False" IsReadOnly="True"
+                                              CanUserResizeColumns="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}">
+                                        <DataGrid.InputBindings>
+                                            <MouseBinding Gesture="LeftDoubleClick"
+                                                          Command="{Binding OpenGramCompareCommand}"
+                                                          CommandParameter="{Binding SelectedItem, ElementName=NbSnippetGrid}"/>
+                                        </DataGrid.InputBindings>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="BaseName" Binding="{Binding BaseName}" Width="Auto"/>
+                                            <DataGridTextColumn Header="Wav" Binding="{Binding WavPath}" Width="*"/>
+                                            <DataGridTextColumn Header="Grm" Binding="{Binding GrmPath}" Width="*"/>
+                                            <DataGridTextColumn Header="Complete" Binding="{Binding IsComplete}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <TextBlock Grid.Row="1" Margin="4,2" Opacity="0.6" FontSize="11"
+                                               Text="※ .grm 파일이 포함된 행을 더블클릭하면 그램 변환 비교 뷰가 열립니다."/>
+                                </Grid>
                             </TabItem>
                             <TabItem Header="SnpTmp">
-                                <DataGrid ItemsSource="{Binding SelectedPackage.TmpSnippets}" AutoGenerateColumns="False" IsReadOnly="True">
+                                <DataGrid ItemsSource="{Binding SelectedPackage.TmpSnippets}" AutoGenerateColumns="False" IsReadOnly="True"
+                                          CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="BaseName" Binding="{Binding BaseName}" Width="auto"/>
+                                        <DataGridTextColumn Header="BaseName" Binding="{Binding BaseName}" Width="Auto"/>
                                         <DataGridTextColumn Header="Wav" Binding="{Binding WavPath}" Width="*"/>
                                         <DataGridTextColumn Header="Grm" Binding="{Binding GrmPath}" Width="*"/>
-                                        <DataGridTextColumn Header="Complete" Binding="{Binding IsComplete}" Width="auto"/>
+                                        <DataGridTextColumn Header="Complete" Binding="{Binding IsComplete}" Width="*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </TabItem>
@@ -717,19 +805,15 @@
                 <!-- Top Bar -->
                 <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,8">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Button Content="경로 선택" Width="90" Margin="0,0,8,0"
-                        Command="{Binding SelectRootPathCommand}"/>
-                        <Button Content="스캔+파싱" Width="110" Margin="0,0,8,0"
-                        Command="{Binding ScanParseCommand}"/>
-                        <Button Content="DB Import(TODO)" Width="130" Margin="0,0,8,0"
-                        Command="{Binding DbImportCommand}"/>
                         <Button Content="취소" Width="70" Margin="0,0,16,0"
+                        Style="{DynamicResource ButtonOutlineStyle}"
                         Command="{Binding CancelCommand}"/>
                         <TextBlock VerticalAlignment="Center" Text="{Binding RootPath}" Opacity="0.8"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                         <ProgressBar Height="18" Width="300" Minimum="0" Maximum="1"
+                             Style="{DynamicResource ProgressBarDefaultStyle}"
                              Value="{Binding Progress}" Margin="0,0,10,0"/>
                         <TextBlock VerticalAlignment="Center" Text="{Binding StatusText}"/>
                     </StackPanel>
@@ -748,37 +832,41 @@
                       AutoGenerateColumns="False"
                       IsReadOnly="False"
                       EnableRowVirtualization="True"
+                      CanUserResizeColumns="True"
+                      Style="{DynamicResource DataGridDefaultStyle}"
                       VirtualizingPanel.IsVirtualizing="True"
                       VirtualizingPanel.VirtualizationMode="Recycling">
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Header="Import" Binding="{Binding IsChecked}" Width="auto"/>
-                            <DataGridTextColumn Header="상태"    Binding="{Binding Status}"       IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="패키지"  Binding="{Binding PreciseName}"   IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="RootWav" Binding="{Binding RootWavCount}"  IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="SPS Ev"  Binding="{Binding SpsEventCount}" IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="LST Ev"  Binding="{Binding LstEventCount}" IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="SET"     Binding="{Binding HasSet}"        IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="AI Ev"   Binding="{Binding AiEventCount}"  IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="TR Ev"   Binding="{Binding TrEventCount}"  IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="에러"    Binding="{Binding Error}"          IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Header="경로"    Binding="{Binding SdDir}"          IsReadOnly="True" Width="auto"/>
+                            <DataGridCheckBoxColumn Header="Import" Binding="{Binding IsChecked}" Width="Auto"/>
+                            <DataGridTextColumn Header="상태"    Binding="{Binding Status}"       IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="패키지"  Binding="{Binding PreciseName}"   IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="RootWav" Binding="{Binding RootWavCount}"  IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="SPS Ev"  Binding="{Binding SpsEventCount}" IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="LST Ev"  Binding="{Binding LstEventCount}" IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="SET"     Binding="{Binding HasSet}"        IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="AI Ev"   Binding="{Binding AiEventCount}"  IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="TR Ev"   Binding="{Binding TrEventCount}"  IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="에러"    Binding="{Binding Error}"          IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="경로"    Binding="{Binding SdDir}"          IsReadOnly="True" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
 
                     <!-- Right: details -->
-                    <TabControl Grid.Column="1" Margin="10,0,0,0">
+                    <TabControl Grid.Column="1" Margin="10,0,0,0" Style="{DynamicResource TabControlDefaultStyle}">
                         <TabItem Header="Root WAV(Signal_*)">
                             <DataGrid ItemsSource="{Binding ViewRootSignalWavs}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               EnableRowVirtualization="True"
+                              CanUserResizeColumns="True"
+                              Style="{DynamicResource DataGridDefaultStyle}"
                               VirtualizingPanel.IsVirtualizing="True"
                               VirtualizingPanel.VirtualizationMode="Recycling">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="상대경로" Binding="{Binding RelativePath}" Width="auto"/>
-                                    <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="auto"/>
-                                    <DataGridTextColumn Header="수정" Binding="{Binding LastWriteTime}" Width="auto"/>
-                                    <DataGridTextColumn Header="전체경로" Binding="{Binding FullPath}" Width="auto"/>
+                                    <DataGridTextColumn Header="상대경로" Binding="{Binding RelativePath}" Width="Auto"/>
+                                    <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="Auto"/>
+                                    <DataGridTextColumn Header="수정" Binding="{Binding LastWriteTime}" Width="Auto"/>
+                                    <DataGridTextColumn Header="전체경로" Binding="{Binding FullPath}" Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </TabItem>
@@ -794,28 +882,32 @@
                                   ItemsSource="{Binding ViewSpsEvents}"
                                   SelectedItem="{Binding SelectedSpsEvent}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  CanUserResizeColumns="True"
+                                  Style="{DynamicResource DataGridDefaultStyle}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                        <DataGridTextColumn Header="Type" Binding="{Binding DetectingType}" Width="auto"/>
-                                        <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="auto"/>
-                                        <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="auto"/>
-                                        <DataGridTextColumn Header="SegCnt" Binding="{Binding SegmentCount}" Width="auto"/>
-                                        <DataGridTextColumn Header="DirPath" Binding="{Binding DirPath}" Width="auto"/>
+                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Type" Binding="{Binding DetectingType}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="Auto"/>
+                                        <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="Auto"/>
+                                        <DataGridTextColumn Header="SegCnt" Binding="{Binding SegmentCount}" Width="Auto"/>
+                                        <DataGridTextColumn Header="DirPath" Binding="{Binding DirPath}" Width="*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
 
                                 <DataGrid Grid.Column="1" Margin="10,0,0,0"
                                   ItemsSource="{Binding ViewSpsSegments}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  CanUserResizeColumns="True"
+                                  Style="{DynamicResource DataGridDefaultStyle}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="auto"/>
-                                        <DataGridTextColumn Header="Type" Binding="{Binding DetectingType}" Width="auto"/>
-                                        <DataGridTextColumn Header="StartFreq" Binding="{Binding StartFreq}" Width="auto"/>
-                                        <DataGridTextColumn Header="EndFreq" Binding="{Binding EndFreq}" Width="auto"/>
-                                        <DataGridTextColumn Header="FrameCnt" Binding="{Binding FrameCount}" Width="auto"/>
-                                        <DataGridTextColumn Header="Len" Binding="{Binding Length}" Width="auto"/>
+                                        <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Type" Binding="{Binding DetectingType}" Width="Auto"/>
+                                        <DataGridTextColumn Header="StartFreq" Binding="{Binding StartFreq}" Width="Auto"/>
+                                        <DataGridTextColumn Header="EndFreq" Binding="{Binding EndFreq}" Width="Auto"/>
+                                        <DataGridTextColumn Header="FrameCnt" Binding="{Binding FrameCount}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Len" Binding="{Binding Length}" Width="*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -832,28 +924,32 @@
                                   ItemsSource="{Binding ViewLstEvents}"
                                   SelectedItem="{Binding SelectedLstEvent}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  CanUserResizeColumns="True"
+                                  Style="{DynamicResource DataGridDefaultStyle}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                        <DataGridTextColumn Header="Type" Binding="{Binding DetectingType}" Width="auto"/>
-                                        <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="auto"/>
-                                        <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="auto"/>
-                                        <DataGridTextColumn Header="SegCnt" Binding="{Binding Segments.Count}" Width="auto"/>
-                                        <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="auto"/>
+                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Type" Binding="{Binding DetectingType}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="Auto"/>
+                                        <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="Auto"/>
+                                        <DataGridTextColumn Header="SegCnt" Binding="{Binding Segments.Count}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
 
                                 <DataGrid Grid.Column="1" Margin="10,0,0,0"
                                   ItemsSource="{Binding ViewLstSegments}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  CanUserResizeColumns="True"
+                                  Style="{DynamicResource DataGridDefaultStyle}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="auto"/>
-                                        <DataGridTextColumn Header="Type" Binding="{Binding DetectingType}" Width="auto"/>
-                                        <DataGridTextColumn Header="StartFreq" Binding="{Binding StartFreq}" Width="auto"/>
-                                        <DataGridTextColumn Header="EndFreq" Binding="{Binding EndFreq}" Width="auto"/>
-                                        <DataGridTextColumn Header="Snippet" Binding="{Binding SnippetFileName}" Width="auto"/>
-                                        <DataGridTextColumn Header="DBSegID" Binding="{Binding DBSegID}" Width="auto"/>
+                                        <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Type" Binding="{Binding DetectingType}" Width="Auto"/>
+                                        <DataGridTextColumn Header="StartFreq" Binding="{Binding StartFreq}" Width="Auto"/>
+                                        <DataGridTextColumn Header="EndFreq" Binding="{Binding EndFreq}" Width="Auto"/>
+                                        <DataGridTextColumn Header="Snippet" Binding="{Binding SnippetFileName}" Width="Auto"/>
+                                        <DataGridTextColumn Header="DBSegID" Binding="{Binding DBSegID}" Width="*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -883,7 +979,7 @@
                                 <TextBlock Grid.Row="0" Margin="0,0,0,6"
                                    Text="{Binding ViewAiErrors}" Foreground="OrangeRed"/>
 
-                                <TabControl Grid.Row="1">
+                                <TabControl Grid.Row="1" Style="{DynamicResource TabControlDefaultStyle}">
                                     <TabItem Header="AI탐지리스트.lst">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -895,26 +991,28 @@
                                               ItemsSource="{Binding ViewAiEvents}"
                                               SelectedItem="{Binding SelectedAiEvent}"
                                               AutoGenerateColumns="False"
-                                              IsReadOnly="True">
+                                              IsReadOnly="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}">
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="auto"/>
-                                                    <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Sonar" Binding="{Binding strSonarName}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Pulse" Binding="{Binding strPulseName}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Score" Binding="{Binding fScore}" Width="auto"/>
+                                                    <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Sonar" Binding="{Binding strSonarName}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Pulse" Binding="{Binding strPulseName}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Score" Binding="{Binding fScore}" Width="*"/>
                                                 </DataGrid.Columns>
                                             </DataGrid>
 
                                             <DataGrid Grid.Column="1" Margin="10,0,0,0"
                                               ItemsSource="{Binding ViewAiSegments}"
                                               AutoGenerateColumns="False"
-                                              IsReadOnly="True">
+                                              IsReadOnly="True"
+                                              Style="{DynamicResource DataGridDefaultStyle}">
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="auto"/>
-                                                    <DataGridTextColumn Header="StartFreq" Binding="{Binding StartFreq}" Width="auto"/>
-                                                    <DataGridTextColumn Header="EndFreq" Binding="{Binding EndFreq}" Width="auto"/>
-                                                    <DataGridTextColumn Header="Snippet" Binding="{Binding SnippetFileName}" Width="auto"/>
+                                                    <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="StartFreq" Binding="{Binding StartFreq}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="EndFreq" Binding="{Binding EndFreq}" Width="Auto"/>
+                                                    <DataGridTextColumn Header="Snippet" Binding="{Binding SnippetFileName}" Width="*"/>
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </Grid>
@@ -928,19 +1026,26 @@
                                             </Grid.ColumnDefinitions>
 
                                             <GroupBox Grid.Column="0" Header="*.wav" Margin="0,0,6,0">
-                                                <DataGrid ItemsSource="{Binding ViewAiSnippetWavs}" AutoGenerateColumns="False" IsReadOnly="True">
+                                                <DataGrid ItemsSource="{Binding ViewAiSnippetWavs}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                     CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="파일" Binding="{Binding RelativePath}" Width="auto"/>
-                                                        <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="auto"/>
+                                                        <DataGridTextColumn Header="파일" Binding="{Binding RelativePath}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </GroupBox>
 
-                                            <GroupBox Grid.Column="1" Header="*.grm" Margin="6,0,0,0">
-                                                <DataGrid ItemsSource="{Binding ViewAiSnippetGrms}" AutoGenerateColumns="False" IsReadOnly="True">
+                                            <GroupBox Grid.Column="1" Header="*.grm (더블클릭→비교)" Margin="6,0,0,0">
+                                                <DataGrid x:Name="SdAiGrmGrid" ItemsSource="{Binding ViewAiSnippetGrms}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                     CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
+                                                    <DataGrid.InputBindings>
+                                                        <MouseBinding Gesture="LeftDoubleClick"
+                                                                      Command="{Binding OpenGramCompareCommand}"
+                                                                      CommandParameter="{Binding SelectedItem, ElementName=SdAiGrmGrid}"/>
+                                                    </DataGrid.InputBindings>
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="파일" Binding="{Binding RelativePath}" Width="auto"/>
-                                                        <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="auto"/>
+                                                        <DataGridTextColumn Header="파일" Binding="{Binding RelativePath}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </GroupBox>
@@ -948,15 +1053,16 @@
                                     </TabItem>
 
                                     <TabItem Header="ai_식별결과.cla">
-                                        <DataGrid ItemsSource="{Binding ViewAiClaPulses}" AutoGenerateColumns="False" IsReadOnly="True">
+                                        <DataGrid ItemsSource="{Binding ViewAiClaPulses}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                 Style="{DynamicResource DataGridDefaultStyle}">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="PID" Binding="{Binding PID}" Width="auto"/>
-                                                <DataGridTextColumn Header="Sonar" Binding="{Binding SonarName}" Width="auto"/>
-                                                <DataGridTextColumn Header="Pulse" Binding="{Binding PulseName}" Width="auto"/>
-                                                <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="auto"/>
-                                                <DataGridTextColumn Header="SegCnt" Binding="{Binding SegmentCount}" Width="auto"/>
-                                                <DataGridTextColumn Header="Gram" Binding="{Binding GramSnippet}" Width="auto"/>
-                                                <DataGridTextColumn Header="Audio" Binding="{Binding AudioSnippet}" Width="auto"/>
+                                                <DataGridTextColumn Header="PID" Binding="{Binding PID}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Sonar" Binding="{Binding SonarName}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Pulse" Binding="{Binding PulseName}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="Auto"/>
+                                                <DataGridTextColumn Header="SegCnt" Binding="{Binding SegmentCount}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Gram" Binding="{Binding GramSnippet}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Audio" Binding="{Binding AudioSnippet}" Width="*"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
@@ -969,13 +1075,14 @@
                                             </Grid.RowDefinitions>
 
                                             <GroupBox Grid.Row="0" Header="Event">
-                                                <DataGrid ItemsSource="{Binding ViewAiTmpEvents}" AutoGenerateColumns="False" IsReadOnly="True">
+                                                <DataGrid ItemsSource="{Binding ViewAiTmpEvents}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                     CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Confirmed Sonar" Binding="{Binding ConfirmedSonarName}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Confirmed Pulse" Binding="{Binding ConfirmedPulseName}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Score" Binding="{Binding ConfirmedScore}" Width="auto"/>
-                                                        <DataGridTextColumn Header="CandCnt" Binding="{Binding CandidateCount}" Width="auto"/>
+                                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Confirmed Sonar" Binding="{Binding ConfirmedSonarName}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Confirmed Pulse" Binding="{Binding ConfirmedPulseName}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Score" Binding="{Binding ConfirmedScore}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="CandCnt" Binding="{Binding CandidateCount}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </GroupBox>
@@ -987,26 +1094,28 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <GroupBox Grid.Column="0" Header="Candidates" Margin="0,0,6,0">
-                                                    <DataGrid ItemsSource="{Binding ViewAiTmpCandidates}" AutoGenerateColumns="False" IsReadOnly="True">
+                                                    <DataGrid ItemsSource="{Binding ViewAiTmpCandidates}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                         Style="{DynamicResource DataGridDefaultStyle}">
                                                         <DataGrid.Columns>
-                                                            <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                                            <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="auto"/>
-                                                            <DataGridTextColumn Header="Sonar" Binding="{Binding SonarName}" Width="auto"/>
-                                                            <DataGridTextColumn Header="Pulse" Binding="{Binding PulseName}" Width="auto"/>
-                                                            <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="auto"/>
+                                                            <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="Sonar" Binding="{Binding SonarName}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="Pulse" Binding="{Binding PulseName}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="*"/>
                                                         </DataGrid.Columns>
                                                     </DataGrid>
                                                 </GroupBox>
 
                                                 <GroupBox Grid.Column="1" Header="Segments" Margin="6,0,0,0">
-                                                    <DataGrid ItemsSource="{Binding ViewAiTmpSegments}" AutoGenerateColumns="False" IsReadOnly="True">
+                                                    <DataGrid ItemsSource="{Binding ViewAiTmpSegments}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                         Style="{DynamicResource DataGridDefaultStyle}">
                                                         <DataGrid.Columns>
-                                                            <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                                            <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="auto"/>
-                                                            <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="auto"/>
-                                                            <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="auto"/>
-                                                            <DataGridTextColumn Header="StartF" Binding="{Binding StartFreq}" Width="auto"/>
-                                                            <DataGridTextColumn Header="EndF" Binding="{Binding EndFreq}" Width="auto"/>
+                                                            <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="StartF" Binding="{Binding StartFreq}" Width="Auto"/>
+                                                            <DataGridTextColumn Header="EndF" Binding="{Binding EndFreq}" Width="*"/>
                                                         </DataGrid.Columns>
                                                     </DataGrid>
                                                 </GroupBox>
@@ -1031,7 +1140,7 @@
                                 <TextBlock Grid.Row="0" Margin="0,0,0,6"
                                    Text="{Binding ViewTrErrors}" Foreground="OrangeRed"/>
 
-                                <TabControl Grid.Row="1">
+                                <TabControl Grid.Row="1" Style="{DynamicResource TabControlDefaultStyle}">
                                     <TabItem Header="순간소음탐지리스트.lst">
                                         <Grid>
                                             <Grid.RowDefinitions>
@@ -1050,12 +1159,13 @@
                                                   ItemsSource="{Binding ViewTrEvents}"
                                                   SelectedItem="{Binding SelectedTrEvent}"
                                                   AutoGenerateColumns="False"
-                                                  IsReadOnly="True">
+                                                  IsReadOnly="True"
+                                                  Style="{DynamicResource DataGridDefaultStyle}">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="auto"/>
-                                                        <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="auto"/>
-                                                        <DataGridTextColumn Header="SegCnt" Binding="{Binding Segments.Count}" Width="auto"/>
+                                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="SegCnt" Binding="{Binding Segments.Count}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
 
@@ -1063,24 +1173,26 @@
                                                   ItemsSource="{Binding ViewTrSegments}"
                                                   SelectedItem="{Binding SelectedTrSegment}"
                                                   AutoGenerateColumns="False"
-                                                  IsReadOnly="True">
+                                                  IsReadOnly="True"
+                                                  Style="{DynamicResource DataGridDefaultStyle}">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Pattern" Binding="{Binding PatternValue}" Width="auto"/>
-                                                        <DataGridTextColumn Header="DBSegID" Binding="{Binding DBSegID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Snippet" Binding="{Binding SnippetFileName}" Width="auto"/>
+                                                        <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Pattern" Binding="{Binding PatternValue}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="DBSegID" Binding="{Binding DBSegID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Snippet" Binding="{Binding SnippetFileName}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
 
                                                 <DataGrid Grid.Column="2" Margin="10,0,0,0"
                                                   ItemsSource="{Binding ViewTrFrames}"
                                                   AutoGenerateColumns="False"
-                                                  IsReadOnly="True">
+                                                  IsReadOnly="True"
+                                                  Style="{DynamicResource DataGridDefaultStyle}">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="FrameID" Binding="{Binding FrameID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="DBSegID" Binding="{Binding DBSegID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="DBFrmID" Binding="{Binding DBFrmID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="auto"/>
+                                                        <DataGridTextColumn Header="FrameID" Binding="{Binding FrameID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="DBSegID" Binding="{Binding DBSegID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="DBFrmID" Binding="{Binding DBFrmID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </Grid>
@@ -1097,19 +1209,26 @@
                                             </Grid.ColumnDefinitions>
 
                                             <GroupBox Grid.Column="0" Header="*.wav" Margin="0,0,6,0">
-                                                <DataGrid ItemsSource="{Binding ViewTrSnippetWavs}" AutoGenerateColumns="False" IsReadOnly="True">
+                                                <DataGrid ItemsSource="{Binding ViewTrSnippetWavs}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                     CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="파일" Binding="{Binding RelativePath}" Width="auto"/>
-                                                        <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="auto"/>
+                                                        <DataGridTextColumn Header="파일" Binding="{Binding RelativePath}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </GroupBox>
 
-                                            <GroupBox Grid.Column="1" Header="*.grm" Margin="6,0,0,0">
-                                                <DataGrid ItemsSource="{Binding ViewTrSnippetGrms}" AutoGenerateColumns="False" IsReadOnly="True">
+                                            <GroupBox Grid.Column="1" Header="*.grm (더블클릭→비교)" Margin="6,0,0,0">
+                                                <DataGrid x:Name="SdTrGrmGrid" ItemsSource="{Binding ViewTrSnippetGrms}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                     CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
+                                                    <DataGrid.InputBindings>
+                                                        <MouseBinding Gesture="LeftDoubleClick"
+                                                                      Command="{Binding OpenGramCompareCommand}"
+                                                                      CommandParameter="{Binding SelectedItem, ElementName=SdTrGrmGrid}"/>
+                                                    </DataGrid.InputBindings>
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="파일" Binding="{Binding RelativePath}" Width="auto"/>
-                                                        <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="auto"/>
+                                                        <DataGridTextColumn Header="파일" Binding="{Binding RelativePath}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="크기" Binding="{Binding Length}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </GroupBox>
@@ -1117,15 +1236,16 @@
                                     </TabItem>
 
                                     <TabItem Header="tr_식별결과.cla">
-                                        <DataGrid ItemsSource="{Binding ViewTrClaSegments}" AutoGenerateColumns="False" IsReadOnly="True">
+                                        <DataGrid ItemsSource="{Binding ViewTrClaSegments}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                 Style="{DynamicResource DataGridDefaultStyle}">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                                <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="auto"/>
-                                                <DataGridTextColumn Header="Group" Binding="{Binding Group}" Width="auto"/>
-                                                <DataGridTextColumn Header="Name" Binding="{Binding TransientName}" Width="auto"/>
-                                                <DataGridTextColumn Header="FrameNum" Binding="{Binding FrameNum}" Width="auto"/>
-                                                <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="auto"/>
-                                                <DataGridTextColumn Header="Audio" Binding="{Binding AudioSnippet}" Width="auto"/>
+                                                <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                                <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Group" Binding="{Binding Group}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding TransientName}" Width="Auto"/>
+                                                <DataGridTextColumn Header="FrameNum" Binding="{Binding FrameNum}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Audio" Binding="{Binding AudioSnippet}" Width="*"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
@@ -1138,23 +1258,25 @@
                                             </Grid.RowDefinitions>
 
                                             <GroupBox Grid.Row="0" Header="Event">
-                                                <DataGrid ItemsSource="{Binding ViewTrTmpEvents}" AutoGenerateColumns="False" IsReadOnly="True">
+                                                <DataGrid ItemsSource="{Binding ViewTrTmpEvents}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                     CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="ConfirmedCnt" Binding="{Binding ConfirmedCount}" Width="auto"/>
-                                                        <DataGridTextColumn Header="SegmentCnt" Binding="{Binding SegmentCount}" Width="auto"/>
+                                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="ConfirmedCnt" Binding="{Binding ConfirmedCount}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="SegmentCnt" Binding="{Binding SegmentCount}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </GroupBox>
 
                                             <GroupBox Grid.Row="1" Header="Segments" Margin="0,6,0,0">
-                                                <DataGrid ItemsSource="{Binding ViewTrTmpSegments}" AutoGenerateColumns="False" IsReadOnly="True">
+                                                <DataGrid ItemsSource="{Binding ViewTrTmpSegments}" AutoGenerateColumns="False" IsReadOnly="True"
+                                                     CanUserResizeColumns="True" Style="{DynamicResource DataGridDefaultStyle}">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="auto"/>
-                                                        <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="auto"/>
-                                                        <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="auto"/>
+                                                        <DataGridTextColumn Header="EventID" Binding="{Binding EventID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="SegID" Binding="{Binding SegmentID}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="End" Binding="{Binding EndTime}" Width="Auto"/>
+                                                        <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="*"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </GroupBox>
@@ -1175,7 +1297,16 @@
     </Window.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <!-- 단계 전환: SetupViewModel → SetupView / WorkspaceViewModel → WorkspaceView -->
-        <ContentControl Content="{Binding CurrentView}"/>
+        <ContentControl Grid.Row="0" Content="{Binding CurrentView}"/>
+        <Border Grid.Row="1" Background="{DynamicResource ShellBackgroundBrush}" Padding="8,4">
+            <TextBlock Text="{Binding StatusText}"
+                       Foreground="{DynamicResource TextOnDarkSecondaryBrush}"
+                       FontSize="11" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+        </Border>
     </Grid>
 </Window>

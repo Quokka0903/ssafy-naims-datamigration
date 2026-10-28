@@ -1,0 +1,135 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>레코드 비교 기준</title><style>
+@page { size: A4; margin: 16mm 14mm; }
+body { font-family:"Malgun Gothic","맑은 고딕",sans-serif; font-size:9.5pt; line-height:1.55; color:#1a1a1a; }
+h1 { font-size:17pt; margin:0 0 2mm; border-bottom:2.5px solid #3E77C5; padding-bottom:2mm; }
+h2 { font-size:12pt; margin:7mm 0 2mm; color:#2A5A9E; border-left:4px solid #3E77C5; padding-left:3mm; }
+h3 { font-size:10pt; margin:4mm 0 1.5mm; }
+.sub { color:#666; font-size:8.5pt; margin-bottom:5mm; }
+table { border-collapse:collapse; width:100%; font-size:8pt; margin:2mm 0 4mm; }
+th { background:#EDF2FA; border:1px solid #C4D3E8; padding:1.6mm 2mm; text-align:left; font-weight:600; }
+td { border:1px solid #D8DEE8; padding:1.4mm 2mm; vertical-align:top; }
+td.k { font-family:Consolas,monospace; font-size:7.5pt; }
+td.fk { font-family:Consolas,monospace; font-size:7pt; }
+.dim { color:#999; } .warn { color:#B45309; font-weight:600; }
+code { font-family:Consolas,monospace; background:#F2F4F8; padding:0.4mm 1mm; border-radius:2px; font-size:8.5pt; }
+.note { background:#FFF8E6; border-left:4px solid #E0A030; padding:2.5mm 3mm; margin:3mm 0; font-size:8.5pt; }
+.why { background:#F4F7FC; border-left:4px solid #3E77C5; padding:2.5mm 3mm; margin:3mm 0; font-size:8.5pt; }
+ul { margin:1.5mm 0 2mm; padding-left:5mm; } li { margin:0.8mm 0; }
+.pb { page-break-before:always; }
+footer { margin-top:6mm; border-top:1px solid #ccc; padding-top:2mm; color:#888; font-size:7.5pt; }
+</style></head><body>
+
+<h1>레코드 비교 기준</h1>
+<div class="sub">NAIMS(Oracle) → NAIMS2(MS SQL) 이관 검증 · 결과 창 [🔗 레코드 매칭] 탭이 실제로 적용하는 규칙 ·
+생성 2026-08-19</div>
+
+<h2>1. 두 가지 비교 방식</h2>
+<table>
+<tr><th style="width:22%">방식</th><th style="width:26%">짝짓는 근거</th><th style="width:24%">언제 쓰나</th><th>정확도</th></tr>
+<tr><td><b>이번 실행 기록</b></td>
+    <td>이관기가 행마다 남긴 <code>소스 PK → 타겟 RECORD_ID</code></td>
+    <td>방금 이관을 끝낸 직후</td>
+    <td>추정 없음. 짝은 100% 확정</td></tr>
+<tr><td><b>DB 간 데이터 비교</b></td>
+    <td>자연키(파일명·명칭 등) 값</td>
+    <td>이관 기록이 없는 DB를 사후에 검증할 때</td>
+    <td>키가 유일할 때만 확정. 중복 키는 짝짓지 않음</td></tr>
+</table>
+
+<div class="why"><b>왜 "정렬해서 나란히 놓기"를 쓰지 않는가</b><br>
+좌우를 각각 정렬해 같은 순번끼리 짝지으면, 한쪽에 빠진 행이 <b>하나만</b> 있어도 그 아래가 전부 한 칸씩 밀려
+<b>전부 불일치로 보인다</b>. 실측에서 <code>TR_SNIPPET</code> 4건이 파일 부재로 전량 스킵된 사례가 있었다.
+키로 사전을 만들면 빠진 행은 <code>소스에만</code> 한 줄로 정확히 드러나고 나머지는 멀쩡히 맞는다.
+<b>정렬은 사람이 보기 위한 것이지 짝을 찾는 수단이 아니다.</b></div>
+
+<h2>2. 판정값</h2>
+<table>
+<tr><th style="width:16%">판정</th><th style="width:20%">쓰이는 방식</th><th>뜻</th></tr>
+<tr><td><b>일치</b></td><td>공통</td><td>비교 필드가 모두 같고 FK도 올바르게 치환됨</td></tr>
+<tr><td><b>불일치</b></td><td>이번 실행 기록</td><td>짝은 있으나 값이 다름 — <code>차이</code> 열에 어긋난 필드가 적힘</td></tr>
+<tr><td><b>확인불가</b></td><td>공통</td><td>한쪽 행이 없거나, 부모 짝이 없어 FK를 대조할 수 없음</td></tr>
+<tr><td><b>소스에만</b></td><td>DB 간 데이터 비교</td><td>소스에 있는데 타겟에 없음 — <b>누락</b></td></tr>
+<tr><td><b>타겟에만</b></td><td>DB 간 데이터 비교</td><td>타겟에 있는데 소스에 없음 — <b>과잉 적재·중복 이관</b></td></tr>
+<tr><td><b>키중복</b></td><td>DB 간 데이터 비교</td><td>같은 자연키를 여러 행이 씀 — 짝짓지 않고 남김</td></tr>
+</table>
+<div class="note"><b>타겟에만</b>은 반드시 표에 나온다. 소스 기준으로만 훑으면 과잉 적재를 영영 발견하지 못하기 때문이다.</div>
+
+<h2>3. 비교 필드 선정 규칙</h2>
+<p>아래 순서로 최대 3개까지 고른다. 앞 순위에서 하나라도 찾으면 뒤 순위는 보지 않는다.</p>
+<ul>
+<li><b>1순위 — 복합키(<code>DedupKeyColumns</code>)</b>: 재이관 중복 방지에 쓰려고 이미 "그 행을 식별하는 값"으로 골라 둔 것.</li>
+<li><b>2순위 — 자연키(<code>TargetKeyColumn</code>)</b>: 기존 행 재사용 판정에 쓰는 이름 컬럼.</li>
+<li><b>3순위 — 추정</b>: 대응이 확정된 비-FK 컬럼 중 이름에 <code>NAME</code>/<code>CODE</code>/<code>_NO</code>가 든 것.</li>
+</ul>
+<p>소스·타겟 <b>양쪽에 실제로 존재하고 컬럼 대응이 확정된</b> 것만 쓴다. 하나도 없으면 PK·FK만 대조하며, 그 사실을 요약줄에 표시한다.</p>
+
+<h2>4. 값 동일성 판정</h2>
+<table>
+<tr><th style="width:22%">자료형</th><th>같다고 보는 기준</th><th style="width:34%">이유</th></tr>
+<tr><td>문자열</td><td>앞뒤 공백 제거 + 대소문자 무시</td><td>레거시가 <code>CHAR(80)</code> 고정폭 공백패딩이고 대소문자 혼용이 흔하다</td></tr>
+<tr><td>숫자</td><td>상대오차 1e-6 이내(최소 절대 1e-6)</td><td><code>float</code>(유효 7자리) 왕복 시 말단 오차가 남는다</td></tr>
+<tr><td>날짜·시각</td><td>1초 미만 차이는 같음</td><td>Oracle <code>DATE</code>는 초 단위, MS SQL <code>datetime2(7)</code>은 100ns 단위</td></tr>
+<tr><td>NULL</td><td>양쪽 다 NULL이어야 같음</td><td>NULL과 0/빈문자는 다른 값이다</td></tr>
+</table>
+<div class="note">이 관용은 <b>표기 차이</b>만 흡수하기 위한 것이다. 이것까지 불일치로 세면 표가 온통 붉어져
+진짜 불일치가 묻힌다. 값 자체가 다르면 반드시 <code>불일치</code>로 잡힌다.</div>
+
+<h2>5. FK 판정</h2>
+<p>FK는 <b>값이 같으면 맞는 것이 아니다.</b> 타겟은 <code>RECORD_ID</code>가 IDENTITY라 소스 ID를 그대로 쓸 수 없고,
+부모의 <b>새 <code>RECORD_ID</code>로 치환</b>되어야 한다. 그래서 이렇게 본다.</p>
+<ul>
+<li>소스 FK 값 → 부모 테이블의 짝 기록에서 기대 <code>RECORD_ID</code>를 찾는다</li>
+<li>타겟 FK 값이 그 기대값과 같아야 <b>일치</b>. 다르면 <code>차이</code> 열에 <code>기대 42 ≠ 실제 7</code>처럼 적는다</li>
+<li>부모 짝 기록이 없으면 <b>확인불가</b>(대조 불가를 일치로 위장하지 않는다)</li>
+<li>소스 FK가 NULL인데 타겟에 값이 있고 그 FK가 필수면 <b>불일치</b></li>
+</ul>
+
+<h2 class="pb">6. 테이블별 비교 기준</h2>
+<p class="sub">이관 계획(<code>MigrationPlan.Defaults()</code>)에서 자동 추출 — 코드가 바뀌면 이 표도 다시 뽑아야 한다.</p>
+<table>
+<tr><th style="width:15%">소스</th><th style="width:19%">타겟</th><th style="width:10%">소스 PK</th>
+    <th style="width:9%">기준</th><th style="width:20%">비교 필드</th><th>FK 치환 대조</th></tr>
+<tr><td>COUNTRY_CODES</td><td>STD_COUNTRY_CODES</td><td>COUNTRY_ID</td><td>자연키</td><td class='k'>CTRY_NAME</td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>CLASSES</td><td>STD_CLASSES</td><td>CLASS_ID</td><td>자연키</td><td class='k'>CLASS_NAME</td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>ACTIVE_SONAR</td><td>STD_ACTV_SONAR</td><td>SONAR_ID</td><td>자연키</td><td class='k'>SONAR_NAME</td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>WEAPON</td><td>STD_WEAPON</td><td>WEAPON_ID</td><td>복합키</td><td class='k'>WEAPON_MODEL</td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>PULSE_SEGMENTS</td><td>STD_PULSE_SEGMENTS</td><td>SEGMENT_ID</td><td>복합키</td><td class='k'>FREQ_START, FREQ_STOP, MODULATION, SEG_LEN_MS_MIN, SEG_LEN_MS_MAX</td><td class='fk'>SONAR_ID → REF_STD_ACTV_SONAR_ID<span class="dim"> (ACTIVE_SONAR)</span></td></tr>
+<tr><td>DB_DIST_GROUP</td><td>STD_DB_DIST_GROUP</td><td>GROUP_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>NB_SNIPPET</td><td>STD_NB_SNIPPET</td><td>NB_SNIPPET_ID</td><td>자연키</td><td class='k'>STD_NB_GRAM_SNIPPET_FILE_NAME</td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>TR_SNIPPET</td><td>STD_TR_SNIPPET</td><td>TR_SNIPPET_ID</td><td>복합키</td><td class='k'>AUDIO_FILE_NAME</td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>VESSEL_DATA</td><td>STD_VESSEL_DATA</td><td>VESSEL_ID</td><td>자연키</td><td class='k'>VESSEL_NAME</td><td class='fk'>CLASS_ID → REF_STD_CLASSES_ID<span class="dim"> (CLASSES)</span><br>COUNTRY_ID → REF_STD_COUNTRY_CODES_ID<span class="dim"> (COUNTRY_CODES)</span></td></tr>
+<tr><td>PULSES</td><td>STD_PULSES</td><td>PULSE_ID</td><td>복합키</td><td class='k'>PULSE_NAME</td><td class='fk'>SONAR_ID → REF_STD_ACTV_SONAR_ID<span class="dim"> (ACTIVE_SONAR)</span><br>FIRST_SEG_ID → FIRST_SEG_ID<span class="dim"> (PULSE_SEGMENTS)</span><br>SECOND_SEG_ID → SECOND_SEG_ID<span class="dim"> (PULSE_SEGMENTS)</span><br>THIRD_SEG_ID → THIRD_SEG_ID<span class="dim"> (PULSE_SEGMENTS)</span><br>FOURTH_SEG_ID → FOURTH_SEG_ID<span class="dim"> (PULSE_SEGMENTS)</span><br>FIFTH_SEG_ID → FIFTH_SEG_ID<span class="dim"> (PULSE_SEGMENTS)</span><br>SIXTH_SEG_ID → SIXTH_SEG_ID<span class="dim"> (PULSE_SEGMENTS)</span><br>SEVENTH_SEG_ID → SEVENTH_SEG_ID<span class="dim"> (PULSE_SEGMENTS)</span></td></tr>
+<tr><td>WEAPON_CARRIER</td><td>STD_WEAPON_CLASSES_LINK</td><td>WCARRIER_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'>WEAPON_ID → REF_STD_WEAPON_ID<span class="dim"> (WEAPON)</span><br>CLASS_ID → REF_STD_CLASSES_ID<span class="dim"> (CLASSES)</span></td></tr>
+<tr><td>DIST_LIST</td><td>STD_DIST_LIST</td><td>DIST_LIST_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'>GROUP_ID → REF_STD_DB_DIST_GROUP_ID<span class="dim"> (DB_DIST_GROUP)</span></td></tr>
+<tr><td>SIGNATURES</td><td>STD_SIGNATURES</td><td>SIGNATURE_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'>VESSEL_ID → REF_STD_VESSEL_DATA_ID<span class="dim"> (VESSEL_DATA)</span></td></tr>
+<tr><td>CHARACTERISTICS</td><td>STD_CHARACTERISTICS</td><td>CHAR_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'>VESSEL_ID → REF_STD_VESSEL_DATA_ID<span class="dim"> (VESSEL_DATA)</span></td></tr>
+<tr><td>TRANSIENT</td><td>STD_TRANSIENT</td><td>TR_ID</td><td>복합키</td><td class='k'>TR_NAME</td><td class='fk'>CLASS_ID → REF_STD_CLASSES_ID<span class="dim"> (CLASSES)</span><br>VESSEL_ID → REF_STD_VESSEL_DATA_ID<span class="dim"> (VESSEL_DATA)</span></td></tr>
+<tr><td>AI_SNIPPET</td><td>STD_AI_SNIPPET</td><td>AI_SNIPPET_ID</td><td>복합키</td><td class='k'>GRAM_FILE_NAME</td><td class='fk'>PULSE_ID → REF_STD_PULSES_ID<span class="dim"> (PULSES)</span></td></tr>
+<tr><td>DB_DIST_LOG</td><td>STD_DB_DIST_LOG</td><td>LOG_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>DIST_TO</td><td>STD_DIST_TO</td><td>LOG_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'>LOG_ID → REF_STD_DB_DIST_LOG_ID<span class="dim"> (DB_DIST_LOG)</span></td></tr>
+<tr><td>HARMONICS</td><td>STD_HARMONICS</td><td>HARM_ID</td><td>복합키</td><td class='k'>HARM_NO</td><td class='fk'>SIGNATURES_ID → REF_STD_SIGNATURES_ID<span class="dim"> (SIGNATURES)</span></td></tr>
+<tr><td>TR_FRAME</td><td>STD_TR_FRAME</td><td>FRAME_ID</td><td>복합키</td><td class='k'>MFB_NO</td><td class='fk'>TR_ID → REF_STD_TRANSIENT_ID<span class="dim"> (TRANSIENT)</span></td></tr>
+<tr><td>SIG_SNIPPET</td><td>STD_NB_SIG_SNIPPET_LINK</td><td>SIG_SNP_ID</td><td>FK 튜플</td><td class='k'>(REF_STD_SIGNATURES_ID, REF_STD_NB_SNIPPET_ID)</td><td class='fk'>SIGNATURE_ID → REF_STD_SIGNATURES_ID<span class="dim"> (SIGNATURES)</span><br>NB_SNIPPET_ID → REF_STD_NB_SNIPPET_ID<span class="dim"> (NB_SNIPPET)</span></td></tr>
+<tr><td>IMAGE_DATA</td><td>STD_REFERENCE_DATA</td><td>IMAGE_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'>VESSEL_ID → REF_STD_VESSEL_DATA_ID<span class="dim"> (VESSEL_DATA)</span></td></tr>
+<tr><td>FRAME_SNIPPET</td><td>STD_TR_FRAME_SNIPPET_LINK</td><td>FRM_SNP_ID</td><td>FK 튜플</td><td class='k'>(REF_STD_TR_FRAME_ID, REF_STD_TR_SNIPPET_ID)</td><td class='fk'>FRAME_ID → REF_STD_TR_FRAME_ID<span class="dim"> (TR_FRAME)</span><br>TR_SNIPPET_ID → REF_STD_TR_SNIPPET_ID<span class="dim"> (TR_SNIPPET)</span></td></tr>
+<tr><td>CD_CHANGE_LOG</td><td>STD_CD_CHANGE_LOG</td><td>CHNG_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>CD_BACKUP_LOG</td><td>STD_CD_BACKUP_LOG</td><td>BACKUP_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>CCF2CD_LOG</td><td>STD_CCF2CD_LOG</td><td>CCFCD_ID</td><td><span class="warn">지정 없음</span></td><td class='k'><span class="warn">추정으로 대체 — NAME/CODE/_NO 컬럼 최대 3개</span></td><td class='fk'><span class="dim">없음</span></td></tr>
+<tr><td>PULSE_FREQUENCY_ISUS90</td><td>STD_PULSE_FREQUENCY_ISUS90</td><td>PULSE_F_ID</td><td>복합키</td><td class='k'>FREQUENCY</td><td class='fk'>SONAR_ID → REF_STD_ACTV_SONAR_ID<span class="dim"> (ACTIVE_SONAR)</span></td></tr>
+<tr><td>PULSE_SEG_LENGTH_ISUS90</td><td>STD_PULSE_SEG_LENGTH_ISUS90</td><td>SEG_ID</td><td>복합키</td><td class='k'>LENGTH_MIN, LENGTH_MAX</td><td class='fk'>PULSE_F_ID → REF_STD_PULSE_FREQUENCY_ISUS90_ID<span class="dim"> (PULSE_FREQUENCY_ISUS90)</span></td></tr>
+<tr><td>PULSE_SEG_SWING_ISUS90</td><td>STD_PULSE_SEG_SWING_ISUS90</td><td>SWING_ID</td><td>복합키</td><td class='k'>SWING, MODULATION</td><td class='fk'>PULSE_F_ID → REF_STD_PULSE_FREQUENCY_ISUS90_ID<span class="dim"> (PULSE_FREQUENCY_ISUS90)</span></td></tr>
+</table>
+
+<h2>7. 한계와 주의</h2>
+<ul>
+<li><b>표시 상한</b>이 있다(기본 200행). 상한에 걸리면 요약줄에 전체 짝 수와 함께 표시된다 — 조용히 자르지 않는다.</li>
+<li><b>짝이 기록되지 않은 행</b>은 '이번 실행 기록' 방식에 나오지 않는다. 부모단위 스킵·링크 재사용 행은 타겟 <code>RECORD_ID</code>를 모르기 때문이며, 건수는 요약에 드러난다. 이런 행은 'DB 간 데이터 비교'로 확인한다.</li>
+<li><b>암호화 컬럼</b>(이름류)은 복호화 규칙을 찾은 경우에만 비교한다. 못 찾으면 비교에서 빠지며 요약에 표시된다.</li>
+<li><b>바이너리 컬럼</b>(그램·원음·스펙트로그램 blob)은 비교 대상이 아니다. 형식 정합은 별도 규격(R8 66B 태그 <code>A0</code>/<code>S0</code>, NB 순수 float)으로 관리한다.</li>
+<li><b><code>NB_SNIPPET</code>에는 복합키가 지정돼 있지 않다.</b> 추정 필드로 대체되므로, 이 표에서 <span class="warn">지정 없음</span>인 테이블은 비교 신뢰도가 낮다.</li>
+</ul>
+
+<footer>NAIMS 이관 도구(RawCollectMigrator) · 코드 내 검색어 <code>[찾기:레코드매칭]</code> ·
+구현 <code>Features/DbToDb/Services/RecordMatchBuilder.cs</code></footer>
+</body></html>

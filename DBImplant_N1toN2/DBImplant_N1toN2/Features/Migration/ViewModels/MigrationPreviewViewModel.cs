@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -50,6 +51,9 @@ namespace DBImplant_N1toN2.Features.Migration.ViewModels
             get => _fileSelectedCategory;
             set { if (Set(ref _fileSelectedCategory, value)) RebuildFileFiltered(); }
         }
+
+        // ── 파일 이동 트리 뷰 ────────────────────────────────────────────
+        public ObservableCollection<FileTransferTreeNode> FileTree { get; } = new();
 
         // ── 통계 ─────────────────────────────────────────────────────────
         private string _dbSummary = "";
@@ -110,7 +114,7 @@ namespace DBImplant_N1toN2.Features.Migration.ViewModels
                 RebuildDbFiltered();
                 DbSummary = $"{dbRows.Count}개 매핑 — {DbAvailableTables.Length}개 테이블";
 
-                // 파일 이동
+                // 파일 이동 (flat list)
                 FileRows.Clear();
                 foreach (var r in fileRows) FileRows.Add(r);
                 FileCategories = fileRows.Select(r => r.Category).Distinct().OrderBy(c => c).ToArray();
@@ -118,9 +122,13 @@ namespace DBImplant_N1toN2.Features.Migration.ViewModels
                 RebuildFileFiltered();
 
                 long totalSize = fileRows.Sum(r => r.FileSize);
-                int insertCount = fileRows.Count(r => r.TargetAction.Contains("INSERT"));
+                int insertCount = fileRows.Count(r => r.TargetAction.Contains("INSERT") || r.TargetAction.Contains("변환"));
                 int skipCount = fileRows.Count(r => r.TargetAction.Contains("스킵"));
-                FileSummary = $"{fileRows.Count}개 파일 — INSERT대상: {insertCount}, 스킵: {skipCount}, 총 {totalSize / 1024.0 / 1024.0:F1} MB";
+                FileSummary = $"{fileRows.Count}개 파일 — INSERT/변환: {insertCount}, 스킵: {skipCount}, 총 {totalSize / 1024.0 / 1024.0:F1} MB";
+
+                // 파일 이동 트리 빌드 (카테고리 → 임무/패키지 → 대상테이블 → 파일)
+                FileTree.Clear();
+                BuildFileTree(fileRows);
 
                 // INSERT 미리보기
                 InsertRows.Clear();
@@ -163,6 +171,81 @@ namespace DBImplant_N1toN2.Features.Migration.ViewModels
             var src = string.IsNullOrEmpty(_fileSelectedCategory)
                 ? FileRows : new ObservableCollection<FileTransferPreviewRow>(FileRows.Where(r => r.Category == _fileSelectedCategory));
             foreach (var r in src) FileFilteredRows.Add(r);
+        }
+
+        // ── 파일 이동 트리 빌드 ──────────────────────────────────────────
+        private void BuildFileTree(List<FileTransferPreviewRow> rows)
+        {
+            // 계층: Category → PackageName → TargetTable → 파일
+            var byCategory = rows.GroupBy(r => r.Category).OrderBy(g => g.Key);
+            foreach (var catGroup in byCategory)
+            {
+                var catNode = new FileTransferTreeNode
+                {
+                    DisplayName = catGroup.Key,
+                    NodeType = "Category",
+                    Icon = "📂",
+                    FileCount = catGroup.Count(),
+                    TotalSize = catGroup.Sum(r => r.FileSize),
+                    Detail = $"{catGroup.Count()}개 파일, {catGroup.Sum(r => r.FileSize) / 1024.0 / 1024.0:F1} MB"
+                };
+
+                var byMission = catGroup.GroupBy(r => r.PackageName).OrderBy(g => g.Key);
+                foreach (var missionGroup in byMission)
+                {
+                    var missionNode = new FileTransferTreeNode
+                    {
+                        DisplayName = missionGroup.Key,
+                        NodeType = "Mission",
+                        Icon = "📁",
+                        FileCount = missionGroup.Count(),
+                        TotalSize = missionGroup.Sum(r => r.FileSize),
+                        Detail = $"{missionGroup.Count()}개"
+                    };
+
+                    var byTable = missionGroup.GroupBy(r => r.TargetTable).OrderBy(g => g.Key);
+                    foreach (var tableGroup in byTable)
+                    {
+                        var tableNode = new FileTransferTreeNode
+                        {
+                            DisplayName = tableGroup.Key,
+                            NodeType = "Table",
+                            Icon = "🗄",
+                            FileCount = tableGroup.Count(),
+                            TotalSize = tableGroup.Sum(r => r.FileSize),
+                            Action = tableGroup.First().TargetAction,
+                            Detail = $"{tableGroup.Count()}개, {tableGroup.First().TargetAction}"
+                        };
+
+                        foreach (var file in tableGroup)
+                        {
+                            tableNode.Children.Add(new FileTransferTreeNode
+                            {
+                                DisplayName = file.SourceFile,
+                                NodeType = "File",
+                                Icon = file.FileType switch
+                                {
+                                    "WAV" => "🎵",
+                                    "GRM" => "📊",
+                                    "TXT" or "LST" or "SET" => "📄",
+                                    "DAT" => "📈",
+                                    "DIR" => "📁",
+                                    _ => "📎"
+                                },
+                                Action = file.TargetAction,
+                                TotalSize = file.FileSize,
+                                Detail = file.Note
+                            });
+                        }
+
+                        missionNode.Children.Add(tableNode);
+                    }
+
+                    catNode.Children.Add(missionNode);
+                }
+
+                FileTree.Add(catNode);
+            }
         }
 
         // ── INPC ─────────────────────────────────────────────────────────

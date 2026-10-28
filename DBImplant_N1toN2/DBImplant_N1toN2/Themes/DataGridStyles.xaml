@@ -132,6 +132,7 @@
         <Setter Property="CanUserAddRows"          Value="False"/>
         <Setter Property="CanUserDeleteRows"       Value="False"/>
         <Setter Property="CanUserReorderColumns"   Value="True"/>
+        <Setter Property="CanUserResizeColumns"    Value="True"/>
         <Setter Property="CanUserResizeRows"       Value="False"/>
         <Setter Property="HeadersVisibility"       Value="Column"/>
         <Setter Property="SelectionMode"           Value="Single"/>

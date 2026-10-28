@@ -1,0 +1,326 @@
+﻿<Application x:Class="RawCollectMigrator.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <!--
+              [찾기:NAIMS2디자인] 디자인 시스템 = NAIMS2 ComponentKit 이식본.
+                Naims2.Colors.xaml   색·타이포 토큰 (+ 기존 키 별칭: BgBrush/PanelBrush/…)
+                Naims2.Controls.xaml 컨트롤 스타일 (Button/TextBox/ComboBox/DataGrid/Tab/…)
+              병합 순서가 중요하다 — Controls 가 Colors 의 토큰을 StaticResource 로 참조한다.
+            -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Naims2.Colors.xaml"/>
+                <ResourceDictionary Source="Themes/Naims2.Controls.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+        <!--
+          상세 그리드 공용 스타일.
+          BasedOn 이 없으면 위의 암묵적 DataGrid 스타일이 통째로 무시되어
+          CanUserResizeColumns 같은 설정을 잃는다(컬럼 폭 조절 불가). 반드시 상속시킨다.
+        -->
+        <Style x:Key="DetailGrid" TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="RowHeight" Value="24"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Background" Value="{StaticResource BrushBGDeep}"/>
+            <Setter Property="RowBackground" Value="{StaticResource BrushBGBase}"/>
+            <Setter Property="AlternatingRowBackground" Value="{StaticResource BrushBGSubtle}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+
+            <!-- 사용자가 폭을 직접 조절할 수 있어야 한다(헤더 경계 드래그, 더블클릭 = 내용 맞춤) -->
+            <Setter Property="CanUserResizeColumns" Value="True"/>
+            <Setter Property="CanUserSortColumns" Value="True"/>
+            <!-- 자동 생성 컬럼의 기본값은 SizeToHeader 라 내용이 잘린다. Auto = 헤더·셀 중 큰 쪽 -->
+            <Setter Property="ColumnWidth" Value="Auto"/>
+            <!-- 컬럼 가상화를 끄면 Auto 폭이 보이는 행만이 아니라 전체 기준으로 계산된다 -->
+            <Setter Property="EnableColumnVirtualization" Value="False"/>
+        </Style>
+
+        <!-- 보조정보(.alg) key/value 라벨 -->
+        <Style x:Key="AlgKey" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource BrushTextHelp}"/>
+            <Setter Property="FontFamily" Value="{StaticResource FontFamily_Mono}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,3,10,3"/>
+        </Style>
+        <Style x:Key="AlgVal" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="FontFamily" Value="{StaticResource FontFamily_Mono}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,3,0,3"/>
+        </Style>
+
+        <!--
+          보조정보(.alg) 전체 파싱 결과 전시 템플릿.
+          DataContext = SupplementView (null 이면 안내문). 수집 원음 / 발췌 원음 두 탭이 공유한다.
+        -->
+        <DataTemplate x:Key="SupplementDetailTemplate">
+            <Grid>
+                <!-- 파싱 실패/미존재 안내 -->
+                <TextBlock Text="(보조정보.alg 없음 또는 파싱 실패)" Foreground="{StaticResource BrushTextHelp}" Margin="4">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <TabControl Background="{StaticResource BgBrush}"
+                            BorderBrush="{StaticResource BorderBrush}">
+                    <TabControl.Style>
+                        <Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TabControl.Style>
+
+                    <!-- 1. 임무정보 -->
+                    <TabItem Header="임무정보">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <Grid Margin="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="190"/>
+                                    <ColumnDefinition Width="*" MinWidth="180"/>
+                                    <ColumnDefinition Width="Auto" MinWidth="190"/>
+                                    <ColumnDefinition Width="*" MinWidth="180"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="진수체계 (DetPlatform)"    Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding MissionInfo.DetPlatform}"    Style="{StaticResource AlgVal}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="진수함정 (DetVesselName)"  Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding MissionInfo.DetVesselName}"  Style="{StaticResource AlgVal}"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="진수계급 (DetVesselClass)" Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding MissionInfo.DetVesselClass}" Style="{StaticResource AlgVal}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="2" Text="↳ RECORDING_SYSTEM 매핑"   Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding MissionInfo.RecordingSystemMapped}" Style="{StaticResource AlgVal}" Foreground="{StaticResource BrushSuccess}"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="임무 시작일 (MissionDateFr)" Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MissionInfo.MissionDateFr}" Style="{StaticResource AlgVal}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="2" Text="임무 종료일 (MissionDateTo)" Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding MissionInfo.MissionDateTo}" Style="{StaticResource AlgVal}"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="임무 해역 (MissionSeaArea)" Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MissionInfo.MissionSeaArea}" Style="{StaticResource AlgVal}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="2" Text="SetCount (세트 수)"          Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding SetCount}"           Style="{StaticResource AlgVal}" Foreground="{StaticResource BrushSuccess}"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="임무 요약 (MissionSummary)"  Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding MissionInfo.MissionSummary}" Style="{StaticResource AlgVal}"/>
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="임무 코멘트 (MissionComment)" Style="{StaticResource AlgKey}"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding MissionInfo.MissionComment}" Style="{StaticResource AlgVal}"/>
+                            </Grid>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <!-- 2. 녹음매체 -->
+                    <TabItem Header="{Binding RecordsHeader}">
+                        <DataGrid ItemsSource="{Binding Records}" Style="{StaticResource DetailGrid}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="매체#"     Binding="{Binding RecmediaIndex}"  Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="레코드#"   Binding="{Binding Index}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="시작"      Binding="{Binding RecordTimeFr}"   Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="종료"      Binding="{Binding RecordTimeTo}"   Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Comment"   Binding="{Binding RecordComment}"  Width="*" MinWidth="200"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+
+                    <!-- 3. 항해·해양 -->
+                    <TabItem Header="{Binding NaviSeaHeader}">
+                        <DataGrid ItemsSource="{Binding NaviSea}" Style="{StaticResource DetailGrid}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Set#"       Binding="{Binding SetIndex}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="DetDate"    Binding="{Binding DetDate}"           Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="DetTime"    Binding="{Binding DetTime}"           Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Depth"      Binding="{Binding Depth}"             Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="TADepth"    Binding="{Binding TADepth}"           Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Latitude"   Binding="{Binding Latitude}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Longitude"  Binding="{Binding Longitude}"         Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="DetPath"    Binding="{Binding DetPath}"           Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Speed"      Binding="{Binding Speed}"             Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Situation"  Binding="{Binding Situation}"         Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="WaveHeight" Binding="{Binding WaveHeight}"        Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="RgnDepth"   Binding="{Binding RgnDepth}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="수온 건수"  Binding="{Binding TemperatureCount}"  Width="*" MinWidth="90"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+
+                    <!-- 4. 수온 -->
+                    <TabItem Header="{Binding TemperaturesHeader}">
+                        <DataGrid ItemsSource="{Binding Temperatures}" Style="{StaticResource DetailGrid}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Set#"        Binding="{Binding SetIndex}"    Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="#"           Binding="{Binding Index}"       Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Depth"       Binding="{Binding Depth}"       Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}" Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Sonic"       Binding="{Binding Sonic}"       Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Salt"        Binding="{Binding Salt}"        Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="GradeDepth"  Binding="{Binding GradeDepth}"  Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Comment"     Binding="{Binding Comment}"     Width="*" MinWidth="200"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+
+                    <!-- 5. 자함소음 -->
+                    <TabItem Header="{Binding MachinesHeader}">
+                        <DataGrid ItemsSource="{Binding Machines}" Style="{StaticResource DetailGrid}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Set#"      Binding="{Binding SetIndex}"      Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="#"         Binding="{Binding Index}"         Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="장비명"    Binding="{Binding MachineName}"   Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="RunTimeFr" Binding="{Binding RunTimeFr}"     Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="RunTimeTo" Binding="{Binding RunTimeTo}"     Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="발생주파수" Binding="{Binding OccurenceFreq}" Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Comment"   Binding="{Binding Comment}"       Width="*" MinWidth="200"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+
+                    <!-- 6. 표적 -->
+                    <TabItem Header="{Binding TargetsHeader}">
+                        <DataGrid ItemsSource="{Binding Targets}" Style="{StaticResource DetailGrid}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Set#"        Binding="{Binding SetIndex}"        Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="표적#"       Binding="{Binding TargetNumber}"    Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="접촉시각Fr"  Binding="{Binding ContactRecTimeFr}" Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="접촉시각To"  Binding="{Binding ContactRecTimeTo}" Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="분류방법"    Binding="{Binding ClassifyMethod}"  Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="탐지소나"    Binding="{Binding DetSonar}"        Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="국가"        Binding="{Binding Nation}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="표적종류"    Binding="{Binding TargetType}"      Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="표적계급"    Binding="{Binding TargetClass}"     Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="표적명"      Binding="{Binding TargetName}"      Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="원음번호"    Binding="{Binding RawsignalNumber}" Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="주파수대역"  Binding="{Binding FrequencyBand}"   Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="표본화율"    Binding="{Binding SampleRate}"      Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="거리"        Binding="{Binding TargetDistance}"  Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="속력"        Binding="{Binding TargetSpeed}"     Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="추진기관"    Binding="{Binding EngineType}"      Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="원음자료명"  Binding="{Binding RawsignalName}"   Width="*" MinWidth="200"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+
+                    <!-- 7. 협대역 탐지 -->
+                    <TabItem Header="{Binding NbDetectionsHeader}">
+                        <DataGrid ItemsSource="{Binding NbDetections}" Style="{StaticResource DetailGrid}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Set#"       Binding="{Binding SetIndex}"       Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="표적#"      Binding="{Binding TargetNumber}"   Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="탐지Fr"     Binding="{Binding DetTimeFr}"      Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="탐지To"     Binding="{Binding DetTimeTo}"      Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="함급"       Binding="{Binding DetVesselClass}" Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="함명"       Binding="{Binding DetVesselName}"  Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="분류"       Binding="{Binding TargetClassify}" Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="거리"       Binding="{Binding Distance}"       Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="속력"       Binding="{Binding Speed}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="특징주파수" Binding="{Binding FeatureFreq}"    Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="우세주파수" Binding="{Binding SuperiorFreq}"   Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="실린더수"   Binding="{Binding CylinderCount}"  Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="BR"         Binding="{Binding BR}"             Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="PSR"        Binding="{Binding PSR}"            Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="PSRPM"      Binding="{Binding PSRPM}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="TSR"        Binding="{Binding TSR}"            Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="CFR"        Binding="{Binding CFR}"            Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="CSR"        Binding="{Binding CSR}"            Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="EFR"        Binding="{Binding EFR}"            Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="ERPM"       Binding="{Binding ERPM}"           Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="장비"       Binding="{Binding Machine}"        Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="SWATH"      Binding="{Binding SWATH}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="LP"         Binding="{Binding LP}"             Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="Pitch"      Binding="{Binding Pitch}"          Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="탐지방향"   Binding="{Binding DetSide}"        Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="인덱스수"   Binding="{Binding IndexCount}"     Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="분석결과파일" Binding="{Binding AnalysisResultFile}" Width="*" MinWidth="200"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+
+                    <!-- 8. 협대역 인덱스 -->
+                    <TabItem Header="{Binding NbIndicesHeader}">
+                        <DataGrid ItemsSource="{Binding NbIndices}" Style="{StaticResource DetailGrid}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Set#"       Binding="{Binding SetIndex}"     Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="표적#"      Binding="{Binding TargetNumber}" Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="#"          Binding="{Binding Index}"        Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="중심주파수" Binding="{Binding CenterFreq}"   Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="정규주파수" Binding="{Binding NormalFreq}"   Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="하모닉"     Binding="{Binding Harmonic}"     Width="Auto" MinWidth="90"/>
+                                <DataGridTextColumn Header="소음원"     Binding="{Binding NoiseSrc}"     Width="*" MinWidth="200"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </DataTemplate>
+
+        <!-- TabControl 다크 테마 -->
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="{StaticResource BgBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,1,1,0"
+                                Padding="{TemplateBinding Padding}"
+                                Margin="0,0,2,0">
+                            <ContentPresenter ContentSource="Header"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#3a4a70"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#3a3a55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

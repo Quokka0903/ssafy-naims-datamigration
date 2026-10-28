@@ -1,0 +1,2 @@
+﻿"Table","Kind","Verdict","Rows","Combos","Loss","Keys"
+"PULSE_SEGMENTS","복합키","❌ 중복 — 2 행 유실","37","35","2","SONAR_ID, SEGMENT_NAME, FREQ_START, FREQ_STOP, MODULATION, SEG_LEN_MS_MIN, SEG_LEN_MS_MAX"

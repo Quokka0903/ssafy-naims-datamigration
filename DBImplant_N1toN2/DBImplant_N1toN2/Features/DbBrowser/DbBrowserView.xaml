@@ -1,4 +1,4 @@
-<UserControl x:Class="DBImplant_N1toN2.Features.DbBrowser.DbBrowserView"
+﻿<UserControl x:Class="DBImplant_N1toN2.Features.DbBrowser.DbBrowserView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:DBImplant_N1toN2.Features.DbBrowser"
@@ -15,11 +15,11 @@
         </Grid.ColumnDefinitions>
 
         <!-- 좌측: 루트 테이블 목록 -->
-        <Border Grid.Column="0" Background="#1e1e2e" CornerRadius="4" Padding="4" Margin="0,0,4,0">
+        <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" CornerRadius="4" Padding="4" Margin="0,0,4,0">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top" Text="레거시 DB 테이블" FontWeight="Bold"
-                           Foreground="#aaaacc" Margin="4,4,4,8"/>
-                <TextBlock DockPanel.Dock="Top" Text="{Binding DbTypeName}" Foreground="#666699"
+                           Foreground="{StaticResource TextSecondaryBrush}" Margin="4,4,4,8"/>
+                <TextBlock DockPanel.Dock="Top" Text="{Binding DbTypeName}" Foreground="{StaticResource TextSecondaryBrush}"
                            FontSize="10" Margin="4,0,4,8"/>
                 <ListBox ItemsSource="{Binding RootTableNames}"
                          SelectedItem="{Binding SelectedRootTable}"

@@ -24,12 +24,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 205,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 2,
@@ -66,10 +62,8 @@
               "Title": "PropertyPathWorker.cs",
               "DocumentMoniker": "C:\\Users\\TUKIM\\AppData\\Local\\Temp\\.vsdbgsrc\\1b77cb146b3dc6f60ca3b7de619b68fc3904b4f03155b255fa425d7d7bd36ae9\\PropertyPathWorker.cs",
               "ToolTip": "C:\\Users\\TUKIM\\AppData\\Local\\Temp\\.vsdbgsrc\\1b77cb146b3dc6f60ca3b7de619b68fc3904b4f03155b255fa425d7d7bd36ae9\\PropertyPathWorker.cs",
-              "ViewState": "AgIAAIgEAAAAAAAAAAAgwLQEAAAAAAAAAQAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T05:22:51.698Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-30T05:22:51.698Z"
             },
             {
               "$type": "Document",

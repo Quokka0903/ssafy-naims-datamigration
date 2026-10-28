@@ -241,40 +241,90 @@ namespace DBImplant_N1toN2.Features.Migration.Models
 
             var missionDirs = SafeGetDirectories(nbRoot);
             int idx = 0;
-            foreach (var dir in missionDirs.Take(20))
+            foreach (var dir in missionDirs)
             {
                 idx++;
                 var name = Path.GetFileName(dir);
 
+                // 임무 폴더 → RAW_COLLECT_SIG (또는 PREC_SRC_SIG)
                 recs.Add(Rec("PREC_SRC_SIG(NB)", name, idx,
                     "MISSION_NAME", name,
                     "FOLDER_PATH",  dir,
                     "STATUS",       "INSERT",
                     "", "", "", "", "", ""));
 
-                // NB 파일 탐색
-                var nbFiles = SafeGetFiles(dir, "*.*", SearchOption.AllDirectories);
-                var feaFiles = nbFiles.Where(f => f.EndsWith(".fea", StringComparison.OrdinalIgnoreCase));
-                var claFiles = nbFiles.Where(f => f.EndsWith(".cla", StringComparison.OrdinalIgnoreCase));
-                var datFiles = nbFiles.Where(f => f.EndsWith(".dat", StringComparison.OrdinalIgnoreCase));
+                // 실제 파일 스캔 — 파일명 패턴 기반 분류
+                var allFiles = SafeGetFiles(dir, "*.*", SearchOption.AllDirectories);
 
-                int fIdx = 0;
-                foreach (var f in feaFiles.Take(10))
+                // WAV 파일 기준 그룹핑
+                var wavFiles = allFiles.Where(f => f.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)).ToArray();
+                int wavIdx = 0;
+                foreach (var wav in wavFiles)
                 {
-                    fIdx++;
-                    recs.Add(Rec("NB_FEATURE(NB)", name, fIdx,
-                        "FILE", Path.GetFileName(f), "TYPE", "FEA",
-                        "SIZE", $"{new FileInfo(f).Length:N0} B",
-                        "ACTION", "파싱→NB특징정보",
+                    wavIdx++;
+                    var fi = new FileInfo(wav);
+                    var baseName = Path.GetFileNameWithoutExtension(wav);
+
+                    recs.Add(Rec("RAW_SCHANNEL_SS_EVENT(NB)", name, wavIdx,
+                        "WAV_FILE",   fi.Name,
+                        "FILE_SIZE",  $"{fi.Length:N0} B",
+                        "BASE_NAME",  baseName,
+                        "ACTION",     "INSERT",
                         "", "", "", ""));
                 }
-                foreach (var f in claFiles.Take(10))
+
+                // GRM 파일
+                var grmFiles = allFiles.Where(f => f.EndsWith(".grm", StringComparison.OrdinalIgnoreCase)).ToArray();
+                int grmIdx = 0;
+                foreach (var grm in grmFiles)
                 {
-                    fIdx++;
-                    recs.Add(Rec("NB_CLASSIFICATION(NB)", name, fIdx,
-                        "FILE", Path.GetFileName(f), "TYPE", "CLA",
-                        "SIZE", $"{new FileInfo(f).Length:N0} B",
-                        "ACTION", "파싱→NB분류결과",
+                    grmIdx++;
+                    var fi = new FileInfo(grm);
+                    var lower = fi.Name.ToLowerInvariant();
+                    string target = lower.Contains("_lofar") ? "ANLAY_LOFAR_GRAM"
+                                  : lower.Contains("_demon") ? "ANLAY_DEMON_GRAM"
+                                  : lower.Contains("_event") ? "EXTRACT_DATA"
+                                  : "GRM";
+                    recs.Add(Rec($"RAW_SCHANNEL_SS_SEGMENT[{target}]", name, grmIdx,
+                        "GRM_FILE",   fi.Name,
+                        "FILE_SIZE",  $"{fi.Length:N0} B",
+                        "GRM_TYPE",   target,
+                        "ACTION",     "변환→INSERT (short→float)",
+                        "", "", "", ""));
+                }
+
+                // TXT 파일
+                var txtFiles = allFiles.Where(f => f.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)).ToArray();
+                int txtIdx = 0;
+                foreach (var txt in txtFiles)
+                {
+                    txtIdx++;
+                    var fi = new FileInfo(txt);
+                    var lower = fi.Name.ToLowerInvariant();
+                    string kind = lower.Contains("_spslist") ? "SPSlist → 이벤트/세그먼트"
+                                : lower.Contains("_nblist")  ? "NBlist → 발췌구간"
+                                : lower.Contains("drawing")  ? "DrawingList → 커서마크(스킵)"
+                                : "기타 TXT";
+                    recs.Add(Rec("NB_TEXT_FILE", name, txtIdx,
+                        "FILE",   fi.Name,
+                        "SIZE",   $"{fi.Length:N0} B",
+                        "TYPE",   kind,
+                        "ACTION", lower.Contains("drawing") ? "스킵" : "파싱→참조",
+                        "", "", "", ""));
+                }
+
+                // DAT 파일
+                var datFiles = allFiles.Where(f => f.EndsWith(".dat", StringComparison.OrdinalIgnoreCase)).ToArray();
+                int datIdx = 0;
+                foreach (var dat in datFiles)
+                {
+                    datIdx++;
+                    var fi = new FileInfo(dat);
+                    recs.Add(Rec("NB_DETECT_DAT", name, datIdx,
+                        "FILE",   fi.Name,
+                        "SIZE",   $"{fi.Length:N0} B",
+                        "TYPE",   "float[] 탐지결과",
+                        "ACTION", "파싱→참조",
                         "", "", "", ""));
                 }
             }

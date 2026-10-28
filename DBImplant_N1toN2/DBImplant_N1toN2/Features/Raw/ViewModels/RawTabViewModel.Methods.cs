@@ -1,6 +1,8 @@
 using DBImplant_N1toN2.Audio.Writer;
 using DBImplant_N1toN2.Features.Raw.Models;
 using DBImplant_N1toN2.Features.Raw.Parsers;
+using DBImplant_N1toN2.Features.ShortPeriod.Parsers;
+using SpsReader = DBImplant_N1toN2.Features.Raw.Parsers.SpsListReader;
 using DBImplant_N1toN2.Infrastructure;
 using DBImplant_N1toN2.Infrastructure.Commands;
 using Microsoft.Win32;
@@ -54,129 +56,179 @@ namespace DBImplant_N1toN2.Features.Raw.ViewModels
                 // 1) 스캔
                 var scan = await Task.Run(() => RawScanner.ScanCollections(RootPath), ct);
 
-                // 2) 패키지(작업) 리스트로 평탄화
-                var items = scan.Collections
-                    .SelectMany(col =>
+                // 2) 임무폴더를 트리 구조로 구성 (CollectionFolder → SD/NB 자식)
+                foreach (var col in scan.Collections)
+                {
+                    int nbWavCount = col.NbFolders.Sum(nb => nb.Groups.Count);
+                    var parent = new RawPackageItem(col.DirectoryPath, col.SdPackages.Count, nbWavCount);
+
+                    // SD 패키지를 자식으로
+                    foreach (var sd in col.SdPackages)
+                        parent.Children.Add(new RawPackageItem(col.DirectoryPath, sd));
+
+                    // NB 그룹을 자식으로
+                    foreach (var nb in col.NbFolders)
                     {
-                        var list = new System.Collections.Generic.List<RawPackageItem>();
+                        var nbGroups = new ObservableCollection<NarrowBandGroup>();
+                        foreach (var g in nb.Groups)
+                            nbGroups.Add(g);
+                        parent.Children.Add(new RawPackageItem(col.DirectoryPath, nb.DirectoryPath, nbGroups));
+                    }
 
-                        // SdPackage 처리
-                        foreach (var sd in col.SdPackages)
-                            list.Add(new RawPackageItem(col.DirectoryPath, sd));
-
-                        // NarrowBandGroup 처리
-                        foreach (var nb in col.NbFolders)
-                        {
-                            var nbGroups = new ObservableCollection<NarrowBandGroup>();
-                            foreach (var g in nb.Groups)
-                            {
-                                nbGroups.Add(g);
-                            }
-                            list.Add(new RawPackageItem(col.DirectoryPath, nb.DirectoryPath, nbGroups));
-                        }
-
-                        return list;
-                    })
-                    .ToList();
-
-                foreach (var it in items)
-                    Packages.Add(it);
+                    Packages.Add(parent);
+                }
 
                 SelectedPackage = Packages.FirstOrDefault();
 
-                // 3) 파일별 파싱(메서드 호출)
-                int total = Packages.Count;
+                // 3) 파일별 파싱(메서드 호출) — 트리 구조 (부모 + 자식)
+                // 전체 파싱 대상 수 계산
+                int total = Packages.Sum(p => 1 + p.Children.Count);
                 int done = 0;
 
-                foreach (var pkg in Packages)
+                foreach (var parent in Packages)
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    pkg.Status = "파싱 중...";
-                    pkg.Error = "";
-                    pkg.Files.Clear();
+                    // 부모(CollectionFolder) 폴더 요약(재귀 파일 카운트 등 IO)도 백그라운드에서 채움
+                    parent.Status = "파싱 중...";
+                    parent.Error = "";
+                    parent.Files.Clear();
 
                     try
                     {
-                        await ParseOnePackageAsync(pkg, ct);
-                        pkg.Status = "완료";
+                        await ParseOnePackageAsync(parent, ct);
+                        parent.Status = "완료";
                     }
+                    catch (OperationCanceledException) { throw; }
                     catch (Exception ex)
                     {
-                        pkg.Status = "실패";
-                        pkg.Error = ex.Message;
+                        parent.Status = "실패";
+                        parent.Error = ex.Message;
                     }
 
                     done++;
                     Progress = total == 0 ? 1 : (double)done / total;
-                    if (done % 20 == 0) StatusText = $"진행 {done}/{total}";
+
+                    // 자식(SD/NB) 파싱
+                    foreach (var child in parent.Children)
+                    {
+                        ct.ThrowIfCancellationRequested();
+                        child.Status = "파싱 중...";
+                        child.Error = "";
+                        child.Files.Clear();
+
+                        try
+                        {
+                            await ParseOnePackageAsync(child, ct);
+                            child.Status = "완료";
+                        }
+                        catch (OperationCanceledException) { throw; }
+                        catch (Exception ex)
+                        {
+                            child.Status = "실패";
+                            child.Error = ex.Message;
+                        }
+
+                        done++;
+                        Progress = total == 0 ? 1 : (double)done / total;
+                        if (done % 20 == 0) StatusText = $"진행 {done}/{total}";
+                    }
                 }
 
                 StatusText = $"완료 (총 {total}개)";
                 Progress = 1;
             }
+            catch (OperationCanceledException)
+            {
+                StatusText = "취소됨";
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                // DirectoryNotFoundException 등 IO 예외는 팝업 대신 상태 텍스트로 표시
+                StatusText = $"실패: {ex.Message}";
+            }
             finally
             {
                 IsRunning = false;
+                _cts?.Dispose();
+                _cts = null;
             }
         }
 
         private static async Task ParseOnePackageAsync(RawPackageItem pkg, CancellationToken ct)
         {
-            // "각 파일별 파싱 메서드를 호출"하는 엔트리
-            if (pkg.Kind == RawPackageKind.SdPackage)
-            {
-                await ParseSdPackageAsync(pkg, pkg.Sd!, ct);
-                return;
-            }
+            // 파싱(GRM/BWF/SPS 해석 + FileInfo IO)은 백그라운드 스레드에서 수행하고,
+            // UI 바인딩 컬렉션(Files) 반영만 UI 스레드(await 재개 지점)에서 수행한다.
+            var rows = await Task.Run(() => ParsePackageRows(pkg, ct), ct);
 
-            await ParseNbGroupAsync(pkg, pkg.NbGroups!, ct);
+            foreach (var row in rows)
+                pkg.Files.Add(row);
         }
 
-        private static Task ParseSdPackageAsync(RawPackageItem item, ShortPeriodSdPackage sd, CancellationToken ct)
+        private static List<FileParseRow> ParsePackageRows(RawPackageItem pkg, CancellationToken ct)
+        {
+            var rows = new List<FileParseRow>();
+
+            switch (pkg.Kind)
+            {
+                case RawPackageKind.CollectionFolder:
+                    // 임무 폴더 요약(.sd 재귀 파일 카운트 포함) — 생성자에서 분리한 IO
+                    pkg.BuildFolderSummaryRows(rows);
+                    break;
+
+                case RawPackageKind.SdPackage:
+                    ParseSdPackage(rows, pkg.Sd!, ct);
+                    break;
+
+                default:
+                    if (pkg.NbGroups != null)
+                        ParseNbGroup(rows, pkg.NbGroups, ct);
+                    break;
+            }
+
+            return rows;
+        }
+
+        private static void ParseSdPackage(List<FileParseRow> rows, ShortPeriodSdPackage sd, CancellationToken ct)
         {
             // Sd: wav 여러 개 + SPSlist.txt(옵션)
             foreach (var wav in sd.WavFiles)
             {
                 ct.ThrowIfCancellationRequested();
-                item.Files.Add(ParseWavFile(wav));
+                rows.Add(ParseWavFile(wav));
             }
 
             if (sd.SpsListPath != null)
             {
                 ct.ThrowIfCancellationRequested();
-                item.Files.Add(ParseTextOrBinary(sd.SpsListPath, kind: "SPSlist.txt"));
-            }
+                rows.Add(ParseTextOrBinary(sd.SpsListPath, kind: "SPSlist.txt"));
 
-            // SPSlist 실제 파싱 호출
-            if (sd.SpsListPath != null)
-            {
-                var events = SpsListReader.ReadAll(sd.SpsListPath);
+                // SPSlist 실제 파싱 호출
+                var fi = new FileInfo(sd.SpsListPath);
+                var events = SpsReader.ReadAll(sd.SpsListPath);
                 foreach (var ev in events)
                 {
                     // Event와 Segment 정보 처리
-                    item.Files.Add(ParseSpsEvent(ev));
+                    rows.Add(ParseSpsEvent(ev, fi.FullName, fi.LastWriteTime));
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        private static Task ParseNbGroupAsync(RawPackageItem item, ObservableCollection<NarrowBandGroup> groups, CancellationToken ct)
+        private static void ParseNbGroup(List<FileParseRow> rows, ObservableCollection<NarrowBandGroup> groups, CancellationToken ct)
         {
             foreach (var g in groups)
             {
                 ct.ThrowIfCancellationRequested();
-                item.Files.Add(ParseWavFile(g.WavPath));
+                rows.Add(ParseWavFile(g.WavPath));
 
-                // GRM 파일 (바이너리 그램 데이터)
-                AddIfExists(item, g.DemonGrmPath, "Demon.grm");
-                AddIfExists(item, g.EventGrmPath, "Event.grm");
-                AddIfExists(item, g.LofarGrmPath, "Lofar.grm");
+                // GRM 파일 — 레거시 .grm 바이너리 파싱 (헤더DB필드 + 전시데이터 변환)
+                ParseGrmIfExists(rows, g.DemonGrmPath, "Demon.grm");
+                ParseGrmIfExists(rows, g.EventGrmPath, "Event.grm");
+                ParseGrmIfExists(rows, g.LofarGrmPath, "Lofar.grm");
 
                 // Drawing 리스트 (CDrawObject 바이너리)
-                AddIfExists(item, g.DemonDrawingListPath, "DemonDrawinglist.txt");
-                AddIfExists(item, g.LofarDrawingListPath, "LofarDrawinglist.txt");
+                AddIfExists(rows, g.DemonDrawingListPath, "DemonDrawinglist.txt");
+                AddIfExists(rows, g.LofarDrawingListPath, "LofarDrawinglist.txt");
 
                 // _Detect.dat — float[] 탐지 결과
                 if (!string.IsNullOrWhiteSpace(g.DetectDatPath))
@@ -185,12 +237,12 @@ namespace DBImplant_N1toN2.Features.Raw.ViewModels
                     {
                         var floats = DetectDatParser.ReadDetectDat(g.DetectDatPath!);
                         var fi = new FileInfo(g.DetectDatPath!);
-                        item.Files.Add(new FileParseRow(
+                        rows.Add(new FileParseRow(
                             "Detect.dat", fi.Name, fi.FullName, fi.Length, fi.LastWriteTime,
                             $"float[{floats.Length}], min={floats.DefaultIfEmpty().Min():F2}, max={floats.DefaultIfEmpty().Max():F2}",
                             null));
                     }
-                    catch (Exception ex) { AddWithError(item, g.DetectDatPath!, "Detect.dat", ex.Message); }
+                    catch (Exception ex) { AddWithError(rows, g.DetectDatPath!, "Detect.dat", ex.Message); }
                 }
 
                 // _NBlist.txt — 발췌 구간 목록
@@ -198,24 +250,24 @@ namespace DBImplant_N1toN2.Features.Raw.ViewModels
                 {
                     try
                     {
-                        var rows = NbListParser.ReadNbList(g.NbListPath!);
+                        var nbRows = NbListParser.ReadNbList(g.NbListPath!);
                         var fi = new FileInfo(g.NbListPath!);
-                        var typeGroups = rows.GroupBy(r => r.TypeText).Select(gr => $"{gr.Key}:{gr.Count()}");
-                        item.Files.Add(new FileParseRow(
+                        var typeGroups = nbRows.GroupBy(r => r.TypeText).Select(gr => $"{gr.Key}:{gr.Count()}");
+                        rows.Add(new FileParseRow(
                             "NBlist.txt", fi.Name, fi.FullName, fi.Length, fi.LastWriteTime,
-                            $"{rows.Count}개 발췌구간 [{string.Join(", ", typeGroups)}]",
+                            $"{nbRows.Count}개 발췌구간 [{string.Join(", ", typeGroups)}]",
                             null));
                         // 각 발췌 구간을 개별 행으로
-                        foreach (var r in rows)
+                        foreach (var r in nbRows)
                         {
-                            item.Files.Add(new FileParseRow(
+                            rows.Add(new FileParseRow(
                                 $"  NB발췌[{r.TypeText}]", $"Frame {r.StartFrame}~{r.EndFrame}", g.NbListPath!,
                                 r.ExtractSizeBytes, fi.LastWriteTime,
                                 $"type={r.TypeCode}, size={r.ExtractSizeBytes}B, frames={r.StartFrame}~{r.EndFrame}",
                                 null));
                         }
                     }
-                    catch (Exception ex) { AddWithError(item, g.NbListPath!, "NBlist.txt", ex.Message); }
+                    catch (Exception ex) { AddWithError(rows, g.NbListPath!, "NBlist.txt", ex.Message); }
                 }
 
                 // _SPSlist.txt — SPS 이벤트/세그먼트 (협대역 폴더 내 단주기 이벤트)
@@ -223,34 +275,80 @@ namespace DBImplant_N1toN2.Features.Raw.ViewModels
                 {
                     try
                     {
-                        var events = SpsListReader.ReadAll(g.SpsListPath!);
+                        var events = SpsReader.ReadAll(g.SpsListPath!);
                         var fi = new FileInfo(g.SpsListPath!);
                         int totalSegs = events.Sum(e => e.Segs.Count);
-                        item.Files.Add(new FileParseRow(
+                        rows.Add(new FileParseRow(
                             "SPSlist.txt", fi.Name, fi.FullName, fi.Length, fi.LastWriteTime,
                             $"{events.Count}개 이벤트, {totalSegs}개 세그먼트",
                             null));
                         foreach (var ev in events)
-                        {
-                            item.Files.Add(ParseSpsEvent(ev));
-                        }
+                            rows.Add(ParseSpsEvent(ev, fi.FullName, fi.LastWriteTime));
                     }
-                    catch (Exception ex) { AddWithError(item, g.SpsListPath!, "SPSlist.txt", ex.Message); }
+                    catch (Exception ex) { AddWithError(rows, g.SpsListPath!, "SPSlist.txt", ex.Message); }
                 }
             }
 
-            return Task.CompletedTask;
-
-            static void AddIfExists(RawPackageItem item, string? path, string kind)
+            static void AddIfExists(List<FileParseRow> rows, string? path, string kind)
             {
                 if (string.IsNullOrWhiteSpace(path)) return;
-                item.Files.Add(ParseTextOrBinary(path!, kind));
+                rows.Add(ParseTextOrBinary(path!, kind));
             }
 
-            static void AddWithError(RawPackageItem item, string path, string kind, string error)
+            static void AddWithError(List<FileParseRow> rows, string path, string kind, string error)
             {
                 var fi = new FileInfo(path);
-                item.Files.Add(new FileParseRow(kind, fi.Name, fi.FullName, fi.Length, fi.LastWriteTime, "", error));
+                rows.Add(new FileParseRow(kind, fi.Name, fi.FullName, fi.Length, fi.LastWriteTime, "", error));
+            }
+        }
+
+        private static void ParseGrmIfExists(List<FileParseRow> rows, string? path, string kind)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return;
+            var fi = new FileInfo(path!);
+            try
+            {
+                var grm = GrmFileReader.Read(path!);
+                if (grm.Error != null)
+                {
+                    rows.Add(new FileParseRow(kind, fi.Name, fi.FullName, fi.Length, fi.LastWriteTime, "", grm.Error));
+                    return;
+                }
+
+                string summary;
+                if (grm.FileType == LegacyGrmParseResult.GrmFileType.NbSnippet && grm.NbHeader != null)
+                {
+                    var h = grm.NbHeader;
+                    var d = grm.Data;
+                    summary = $"NB [{h.GramType}] {h.FrameNum}fr×{h.BinWidth}bin, " +
+                              $"freq={h.StartFreq:F1}~{h.EndFreq:F1}Hz, res={h.Resolution:F2}, " +
+                              $"det={h.DetYear}-{h.DetMonth:D2}-{h.DetDay:D2}";
+                    if (d != null)
+                        summary += $", float[{d.FloatBuffer.Length}]";
+                }
+                else if (grm.FileType == LegacyGrmParseResult.GrmFileType.AiSnippet && grm.AiHeader != null)
+                {
+                    var h = grm.AiHeader;
+                    summary = $"AI {h.FrameNum}fr×{h.BinWidth}bin, " +
+                              $"freq={h.StartFreq:F1}~{h.EndFreq:F1}Hz, res={h.Resolution:F2}, " +
+                              $"evtID={h.EventID}, sonar={h.DetSonar}";
+                }
+                else if (grm.FileType == LegacyGrmParseResult.GrmFileType.RawHeaderless && grm.RawData != null)
+                {
+                    var r = grm.RawData;
+                    summary = $"Raw[{r.GramSubType}] {r.FrameCount}fr×{r.BinCount}bin, " +
+                              $"short[]→float[{r.FloatBuffer.Length}]";
+                }
+                else
+                {
+                    summary = $"[{grm.FileType}]";
+                }
+
+                rows.Add(new FileParseRow(kind, fi.Name, fi.FullName, fi.Length, fi.LastWriteTime, summary, null));
+            }
+            catch (Exception ex)
+            {
+                rows.Add(new FileParseRow(kind, fi.Name, fi.FullName, fi.Length, fi.LastWriteTime, "", ex.Message));
             }
         }
 
@@ -267,14 +365,21 @@ namespace DBImplant_N1toN2.Features.Raw.ViewModels
                 Error: null);
         }
 
-        private static FileParseRow ParseSpsEvent((QuickShortPeriodEvent Ev, List<QuickShortPeriodSegment> Segs) eventData)
+        /// <summary>
+        /// SPSlist 안의 이벤트 1건을 목록 행으로 만든다.
+        /// 경로·수정시각은 이벤트를 담고 있는 SPSlist 파일의 실제 값을 넘겨받는다
+        /// (예전에는 "N/A"·DateTime.Now 라는 가짜 메타데이터를 넣어 실제 파일 정보로 오인됐다).
+        /// </summary>
+        private static FileParseRow ParseSpsEvent(
+            (QuickShortPeriodEvent Ev, List<QuickShortPeriodSegment> Segs) eventData,
+            string sourcePath, DateTime sourceLastWrite)
         {
             return new FileParseRow(
                 Kind: "SPSlist Event",
                 FileName: $"Event_{eventData.Ev.EventId}",
-                FullPath: "N/A", // Path가 없다면 N/A로
+                FullPath: sourcePath,
                 Size: eventData.Segs.Count * QuickShortPeriodSegment.ByteSize, // Segments 크기
-                LastWriteTime: DateTime.Now,
+                LastWriteTime: sourceLastWrite,
                 Summary: $"Event {eventData.Ev.EventId} - {eventData.Segs.Count} segments",
                 Error: null
             );

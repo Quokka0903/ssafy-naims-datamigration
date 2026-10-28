@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DBImplant_N1toN2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4c50e7f5aea4c87615876d3ed9fb316185f222ca")]
 [assembly: System.Reflection.AssemblyProductAttribute("DBImplant_N1toN2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DBImplant_N1toN2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

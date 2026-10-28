@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DBImplant_N1toN2.Infrastructure.Utilities;
 using DBImplant_N1toN2.Audio;
 using System.Diagnostics;
 using System.Globalization;
@@ -54,6 +55,10 @@ public static partial class SdPackageImporter
         string sql = $"SELECT 1 FROM {table} WITH(NOLOCK) WHERE {keyCol} = @val";
         await using var cmd = new SqlCommand(sql, c, tx);
         cmd.Parameters.AddWithValue("@val", keyVal);
+        // [NAIMS-ISSUE:CHAR-PADDING] .SD/.CLA/.TMP 는 C 고정 배열 문자열이라
+        //   변조방식·송신모드·소나명이 char[N] 폭만큼 공백으로 채워져 온다.
+        //   실행 직전에 한 번 훑어 떼면 파라미터가 늘어도 자동으로 덮인다.
+        LegacyText.NormalizeStringParameters(cmd);
         return await cmd.ExecuteScalarAsync() != null;
     }
 
@@ -178,6 +183,7 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
         await using var cmd = new SqlCommand(sql, c, tx);
         cmd.Parameters.AddWithValue("@name", preciseName);
+        LegacyText.NormalizeStringParameters(cmd);   // [NAIMS-ISSUE:CHAR-PADDING]
         return (int)await cmd.ExecuteScalarAsync();
     }
 
@@ -205,6 +211,7 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
         cmd.Parameters.AddWithValue("@fft", p.Fft);
         cmd.Parameters.AddWithValue("@freqRes", p.FreqResolution);
 
+        LegacyText.NormalizeStringParameters(cmd);   // [NAIMS-ISSUE:CHAR-PADDING]
         return (int)await cmd.ExecuteScalarAsync();
     }
 
@@ -233,6 +240,7 @@ VALUES (@paId, @dtThr, @dtStep, @bwThr, @bwStep,
         cmd.Parameters.AddWithValue("@fft", p.Fft);
         cmd.Parameters.AddWithValue("@freqRes", p.FreqResolution);
 
+        LegacyText.NormalizeStringParameters(cmd);   // [NAIMS-ISSUE:CHAR-PADDING]
         await cmd.ExecuteNonQueryAsync();
     }
 

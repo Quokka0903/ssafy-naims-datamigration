@@ -790,8 +790,9 @@ namespace DBImplant_N1toN2.Audio.Writer
                 iBwfFileInfo.mn32HeaderSize += 4;
 
                 long expectedSize = header.U32FileSize + 8;                             // FileSize 필드와 실제 파일 크기 검증
-                if (ms.Length != expectedSize)
-                    throw new InvalidDataException($"File size mismatch. Header: {expectedSize}, Actual: {ms.Length}");
+                // 트레일링 바이트는 허용하고, 과소(파일이 헤더 신고치보다 작음)만 오류 처리 (BWFReader와 판정 일치)
+                if (ms.Length < expectedSize)
+                    throw new InvalidDataException($"File length smaller than RIFF size. Header: {expectedSize}, Actual: {ms.Length}");
 
                 while (br.BaseStream.Position < br.BaseStream.Length)                 // 청크 순서가 바뀌거나 없을 때를 대비
                 {
@@ -817,8 +818,11 @@ namespace DBImplant_N1toN2.Audio.Writer
                             header.Bext.OriginatorReference = Encoding.ASCII.GetString(bext, 288, 32).TrimEnd('\0');
                             header.Bext.OriginationDate = Encoding.ASCII.GetString(bext, 320, 10).TrimEnd('\0');
                             header.Bext.OriginationTime = Encoding.ASCII.GetString(bext, 330, 8).TrimEnd('\0');
-                            header.Bext.U32TimeReferenceHigh = BitConverter.ToUInt32(bext, 338);
-                            header.Bext.U32TimeReferenceLow = BitConverter.ToUInt32(bext, 342);
+                            // BWF 규격(EBU Tech 3285): TimeReference는 64비트 값이며
+                            // offset 338 = TimeReferenceLow(하위 32비트), offset 342 = TimeReferenceHigh(상위 32비트).
+                            // 쓰기 루틴(Write)도 Low → High 순으로 기록하므로 읽기와 방향 일치.
+                            header.Bext.U32TimeReferenceLow = BitConverter.ToUInt32(bext, 338);
+                            header.Bext.U32TimeReferenceHigh = BitConverter.ToUInt32(bext, 342);
                             header.Bext.N32Version = BitConverter.ToUInt16(bext, 346);
                             Array.Copy(bext, 348, header.Bext.U8UMID, 0, 64);
                             Array.Copy(bext, 412, header.Bext.U8Reserved, 0, 190);
@@ -852,7 +856,7 @@ namespace DBImplant_N1toN2.Audio.Writer
                         case "TFID":
                             {
                                 header.FactID = chunkID;
-                                header.U32BextChunkSize = chunkSize;
+                                header.U32FactChunkSize = chunkSize;   // (수정) U32BextChunkSize 복붙 버그 → fact 청크 크기 필드에 기록
 
                                 var tfidRaw = br.ReadBytes((int)chunkSize);
                                 header.U8FactRaw = tfidRaw;
@@ -910,6 +914,11 @@ namespace DBImplant_N1toN2.Audio.Writer
                             //    iBwfFileInfo.mdSigData[n32Index] = n16SigDataBuffer[n32Index] / 32768.0 * dRange;
                             //}
 
+                            // fmt 청크 미등장 또는 AvgBytesPerSec==0 상태 가드(0 나눗셈 금지 → 명시 오류)
+                            if (header.Format.U32AvgBytesPerSec == 0)
+                                throw new InvalidDataException(
+                                    "fmt 청크가 없거나 AvgBytesPerSec=0 이라 data 길이를 시간으로 환산할 수 없습니다.");
+
                             header.FactChunk.EndTime = header.FactChunk.StartTime + (Int32)(header.U32DataSize / header.Format.U32AvgBytesPerSec);
                             break;
 
@@ -964,8 +973,9 @@ namespace DBImplant_N1toN2.Audio.Writer
                 header.WaveID = Encoding.ASCII.GetString(br.ReadBytes(4));           // "WAVE" 확인
 
                 long expectedSize = header.U32FileSize + 8;                             // FileSize 필드와 실제 파일 크기 검증
-                if (ms.Length != expectedSize)
-                    throw new InvalidDataException($"File size mismatch. Header: {expectedSize}, Actual: {ms.Length}");
+                // 트레일링 바이트는 허용하고, 과소(파일이 헤더 신고치보다 작음)만 오류 처리 (BWFReader와 판정 일치)
+                if (ms.Length < expectedSize)
+                    throw new InvalidDataException($"File length smaller than RIFF size. Header: {expectedSize}, Actual: {ms.Length}");
 
                 while (br.BaseStream.Position < br.BaseStream.Length)                 // 청크 순서가 바뀌거나 없을 때를 대비
                 {
@@ -986,8 +996,11 @@ namespace DBImplant_N1toN2.Audio.Writer
                             header.Bext.OriginatorReference = Encoding.ASCII.GetString(bext, 288, 32).TrimEnd('\0');
                             header.Bext.OriginationDate = Encoding.ASCII.GetString(bext, 320, 10).TrimEnd('\0');
                             header.Bext.OriginationTime = Encoding.ASCII.GetString(bext, 330, 8).TrimEnd('\0');
-                            header.Bext.U32TimeReferenceHigh = BitConverter.ToUInt32(bext, 338);
-                            header.Bext.U32TimeReferenceLow = BitConverter.ToUInt32(bext, 342);
+                            // BWF 규격(EBU Tech 3285): TimeReference는 64비트 값이며
+                            // offset 338 = TimeReferenceLow(하위 32비트), offset 342 = TimeReferenceHigh(상위 32비트).
+                            // 쓰기 루틴(Write)도 Low → High 순으로 기록하므로 읽기와 방향 일치.
+                            header.Bext.U32TimeReferenceLow = BitConverter.ToUInt32(bext, 338);
+                            header.Bext.U32TimeReferenceHigh = BitConverter.ToUInt32(bext, 342);
                             header.Bext.N32Version = BitConverter.ToUInt16(bext, 346);
                             Array.Copy(bext, 348, header.Bext.U8UMID, 0, 64);
                             Array.Copy(bext, 412, header.Bext.U8Reserved, 0, 190);
@@ -1017,7 +1030,7 @@ namespace DBImplant_N1toN2.Audio.Writer
                         case "TFID":
                             {
                                 header.FactID = chunkID;
-                                header.U32BextChunkSize = chunkSize;
+                                header.U32FactChunkSize = chunkSize;   // (수정) U32BextChunkSize 복붙 버그 → fact 청크 크기 필드에 기록
 
                                 var tfidRaw = br.ReadBytes((int)chunkSize);
                                 header.U8FactRaw = tfidRaw;

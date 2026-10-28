@@ -96,3 +96,35 @@ F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\n
 F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\App.baml
 F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\Features\Migration\Views\MigrationExecuteView.baml
 F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\Features\Migration\Views\MigrationPreviewView.baml
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\DBImplant_N1toN2.sourcelink.json
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\Features\Migration\Views\GramCompareView.baml
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\Features\Migration\Views\GramCompareView.g.cs
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\Features\Migration\Views\GramCompareWindow.g.cs
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\Features\Migration\Views\GramCompareWindow.baml
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build\DBImplant_N1toN2.exe
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build\DBImplant_N1toN2.deps.json
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build\DBImplant_N1toN2.runtimeconfig.json
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build\DBImplant_N1toN2.dll
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build\DBImplant_N1toN2.pdb
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build2\DBImplant_N1toN2.exe
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build2\DBImplant_N1toN2.deps.json
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build2\DBImplant_N1toN2.runtimeconfig.json
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build2\DBImplant_N1toN2.dll
+D:\Caches\UserTemp\claude\F--JKYi-2026-260109-DB----\25785718-bcc5-426a-a28e-b819273c3a3d\scratchpad\dbi_build2\DBImplant_N1toN2.pdb
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\Features\Setup\OdbcBrowserWindow.baml
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\obj\Debug\net8.0-windows\Features\Setup\OdbcBrowserWindow.g.cs
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\Oracle.ManagedDataAccess.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\System.Collections.Immutable.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\System.DirectoryServices.Protocols.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\freebsd\lib\net8.0\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\illumos\lib\net8.0\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\ios\lib\net8.0\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\linux\lib\net8.0\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\osx\lib\net8.0\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\solaris\lib\net8.0\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\tvos\lib\net8.0\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Data.Odbc.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\linux\lib\net8.0\System.DirectoryServices.Protocols.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\osx\lib\net8.0\System.DirectoryServices.Protocols.dll
+F:\JKYi\2026\260109 DB임플란트\DBImplant_N1toN2\DBImplant_N1toN2\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.DirectoryServices.Protocols.dll

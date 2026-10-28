@@ -1,0 +1,564 @@
+mapid	cat	level	src	col	mtyp	otyp	tgt	tcol	ttyp	rule	status	verdict	note	review
+	능동소나	2	ACTIVE_SONAR	SONAR_ID	int NOT NULL	NUMBER(*,0)	STD_ACTV_SONAR	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-01	능동소나	2	ACTIVE_SONAR	SONAR_NAME	varbinary(300)	VARCHAR2(100 BYTE)	STD_ACTV_SONAR	SONAR_NAME	varchar(100) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); MsSQL만 암호화 / Oracle 평문	
+STD-01	능동소나	2	ACTIVE_SONAR	SONAR_NAME_ISUS90	varbinary(300)	VARCHAR2(100 BYTE)	STD_ACTV_SONAR	SONAR_NAME_ISUS90	varchar(100) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); MsSQL만 암호화 / Oracle 평문	
+STD-01	능동소나	2	ACTIVE_SONAR	TRANS_TYPE	varchar(20)	VARCHAR2(20 BYTE)	STD_ACTV_SONAR	TRANS_TYPE	varchar(20)	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	SONAR_TYPE	varchar(20)	VARCHAR2(20 BYTE)	STD_ACTV_SONAR	SONAR_TYPE	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	TRM_MODE	varchar(10)	VARCHAR2(10 BYTE)	STD_ACTV_SONAR	TRM_MODE	varchar(10) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	MODULATION	varchar(12)	VARCHAR2(12 BYTE)	STD_ACTV_SONAR	MODULATION	varchar(12) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	SOURCE_LEVEL_MIN	int	NUMBER(4,0)	STD_ACTV_SONAR	SOURCE_LEVEL_MIN	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	SOURCE_LEVEL_MAX	int	NUMBER(4,0)	STD_ACTV_SONAR	SOURCE_LEVEL_MAX	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	RANGE_RESOL_M_MIN	int	NUMBER(4,0)	STD_ACTV_SONAR	RANGE_RESOL_M_MIN	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	RANGE_RESOL_M_MAX	int	NUMBER(4,0)	STD_ACTV_SONAR	RANGE_RESOL_M_MAX	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	DPLR_RESOL_KTS_MIN	float	NUMBER(6,2)	STD_ACTV_SONAR	DPLR_RESOL_KTS_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	DPLR_RESOL_KTS_MAX	float	NUMBER(6,2)	STD_ACTV_SONAR	DPLR_RESOL_KTS_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	DET_RANGE_KM	float	NUMBER(12,3)	STD_ACTV_SONAR	DET_RANGE_KM	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	MANUFACTURER	varchar(30)	VARCHAR2(30 BYTE)	STD_ACTV_SONAR	MANUFACTURER	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	MANUFACT_DATE	varchar(20)	VARCHAR2(20 BYTE)	STD_ACTV_SONAR	MANUFACT_DATE	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	VERSION	int	NUMBER(5,0)	STD_ACTV_SONAR	VERSION	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-01	능동소나	2	ACTIVE_SONAR	DATE_SET_CHNG	datetime2	DATE	STD_ACTV_SONAR	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정	DATE_SET_CHNG -> CHNG_DATETIME	
+STD-01	능동소나	2	ACTIVE_SONAR	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_ACTV_SONAR	COMMENT	varchar(1000)	Rename	Fixed	확정	COMMENTS -> COMMENT; 말머리 [NAIMS-I] 삽입	
+STD-01	능동소나	2	ACTIVE_SONAR	DELETED	smallint	NUMBER(1,0)	STD_ACTV_SONAR	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-01	능동소나	2	ACTIVE_SONAR	SELF_DB	smallint	-	STD_ACTV_SONAR	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	스니펫	4	AI_SNIPPET	AI_SNIPPET_ID	int NOT NULL	NUMBER(*,0)	STD_AI_SNIPPET	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-02	스니펫	4	AI_SNIPPET	PULSE_ID	int	NUMBER(*,0)	STD_AI_SNIPPET	REF_STD_PULSES_ID	int NOT NULL	FKRename	Fixed	확정	legacy pulse -> target std pulses	
+STD-02	스니펫	4	AI_SNIPPET	GRAM_FILENAME	varchar(80)	VARCHAR2(80 BYTE)	STD_AI_SNIPPET	GRAM_FILE_NAME	varchar(150) NOT NULL	Rename	Fixed	확정	파일명만 직접 매핑	
+STD-02	스니펫	4	AI_SNIPPET	AUDIO_FILENAME	varchar(80)	VARCHAR2(80 BYTE)	STD_AI_SNIPPET	AUDIO_FILE_NAME	varchar(150) NOT NULL	Rename	Fixed	확정	파일명만 직접 매핑	
+STD-02	스니펫	4	AI_SNIPPET	FREQ_MIN	float	NUMBER(12,3)	STD_AI_SNIPPET	FREQ_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-02	스니펫	4	AI_SNIPPET	FREQ_MAX	float	NUMBER(12,3)	STD_AI_SNIPPET	FREQ_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-02	스니펫	4	AI_SNIPPET	NO_FRAME	int	NUMBER(4,0)	STD_AI_SNIPPET	FRAME_NUM	int NOT NULL	Rename	Fixed	확정		
+STD-02	스니펫	4	AI_SNIPPET	RESOLUTION	float	NUMBER(12,3)	STD_AI_SNIPPET	RESOLUTION	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-02	스니펫	4	AI_SNIPPET	A_ORG_CFREQ	float	NUMBER(12,3)	STD_AI_SNIPPET	A_ORG_CFREQ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-02	스니펫	4	AI_SNIPPET	A_START_TIME	int	NUMBER	STD_AI_SNIPPET	A_START_MICROSEC	bigint NOT NULL	초→µs (×1000000)	Fixed	확정	소스 A_START_TIME 은 초. AAS 확인: a_start_time = factchunk.start_time(초, ViewCCFApplySubAI.cpp:3180). 타겟 µs 이므로 ×1,000,000	
+STD-02	스니펫	4	AI_SNIPPET	A_END_TIME	int	NUMBER	STD_AI_SNIPPET	A_END_MICROSEC	bigint NOT NULL	초→µs (×1000000)	Fixed	확정	소스 A_END_TIME 은 초. 타겟 µs 이므로 ×1,000,000	
+STD-02	스니펫	4	AI_SNIPPET	SAMPLING_RATE	float	NUMBER(12,3)	STD_AI_SNIPPET	SAMPLING_RATE	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-02	스니펫	4	AI_SNIPPET	DET_SONAR	varchar(10)	VARCHAR2(10 BYTE)	STD_AI_SNIPPET	DET_SONAR	varchar(15) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-02	스니펫	4	AI_SNIPPET	LATITUDE_DEGREE	int	NUMBER	STD_AI_SNIPPET	LATITUDE_DEGREE	int	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-02	스니펫	4	AI_SNIPPET	LATITUDE_MINUTE	int	NUMBER	STD_AI_SNIPPET	LATITUDE_MINUTE	int	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-02	스니펫	4	AI_SNIPPET	LATITUDE_SECOND	int	NUMBER	STD_AI_SNIPPET	LATITUDE_SECOND	int	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-02	스니펫	4	AI_SNIPPET	LONGITUDE_DEGREE	int	NUMBER	STD_AI_SNIPPET	LONGITUDE_DEGREE	int	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-02	스니펫	4	AI_SNIPPET	LONGITUDE_MINUTE	int	NUMBER	STD_AI_SNIPPET	LONGITUDE_MINUTE	int	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-02	스니펫	4	AI_SNIPPET	LONGITUDE_SECOND	int	NUMBER	STD_AI_SNIPPET	LONGITUDE_SECOND	int	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-02	스니펫	4	AI_SNIPPET	DET_DATE	datetime2	DATE	STD_AI_SNIPPET	DET_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정	datetime 변환	
+STD-02	스니펫	4	AI_SNIPPET	DET_PLATFORM	varchar(30)	VARCHAR2(30 BYTE)	STD_AI_SNIPPET	DET_PLATFORM	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-02	스니펫	4	AI_SNIPPET	DISTANCE_KM	float	NUMBER(12,3)	STD_AI_SNIPPET	DET_DISTANCE_NM	real NOT NULL	우선 nm로 가정하여 값 그대로 저장하고, 프로그램 내 단위 동기화/변환 가능하도록 처리	Fixed	확정	현재는 nm 가정, 후속 구현에서 단위 sync 지원	
+STD-02	스니펫	4	AI_SNIPPET	COMMENTS1	varchar(80)	VARCHAR2(80 BYTE)	STD_AI_SNIPPET	COMMENT1	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-02	스니펫	4	AI_SNIPPET	COMMENTS2	varchar(240)	VARCHAR2(240 BYTE)	STD_AI_SNIPPET	COMMENT2	varchar(3000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-02	스니펫	4	AI_SNIPPET	DATE_SET_CHNG	datetime2	DATE	STD_AI_SNIPPET	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-02	스니펫	4	AI_SNIPPET	DELETED	smallint	NUMBER(1,0)	STD_AI_SNIPPET	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-02	스니펫	4	AI_SNIPPET	SELF_DB	smallint	-	STD_AI_SNIPPET	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	스니펫	4	AI_SNIPPET	-	-	-	STD_AI_SNIPPET	GRAM_FILE	varbinary(max) NOT NULL	grm→R8 변환 적재	Proposed	확정	레거시 .grm 을 신규 R8 66B 포맷으로 변환해 적재	
+	스니펫	4	AI_SNIPPET	-	-	-	STD_AI_SNIPPET	AUDIO_FILE	varbinary(max) NOT NULL	wav 원본 적재	Proposed	확정	스니펫 실제 wav 데이터	
+	스니펫	4	AI_SNIPPET	-	-	-	STD_AI_SNIPPET	BIN_NUM	int NOT NULL	그램 데이터에서 계산	Proposed	확정	변환된 그램 데이터의 bin 수 계산	
+	스니펫	4	AI_SNIPPET	-	-	-	STD_AI_SNIPPET	ROWGUID	uniqueidentifier NOT NULL	신규	Proposed	확정	타겟 기본값 newid() 로 채움	
+	변경이력	1	CCF2CD_LOG	CCFCD_ID	int NOT NULL	NUMBER	STD_CCF2CD_LOG	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-03	변경이력	1	CCF2CD_LOG	DATASET_ID	int	NUMBER	STD_CCF2CD_LOG	REF_EXT_RAW_SIG_ID	int NOT NULL	수동	Fixed	확정	DATASET_ID → REF_EXT_RAW_SIG_ID (구 워크북의 APPL_DATETIME 매핑은 오류)	
+STD-03	변경이력	1	CCF2CD_LOG	SHIP_SUB	varchar(20)	CHAR(12 BYTE)	STD_CCF2CD_LOG	SHIP_SUB	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-03	변경이력	1	CCF2CD_LOG	CTRY_NAME	varchar(35)	CHAR(35 BYTE)	STD_CCF2CD_LOG	CTRY_NAME	varchar(35) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-03	변경이력	1	CCF2CD_LOG	CTRY_CODE	varchar(2)	CHAR(3 BYTE)	STD_CCF2CD_LOG	CTRY_CODE	varchar(2) NOT NULL	Direct	Fixed	확정	Oracle: 길이 축소 3→2 — 잘림 주의	
+STD-03	변경이력	1	CCF2CD_LOG	TARGET_TYPE	varchar(6)	CHAR(6 BYTE)	STD_CCF2CD_LOG	TARGET_TYPE	varchar(6) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-03	변경이력	1	CCF2CD_LOG	TARGET_NAME	varchar(30)	CHAR(30 BYTE)	STD_CCF2CD_LOG	TARGET_NAME	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-03	변경이력	1	CCF2CD_LOG	NUM_APPLIED	int	NUMBER(3,0)	STD_CCF2CD_LOG	NUM_APPLIED	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-03	변경이력	1	CCF2CD_LOG	APPL_DATE	datetime2	TIMESTAMP (6)	STD_CCF2CD_LOG	APPL_DATETIME	datetime2(7) NOT NULL	별칭	NeedConfirm	확정	APPL_DATE → APPL_DATETIME	
+	변경이력	1	CD_BACKUP_LOG	BACKUP_ID	int NOT NULL	NUMBER(*,0)	STD_CD_BACKUP_LOG	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_CLASSES	int	NUMBER	STD_CD_BACKUP_LOG	NO_CLASSES	int NOT NULL	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_VESSEL	int	NUMBER	STD_CD_BACKUP_LOG	NO_VESSEL	int NOT NULL	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_SONAR	int	NUMBER	STD_CD_BACKUP_LOG	NO_SONAR	int NOT NULL	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_WEAPON	int	NUMBER	STD_CD_BACKUP_LOG	NO_WEAPON	int NOT NULL	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_TR	int	NUMBER	STD_CD_BACKUP_LOG	NO_TR	int NOT NULL	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_FLAG_IMAGE	int	NUMBER	STD_CD_BACKUP_LOG	NO_FLAG_IMAGE	int NOT NULL	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-04	변경이력	1	CD_BACKUP_LOG	BACKUP_TYPE	varchar(5)	VARCHAR2(5 BYTE)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	BACKUP_DATE	datetime2	DATE	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	BACK_BY	varchar(8)	VARCHAR2(8 BYTE)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	BACKUP_MEDIA	varchar(5)	VARCHAR2(5 BYTE)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	BACKUP_MEDIA_ID	varchar(30)	VARCHAR2(30 BYTE)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_NB_GRAM	int	NUMBER	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_NB_GRAM	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_AI_GRAM	int	NUMBER	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_AI_GRAM	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_TR_GRAM	int	NUMBER	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_TR_GRAM	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_NB_AUDIO	int	NUMBER	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_NB_AUDIO	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_AI_AUDIO	int	NUMBER	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_AI_AUDIO	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_TR_AUDIO	int	NUMBER	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_TR_AUDIO	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_VESSEL_IMAGE	int	NUMBER	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_VESSEL_IMAGE	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_FLAG_IMAGE	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	NO_RELEASE_LOG	int	NUMBER	STD_CD_BACKUP_LOG	-	-	TBD	NeedConfirm	미결	파싱만 우선 확정, 저장/미반영 정책 보류	
+STD-04	변경이력	1	CD_BACKUP_LOG	SIZE_RELEASE_LOG	float	NUMBER(12,3)	STD_CD_BACKUP_LOG	-	-	TBD	NeedConfirm	미결	파싱만 우선 확정, 저장/미반영 정책 보류	
+STD-04	변경이력	1	CD_BACKUP_LOG	TOTAL_SIZE	float	NUMBER(15,3)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-04	변경이력	1	CD_BACKUP_LOG	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_CD_BACKUP_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+	변경이력	1	CD_BACKUP_LOG	-	-	-	STD_CD_BACKUP_LOG	REF_DB_BACKUP_LOG_ID	int NOT NULL	TBD	Proposed	미결	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	변경이력	1	CD_BACKUP_LOG	-	-	-	STD_CD_BACKUP_LOG	NO_ACTV_SIG	int NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	변경이력	1	CD_BACKUP_LOG	-	-	-	STD_CD_BACKUP_LOG	NO_NB_SNP	int NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	변경이력	1	CD_BACKUP_LOG	-	-	-	STD_CD_BACKUP_LOG	NO_AI_SNP	int NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	변경이력	1	CD_BACKUP_LOG	-	-	-	STD_CD_BACKUP_LOG	NO_TR_SNP	int NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	변경이력	1	CD_BACKUP_LOG	-	-	-	STD_CD_BACKUP_LOG	NO_REFERENCE	int NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	변경이력	1	CD_CHANGE_LOG	CHNG_ID	int NOT NULL	NUMBER(*,0)	STD_CD_CHANGE_LOG	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-05	변경이력	1	CD_CHANGE_LOG	OPERATOR	varchar(20)	VARCHAR2(20 BYTE)	STD_CD_CHANGE_LOG	OPERATOR	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-05	변경이력	1	CD_CHANGE_LOG	CHNG_DATE	datetime2	DATE	STD_CD_CHANGE_LOG	CHNG_DATETIME	datetime2(7) NOT NULL	별칭	NeedConfirm	확정	CHNG_DATE → CHNG_DATETIME	
+STD-05	변경이력	1	CD_CHANGE_LOG	TABLE_NAME	varchar(30)	VARCHAR2(30 BYTE)	STD_CD_CHANGE_LOG	TABLE_NAME	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-05	변경이력	1	CD_CHANGE_LOG	RECORD_ID	varchar(20)	VARCHAR2(20 BYTE)	STD_CD_CHANGE_LOG	TABLE_ID	int NOT NULL	수동	Fixed	확정	소스 RECORD_ID(변경된 레코드 id) → TABLE_ID. 타겟 RECORD_ID 는 신규 IDENTITY PK 라 충돌 방지 (varchar→int 변환)	
+STD-05	변경이력	1	CD_CHANGE_LOG	TYPE_CHNG	varchar(20)	VARCHAR2(20 BYTE)	STD_CD_CHANGE_LOG	TYPE_CHNG	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-05	변경이력	1	CD_CHANGE_LOG	MENU_NAME	varchar(30)	VARCHAR2(30 BYTE)	STD_CD_CHANGE_LOG	MENU_NAME	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-05	변경이력	1	CD_CHANGE_LOG	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_CD_CHANGE_LOG	COMMENT	varchar(1000)	Rename	Fixed	확정	COMMENTS -> COMMENT; 말머리 [NAIMS-I] 삽입	
+STD-05	변경이력	1	CD_CHANGE_LOG	DATASET_ID	varchar(20)	NUMBER	STD_CD_CHANGE_LOG	-	-	TBD	NeedConfirm	미결	파싱만 우선 확정, 저장/미반영 정책 보류	
+	변경이력	1	CD_CHANGE_LOG	-	-	-	STD_CD_CHANGE_LOG	OPERATOR_ID	varchar(30) NOT NULL	TBD	Proposed	미결	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	기준정보	4	CHARACTERISTICS	CHAR_ID	int NOT NULL	NUMBER(*,0)	STD_CHARACTERISTICS	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-06	기준정보	4	CHARACTERISTICS	VESSEL_ID	int	NUMBER(*,0)	STD_CHARACTERISTICS	REF_STD_VESSEL_DATA_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-06	기준정보	4	CHARACTERISTICS	CAVITATION_DEPTH_M	float	NUMBER(12,3)	STD_CHARACTERISTICS	CAVITATION_DEPTH_M	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	CAVITATION_SPEED	float	NUMBER(12,3)	STD_CHARACTERISTICS	CAVITATION_SPEED	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	CAVITATION_I90	varchar(8)	VARCHAR2(8 BYTE)	STD_CHARACTERISTICS	CAVITATION_I90	varchar(8) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DIST_FEATURES	varchar(40)	VARCHAR2(40 BYTE)	STD_CHARACTERISTICS	DIST_FEATURES	varchar(100) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	SPECTRAL_RANGE	varchar(6)	VARCHAR2(6 BYTE)	STD_CHARACTERISTICS	SPECTRAL_RANGE	varchar(6) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	BLADE_RESONANCE	varchar(1)	CHAR(1 BYTE)	STD_CHARACTERISTICS	BLADE_RESONANCE	varchar(1) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	FLUTTER	varchar(1)	CHAR(1 BYTE)	STD_CHARACTERISTICS	FLUTTER	varchar(1) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	SHAFT_RUB	varchar(1)	CHAR(1 BYTE)	STD_CHARACTERISTICS	SHAFT_RUB	varchar(1) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	WHINE	varchar(1)	CHAR(1 BYTE)	STD_CHARACTERISTICS	WHINE	varchar(1) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	TRANSMISSIONS	varchar(1)	CHAR(1 BYTE)	STD_CHARACTERISTICS	TRANSMISSIONS	varchar(1) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	NOISE_MAKER	varchar(1)	CHAR(1 BYTE)	STD_CHARACTERISTICS	NOISE_MAKER	varchar(1) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	BEST_TRK_FREQ	float	NUMBER(12,3)	STD_CHARACTERISTICS	BEST_TRK_FREQ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	STRONG_SRC_GT_300	float	NUMBER(12,3)	STD_CHARACTERISTICS	STRONG_SRC_GT_300	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	STRONG_SRC_LT_300	float	NUMBER(12,3)	STD_CHARACTERISTICS	STRONG_SRC_LT_300	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ1_MAX	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ1_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ1_AVG	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ1_AVG	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ1_MIN	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ1_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ1_TYPE	varchar(30)	VARCHAR2(30 BYTE)	STD_CHARACTERISTICS	DISCRETE_FREQ1_TYPE	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ2_MAX	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ2_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ2_AVG	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ2_AVG	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ2_MIN	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ2_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ2_TYPE	varchar(30)	VARCHAR2(30 BYTE)	STD_CHARACTERISTICS	DISCRETE_FREQ2_TYPE	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ3_MAX	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ3_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ3_AVG	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ3_AVG	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ3_MIN	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ3_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ3_TYPE	varchar(30)	VARCHAR2(30 BYTE)	STD_CHARACTERISTICS	DISCRETE_FREQ3_TYPE	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ4_MAX	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ4_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ4_AVG	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ4_AVG	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ4_MIN	float	NUMBER(12,3)	STD_CHARACTERISTICS	DISCRETE_FREQ4_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	DISCRETE_FREQ4_TYPE	varchar(30)	VARCHAR2(30 BYTE)	STD_CHARACTERISTICS	DISCRETE_FREQ4_TYPE	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE1_SPD_LO	float	NUMBER(5,2)	STD_CHARACTERISTICS	RANGE1_SPD_LO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE1_SPD_HI	float	NUMBER(5,2)	STD_CHARACTERISTICS	RANGE1_SPD_HI	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE1_TPK_RPM	float	NUMBER(7,2)	STD_CHARACTERISTICS	RANGE1_TPK_RPM	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE2_SPD_LO	float	NUMBER(5,2)	STD_CHARACTERISTICS	RANGE2_SPD_LO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE2_SPD_HI	float	NUMBER(5,2)	STD_CHARACTERISTICS	RANGE2_SPD_HI	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE2_TPK_RPM	float	NUMBER(7,2)	STD_CHARACTERISTICS	RANGE2_TPK_RPM	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE3_SPD_LO	float	NUMBER(5,2)	STD_CHARACTERISTICS	RANGE3_SPD_LO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE3_SPD_HI	float	NUMBER(5,2)	STD_CHARACTERISTICS	RANGE3_SPD_HI	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	RANGE3_TPK_RPM	float	NUMBER(7,2)	STD_CHARACTERISTICS	RANGE3_TPK_RPM	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-06	기준정보	4	CHARACTERISTICS	SELF_DB	smallint	-	STD_CHARACTERISTICS	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	기준정보	4	CHARACTERISTICS	-	-	-	STD_CHARACTERISTICS	CHNG_DATETIME	datetime2(7) NOT NULL	신규	Proposed	확정	타겟 기본값 sysdatetime() 로 채움	
+	기준정보	2	CLASSES	CLASS_ID	int NOT NULL	NUMBER(*,0)	STD_CLASSES	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-07	기준정보	2	CLASSES	CLASS_NAME	varbinary(300)	RAW(200)	STD_CLASSES	CLASS_NAME	varchar(100) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); Oracle: 복호화 필요 (암호문→평문); 양쪽 암호화 — 복호화 후 적재	
+STD-07	기준정보	2	CLASSES	CLASS_NAME_K	varbinary(300)	RAW(200)	STD_CLASSES	CLASS_NAME_K	varchar(100) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); Oracle: 복호화 필요 (암호문→평문); 양쪽 암호화 — 복호화 후 적재	
+STD-07	기준정보	2	CLASSES	SHIP_SUB	varchar(12)	VARCHAR2(12 BYTE)	STD_CLASSES	SHIP_SUB	varchar(12) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	CLASS_TYPE	varchar(5)	VARCHAR2(5 BYTE)	STD_CLASSES	CLASS_TYPE	varchar(5) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	ACTIVE_SONAR1	int	NUMBER(*,0)	STD_CLASSES	ACTV_SONAR1	int NOT NULL	Rename	Fixed	확정		
+STD-07	기준정보	2	CLASSES	ACTIVE_SONAR2	int	NUMBER(*,0)	STD_CLASSES	ACTV_SONAR2	int NOT NULL	Rename	Fixed	확정		
+STD-07	기준정보	2	CLASSES	DRAUGHT_M	float	NUMBER(12,3)	STD_CLASSES	DRAUGHT_M	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	LENGTH_M	float	NUMBER(12,3)	STD_CLASSES	LENGTH_M	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	WIDTH_M	float	NUMBER(12,3)	STD_CLASSES	WIDTH_M	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	DISPLACEMENT	float	NUMBER(12,3)	STD_CLASSES	DISPLACEMENT	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	DET_RANGE_KM	float	NUMBER(12,3)	STD_CLASSES	DET_RANGE_KM	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	NUMBER_BLADES	int	NUMBER(2,0)	STD_CLASSES	NUMBER_BLADES	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	NUMBER_SHAFTS	int	NUMBER(1,0)	STD_CLASSES	NUMBER_SHAFTS	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	PROPULSION_TYPE	varchar(20)	VARCHAR2(20 BYTE)	STD_CLASSES	PROPULSION_TYPE	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	ENGINE_TYPE	varchar(30)	VARCHAR2(30 BYTE)	STD_CLASSES	ENGINE_TYPE	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	NUMBER_CYLINDERS	int	NUMBER(2,0)	STD_CLASSES	NUMBER_CYLINDERS	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	STROKE_TYPE	int	NUMBER(1,0)	STD_CLASSES	STROKE_TYPE	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	NUMBER_ENGINES	int	NUMBER(1,0)	STD_CLASSES	NUMBER_ENGINES	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MAX_CFR	float	NUMBER(12,3)	STD_CLASSES	MAX_CFR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	AVG_CFR	float	NUMBER(12,3)	STD_CLASSES	AVG_CFR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MIN_CFR	float	NUMBER(12,3)	STD_CLASSES	MIN_CFR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MAX_CSR	float	NUMBER(12,3)	STD_CLASSES	MAX_CSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	AVG_CSR	float	NUMBER(12,3)	STD_CLASSES	AVG_CSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MIN_CSR	float	NUMBER(12,3)	STD_CLASSES	MIN_CSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MAX_EFR	float	NUMBER(12,3)	STD_CLASSES	MAX_EFR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	AVG_EFR	float	NUMBER(12,3)	STD_CLASSES	AVG_EFR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MIN_EFR	float	NUMBER(12,3)	STD_CLASSES	MIN_EFR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	PSR_CSR_RATIO	float	NUMBER(12,3)	STD_CLASSES	PSR_CSR_RATIO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	PSR_CFR_RATIO	float	NUMBER(12,3)	STD_CLASSES	PSR_CFR_RATIO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	PSR_EFR_RATIO	float	NUMBER(12,3)	STD_CLASSES	PSR_EFR_RATIO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	TURBINE_TYPE	varchar(30)	VARCHAR2(30 BYTE)	STD_CLASSES	TURBINE_TYPE	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	NUMBER_TURBINES	int	NUMBER(1,0)	STD_CLASSES	NUMBER_TURBINES	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MAX_TSR	float	NUMBER(12,3)	STD_CLASSES	MAX_TSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	AVG_TSR	float	NUMBER(12,3)	STD_CLASSES	AVG_TSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MIN_TSR	float	NUMBER(12,3)	STD_CLASSES	MIN_TSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	PSR_TSR_RATIO	float	NUMBER(12,3)	STD_CLASSES	PSR_TSR_RATIO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	TSR_GEN_RATIO	float	NUMBER(12,3)	STD_CLASSES	TSR_GEN_RATIO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MOTOR_TYPE	varchar(30)	VARCHAR2(30 BYTE)	STD_CLASSES	MOTOR_TYPE	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	NUMBER_MOTORS	int	NUMBER(1,0)	STD_CLASSES	NUMBER_MOTORS	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	NUMBER_SLOT	int	NUMBER(2,0)	STD_CLASSES	NUMBER_SLOT	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MAX_MSR	float	NUMBER(12,3)	STD_CLASSES	MAX_MSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	AVG_MSR	float	NUMBER(12,3)	STD_CLASSES	AVG_MSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MIN_MSR	float	NUMBER(12,3)	STD_CLASSES	MIN_MSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	PSR_MSR_RATIO	float	NUMBER(12,3)	STD_CLASSES	PSR_MSR_RATIO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MIN_SPEED	float	NUMBER(12,3)	STD_CLASSES	MIN_SPEED	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MAX_SPEED	float	NUMBER(12,3)	STD_CLASSES	MAX_SPEED	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MAX_PSR	float	NUMBER(12,3)	STD_CLASSES	MAX_PSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	AVG_PSR	float	NUMBER(12,3)	STD_CLASSES	AVG_PSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	MIN_PSR	float	NUMBER(12,3)	STD_CLASSES	MIN_PSR	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	BR_GEN_RATIO	float	NUMBER(12,3)	STD_CLASSES	BR_GEN_RATIO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	GEAR_RED_TYPE	varchar(25)	VARCHAR2(25 BYTE)	STD_CLASSES	GEAR_RED_TYPE	varchar(25) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	PSR_BGR_RATIO	float	NUMBER(12,3)	STD_CLASSES	PSR_BGR_RATIO	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	USER_COUNTRIES	varchar(80)	VARCHAR2(80 BYTE)	STD_CLASSES	USER_COUNTRIES	varchar(1000)	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	H_MAST_M	float	NUMBER(12,3)	STD_CLASSES	H_MAST_M	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	H_RADAR_M	float	NUMBER(12,3)	STD_CLASSES	H_RADAR_M	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	H_BRIDGE_M	float	NUMBER(12,3)	STD_CLASSES	H_BRIDGE_M	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-07	기준정보	2	CLASSES	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_CLASSES	COMMENT	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-07	기준정보	2	CLASSES	VERSION	int	NUMBER(5,0)	STD_CLASSES	VERSION	int NOT NULL	Direct	Fixed	확정	타겟 기본값 (0)	
+STD-07	기준정보	2	CLASSES	DATE_SET_CHNG	datetime2	DATE	STD_CLASSES	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-07	기준정보	2	CLASSES	DELETED	smallint	NUMBER(1,0)	STD_CLASSES	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-07	기준정보	2	CLASSES	CLASS_NAME_ISUS90	varbinary(300)	RAW(200)	STD_CLASSES	CLASS_NAME_ISUS90	varchar(100) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); Oracle: 복호화 필요 (암호문→평문); 양쪽 암호화 — 복호화 후 적재	
+STD-07	기준정보	2	CLASSES	SELF_DB	smallint	-	STD_CLASSES	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	기준정보	2	CLASSES	-	-	-	STD_CLASSES	PASSIVE_SONAR	int NOT NULL	임시 기본값 -1	Proposed	확정	소스 대응 없음 — 임시로 -1 (추후 확정)	
+	기준정보	2	CLASSES	-	-	-	STD_CLASSES	MIN_SRPM	real NOT NULL	임시 기본값 -1	Proposed	확정	소스 대응 없음 — 임시로 -1 (추후 확정)	
+	기준정보	2	CLASSES	-	-	-	STD_CLASSES	MAX_SRPM	real NOT NULL	임시 기본값 -1	Proposed	확정	소스 대응 없음 — 임시로 -1 (추후 확정)	
+	기준정보	2	CLASSES	-	-	-	STD_CLASSES	MIN_ERPM	real NOT NULL	임시 기본값 -1	Proposed	확정	소스 대응 없음 — 임시로 -1 (추후 확정)	
+	기준정보	2	CLASSES	-	-	-	STD_CLASSES	MAX_ERPM	real NOT NULL	임시 기본값 -1	Proposed	확정	소스 대응 없음 — 임시로 -1 (추후 확정)	
+	기준정보	2	CLASSES	-	-	-	STD_CLASSES	MIN_TRPM	real NOT NULL	임시 기본값 -1	Proposed	확정	소스 대응 없음 — 임시로 -1 (추후 확정)	
+	기준정보	2	CLASSES	-	-	-	STD_CLASSES	MAX_TRPM	real NOT NULL	임시 기본값 -1	Proposed	확정	소스 대응 없음 — 임시로 -1 (추후 확정)	
+	기준정보	2	CLASSES	-	-	-	STD_CLASSES	REF_COMMENT	varchar(500)	고정값	Proposed	확정	NAIMS-I 이관 데이터	
+	기준정보	1	COUNTRY_CODES	COUNTRY_ID	int NOT NULL	NUMBER(*,0)	STD_COUNTRY_CODES	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-08	기준정보	1	COUNTRY_CODES	CTRY_CODE	varchar(2)	VARCHAR2(2 BYTE)	STD_COUNTRY_CODES	CTRY_CODE	varchar(2) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-08	기준정보	1	COUNTRY_CODES	CTRY_NAME	varchar(35)	VARCHAR2(35 BYTE)	STD_COUNTRY_CODES	CTRY_NAME	varchar(35) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-08	기준정보	1	COUNTRY_CODES	HOSTILE_LEVEL	int	NUMBER	STD_COUNTRY_CODES	HOSTILE_LEVEL	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-08	기준정보	1	COUNTRY_CODES	CTRY_NAME_ISUS90	varchar(20)	VARCHAR2(20 BYTE)	STD_COUNTRY_CODES	CTRY_NAME_ISUS90	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-08	기준정보	1	COUNTRY_CODES	FLAG_FILENAME	varchar(40)	VARCHAR2(40 BYTE)	STD_COUNTRY_CODES	FLAG_FILE	varbinary(max)	경로의 파일을 읽어 파일 자체(byte[])를 저장	Fixed	확정	MsSQL: 타입 계열 상이 (STR→BIN) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→BIN) 변환 규칙 확정 필요	
+STD-08	기준정보	1	COUNTRY_CODES	COMMENTS	varchar(40)	VARCHAR2(40 BYTE)	STD_COUNTRY_CODES	COMMENT	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-08	기준정보	1	COUNTRY_CODES	DATE_SET_CHNG	datetime2	DATE	STD_COUNTRY_CODES	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-08	기준정보	1	COUNTRY_CODES	DELETED	smallint	NUMBER(1,0)	STD_COUNTRY_CODES	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-08	기준정보	1	COUNTRY_CODES	SELF_DB	smallint	-	STD_COUNTRY_CODES	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	배포관리	1	DB_DIST_GROUP	GROUP_ID	int NOT NULL	NUMBER(*,0)	STD_DB_DIST_GROUP	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-09	배포관리	1	DB_DIST_GROUP	GROUP_NAME	varchar(30)	VARCHAR2(30 BYTE)	STD_DB_DIST_GROUP	GROUP_NAME	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-09	배포관리	1	DB_DIST_GROUP	IF_SYSTEM	varchar(15)	VARCHAR2(15 BYTE)	STD_DB_DIST_GROUP	IF_SYSTEM	varchar(100) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-09	배포관리	1	DB_DIST_GROUP	IF_MEDIA	varchar(10)	VARCHAR2(10 BYTE)	STD_DB_DIST_GROUP	IF_MEDIA	varchar(10) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-09	배포관리	1	DB_DIST_GROUP	CLASS_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	CLASS_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	NB_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	NB_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	AI_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	AI_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	TR_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	TR_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	WEAPON_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	WEAPON_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	NB_GRAM_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	NB_GRAM_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	NB_AUDIO_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	NB_AUDIO_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	IMAGE_FILE	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	IMAGE_FILE	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	AI_GRAM_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	AI_GRAM_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	AI_AUDIO_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	AI_AUDIO_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	TR_AUDIO_INFO	varchar(1)	CHAR(1 BYTE)	STD_DB_DIST_GROUP	TR_AUDIO_INFO	int NOT NULL	Direct	Fixed	확정	MsSQL: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요; Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-09	배포관리	1	DB_DIST_GROUP	FREQ_MIN	float	NUMBER(12,3)	STD_DB_DIST_GROUP	FREQ_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-09	배포관리	1	DB_DIST_GROUP	FREQ_MAX	float	NUMBER(12,3)	STD_DB_DIST_GROUP	FREQ_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-09	배포관리	1	DB_DIST_GROUP	FINAL_DIST_DATE	datetime2	DATE	STD_DB_DIST_GROUP	FINAL_DIST_DATETIME	datetime2(7)	FINAL_DIST_DATETIME 필드에 매핑	Fixed	확정	사용자 지정 매핑	
+STD-09	배포관리	1	DB_DIST_GROUP	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_DB_DIST_GROUP	COMMENT	varchar(1000)	Rename	Fixed	확정	COMMENTS -> COMMENT; 말머리 [NAIMS-I] 삽입	
+	배포관리	1	DB_DIST_GROUP	-	-	-	STD_DB_DIST_GROUP	ACTV_INFO	int NOT NULL	TBD	Proposed	미결	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	1	DB_DIST_GROUP	-	-	-	STD_DB_DIST_GROUP	DIST_PATH	varchar(50) NOT NULL	TBD	Proposed	미결	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	1	DB_DIST_GROUP	-	-	-	STD_DB_DIST_GROUP	DIST_SOURCE	varchar(50) NOT NULL	TBD	Proposed	미결	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	1	DB_DIST_GROUP	-	-	-	STD_DB_DIST_GROUP	PROTECTION_PERIOD_DATETIME	datetime2(7) NOT NULL	TBD	Proposed	미결	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	1	DB_DIST_GROUP	-	-	-	STD_DB_DIST_GROUP	CHNG_DATETIME	datetime2(7) NOT NULL	신규	Proposed	확정	타겟 기본값 sysdatetime() 로 채움	
+	배포관리	1	DB_DIST_GROUP	-	-	-	STD_DB_DIST_GROUP	DELETED	smallint NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	배포관리	3	DB_DIST_LOG	LOG_ID	int NOT NULL	NUMBER(*,0)	STD_DB_DIST_LOG	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-10	배포관리	3	DB_DIST_LOG	GROUP_NAME	varchar(30)	VARCHAR2(30 BYTE)	STD_DB_DIST_LOG	GROUP_NAME	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-10	배포관리	3	DB_DIST_LOG	IF_SYSTEM	varchar(15)	VARCHAR2(15 BYTE)	STD_DB_DIST_LOG	IF_SYSTEM	varchar(15) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-10	배포관리	3	DB_DIST_LOG	DB_FILENAME	varchar(80)	VARCHAR2(80 BYTE)	STD_DB_DIST_LOG	DB_FILENAME	varchar(260)	동일	NeedConfirm	확정	배포 DB ZIP 파일명(CD_*.zip). 배포완료 응답 매칭 키. 직접 대응 (구 워크북의 파일 내부 파싱 라우팅은 오류)	
+STD-10	배포관리	3	DB_DIST_LOG	DB_FILESIZE_MB	float	NUMBER(7,2)	STD_DB_DIST_LOG	DB_FILESIZE_MB	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-10	배포관리	3	DB_DIST_LOG	DIST_DATE	datetime2	DATE	STD_DB_DIST_LOG	DIST_DATETIME	datetime2(7) NOT NULL	별칭	NeedConfirm	확정	DIST_DATE → DIST_DATETIME	
+STD-10	배포관리	3	DB_DIST_LOG	DIST_OPERATOR	varchar(8)	VARCHAR2(8 BYTE)	STD_DB_DIST_LOG	DIST_OPERATOR	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-10	배포관리	3	DB_DIST_LOG	DOC_NO	varchar(50)	VARCHAR2(50 BYTE)	STD_DB_DIST_LOG	DOC_NO	varchar(150) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-10	배포관리	3	DB_DIST_LOG	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_DB_DIST_LOG	COMMENT	varchar(1000)	Rename	Fixed	확정	COMMENTS -> COMMENT; 말머리 [NAIMS-I] 삽입	
+STD-10	배포관리	3	DB_DIST_LOG	DIST_PATH	varchar(10)	VARCHAR2(10 BYTE)	STD_DB_DIST_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-10	배포관리	3	DB_DIST_LOG	NO_CLASSES	int	NUMBER(5,0)	STD_DB_DIST_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-10	배포관리	3	DB_DIST_LOG	NO_VESSEL	int	NUMBER(5,0)	STD_DB_DIST_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-10	배포관리	3	DB_DIST_LOG	NO_SONAR	int	NUMBER(5,0)	STD_DB_DIST_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-10	배포관리	3	DB_DIST_LOG	NO_TR_EVENT	int	NUMBER(5,0)	STD_DB_DIST_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-10	배포관리	3	DB_DIST_LOG	NO_WEAPON	int	NUMBER(5,0)	STD_DB_DIST_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-10	배포관리	3	DB_DIST_LOG	NO_IMAGE	int	NUMBER(5,0)	STD_DB_DIST_LOG	(대응 없음)	-	TBD	Fixed	스키마변경	대응 컬럼 지정/생성 필요	
+STD-10	배포관리	3	DB_DIST_LOG	LOG_FILENAME	varchar(80)	VARCHAR2(80 BYTE)	STD_DB_DIST_LOG	-	-	TBD	NeedConfirm	미결	배포이력 HWP 보고서 파일명(DB_FILENAME 과 별개). STD_DB_DIST_LOG 에 대응 컬럼 없음 — 미매핑	
+	배포관리	3	DB_DIST_LOG	-	-	-	STD_DB_DIST_LOG	META_TRANSFER_TYPE	int	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	3	DB_DIST_LOG	-	-	-	STD_DB_DIST_LOG	META_DATA_TYPE	int	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	3	DB_DIST_LOG	-	-	-	STD_DB_DIST_LOG	OUTPUT_SYSTEM	varchar(200)	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	3	DB_DIST_LOG	-	-	-	STD_DB_DIST_LOG	TARGET_COUNT	int	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	3	DB_DIST_LOG	-	-	-	STD_DB_DIST_LOG	PROTECTION_PERIOD	datetime2(7)	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	3	DB_DIST_LOG	-	-	-	STD_DB_DIST_LOG	LINKED_MEDIA	int	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	3	DB_DIST_LOG	-	-	-	STD_DB_DIST_LOG	MISSING_REASON	varchar(1000)	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	3	DB_DIST_LOG	-	-	-	STD_DB_DIST_LOG	REF_STD_DIST_TO_ID	int	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	배포관리	2	DIST_LIST	DIST_LIST_ID	int NOT NULL	NUMBER(*,0)	STD_DIST_LIST	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-11	배포관리	2	DIST_LIST	TABLE_NAME	varchar(15)	VARCHAR2(15 BYTE)	STD_DIST_LIST	TABLE_NAME	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-11	배포관리	2	DIST_LIST	ID	int	NUMBER(*,0)	STD_DIST_LIST	ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-11	배포관리	2	DIST_LIST	PARENT_ID	int	NUMBER(*,0)	STD_DIST_LIST	PARENT_ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-11	배포관리	2	DIST_LIST	IAUDIOINCLUDE	int	NUMBER(*,0) DEFAULT 1	STD_DIST_LIST	IAUDIOINCLUDE	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+	배포관리	2	DIST_LIST	GROUP_ID	int	NUMBER(*,0)	STD_DIST_LIST	REF_STD_DB_DIST_GROUP_ID	int NOT NULL	FK수동	Proposed	신규제안	배포그룹 참조 — DB_DIST_GROUP.RECORD_ID 로 치환	
+	배포관리	3	DIST_TO	LOG_ID	int NOT NULL	NUMBER(*,0)	STD_DIST_TO	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-12	배포관리	3	DIST_TO	DESTINATION	varchar(15)	VARCHAR2(30 BYTE)	STD_DIST_TO	DESTINATION	varchar(31) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-12	배포관리	3	DIST_TO	COMPLT_DATE	datetime2	DATE	STD_DIST_TO	CHNG_DATETIME	datetime2(7) NOT NULL	별칭	Exclude	확정	COMPLT_DATE → CHNG_DATETIME	
+STD-12	배포관리	3	DIST_TO	COMPLT_OPTR	varchar(20)	VARCHAR2(20 BYTE)	STD_DIST_TO	-	-	TBD	Fixed	미결	STD_DIST_TO 에 대응 컬럼 없음 — 미매핑 기존 필드	
+	배포관리	3	DIST_TO	-	-	-	STD_DIST_TO	REF_STD_DB_DIST_LOG_ID	int	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	수동신호	5	HARMONICS	HARM_ID	int NOT NULL	NUMBER(*,0)	STD_HARMONICS	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-13	수동신호	5	HARMONICS	SIGNATURES_ID	int	NUMBER(*,0)	STD_HARMONICS	REF_STD_SIGNATURES_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-13	수동신호	5	HARMONICS	HARM_NO	int	NUMBER(3,0)	STD_HARMONICS	HARM_NO	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-13	수동신호	5	HARMONICS	FREQ	float	NUMBER(12,3)	STD_HARMONICS	FREQ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-13	수동신호	5	HARMONICS	PREDOMINANCE	smallint	NUMBER(1,0)	STD_HARMONICS	PREDOMINANCE	smallint NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-13	수동신호	5	HARMONICS	SELF_DB	smallint	-	STD_HARMONICS	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	스니펫	1	NB_SNIPPET	NB_SNIPPET_ID	int NOT NULL	NUMBER(*,0)	STD_NB_SNIPPET	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-14	스니펫	1	NB_SNIPPET	GRAM_FILENAME	varchar(80)	VARCHAR2(80 BYTE)	STD_NB_SNIPPET	STD_NB_GRAM_SNIPPET_FILE_NAME	varchar(150)	GRAM_FILENAME	Fixed	확정	소스 GRAM_FILENAME(파일명)	
+STD-14	스니펫	1	NB_SNIPPET	AUDIO_FILENAME	varchar(80)	VARCHAR2(80 BYTE)	STD_NB_SNIPPET	STD_NB_AUDIO_SNIPPET_FILE_NAME	varchar(150)	AUDIO_FILENAME	Fixed	확정	소스 AUDIO_FILENAME(파일명)	
+STD-14	스니펫	1	NB_SNIPPET	FREQ_MIN	float	NUMBER(12,3)	STD_NB_SNIPPET	FREQ_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	FREQ_MAX	float	NUMBER(12,3)	STD_NB_SNIPPET	FREQ_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	NO_FRAME	int	NUMBER(4,0)	STD_NB_SNIPPET	FRAME_NUM	int NOT NULL	Rename	Fixed	확정		
+STD-14	스니펫	1	NB_SNIPPET	RESOLUTION	float	NUMBER(12,3)	STD_NB_SNIPPET	RESOLUTION	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	A_START_TIME	int	NUMBER	STD_NB_SNIPPET	A_START_MILLISEC	bigint NOT NULL	Rename	Fixed	확정	단위 확인 필요	
+STD-14	스니펫	1	NB_SNIPPET	A_END_TIME	int	NUMBER	STD_NB_SNIPPET	A_END_MILLISEC	bigint NOT NULL	Rename	Fixed	확정	단위 확인 필요	
+STD-14	스니펫	1	NB_SNIPPET	SAMPLING_RATE	float	NUMBER(12,3)	STD_NB_SNIPPET	SAMPLING_RATE	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	DET_SONAR	varchar(10)	VARCHAR2(10 BYTE)	STD_NB_SNIPPET	DET_SONAR	varchar(15) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	LATITUDE_DEGREE	int	NUMBER	STD_NB_SNIPPET	LATITUDE_DEGREE	int	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	LATITUDE_MINUTE	int	NUMBER	STD_NB_SNIPPET	LATITUDE_MINUTE	int	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	LATITUDE_SECOND	int	NUMBER	STD_NB_SNIPPET	LATITUDE_SECOND	int	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	LONGITUDE_DEGREE	int	NUMBER	STD_NB_SNIPPET	LONGITUDE_DEGREE	int	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	LONGITUDE_MINUTE	int	NUMBER	STD_NB_SNIPPET	LONGITUDE_MINUTE	int	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	LONGITUDE_SECOND	int	NUMBER	STD_NB_SNIPPET	LONGITUDE_SECOND	int	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	DET_DATE	datetime2	DATE	STD_NB_SNIPPET	DET_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정	datetime 변환	
+STD-14	스니펫	1	NB_SNIPPET	DET_PLATFORM	varchar(30)	VARCHAR2(30 BYTE)	STD_NB_SNIPPET	DET_PLATFORM	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	DISTANCE_KM	float	NUMBER(12,3)	STD_NB_SNIPPET	DISTANCE_KM	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-14	스니펫	1	NB_SNIPPET	COMMENTS1	varchar(80)	VARCHAR2(80 BYTE)	STD_NB_SNIPPET	COMMENT1	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-14	스니펫	1	NB_SNIPPET	COMMENTS2	varchar(240)	VARCHAR2(240 BYTE)	STD_NB_SNIPPET	COMMENT2	varchar(3000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-14	스니펫	1	NB_SNIPPET	DATE_SET_CHNG	datetime2	DATE	STD_NB_SNIPPET	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-14	스니펫	1	NB_SNIPPET	DELETED	smallint	NUMBER(1,0)	STD_NB_SNIPPET	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-14	스니펫	1	NB_SNIPPET	SELF_DB	smallint	-	STD_NB_SNIPPET	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	CLASSIFI_NB_GRAM_SNIPPET_FILE	varbinary(max) NOT NULL	grm→R8 변환 적재	Proposed	확정	레거시 .grm 을 신규 R8 66B 포맷으로 변환해 적재 (GramReader.cs)	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	CLASSIFI_NB_AUDIO_SNIPPET_FILE	varbinary(max) NOT NULL	wav 원본 적재	Proposed	확정	스니펫 실제 wav 데이터를 그대로 적재	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	BIN_NUM	int NOT NULL	frame block bin 수	Proposed	확정	실제 frame block 의 bin 수 (기본값 1601)	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	ROWGUID	uniqueidentifier NOT NULL	신규	Proposed	확정	타겟 기본값 newid() 로 채움	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	GRAM_TYPE	int NOT NULL	.grm 헤더 cGram→코드	Proposed	확정	레거시 헤더 @0 cGram[3] 태그로 결정: L→101(LOFAR), D→201(DEMON), V1~V4→301~304(VERNIER).	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	SNIPPET_START_DATETIME	datetime2(7) NOT NULL	wav 헤더 계산	Proposed	확정	wav 헤더로 시작시각 계산	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	SNIPPET_END_DATETIME	datetime2(7) NOT NULL	wav 헤더 계산	Proposed	확정	wav 헤더로 끝시각 계산	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	INTEGRAL_TIME	real NOT NULL	고정값 -1	Proposed	확정	-1	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	GRAM_UPDATE_TIME	real NOT NULL	마이그레이션 시각	Proposed	확정	이관 수행 시각	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	NB_ALI_SNIPPET_DATA	varbinary(max)	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	IS_LEGACY	bit NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	A_START_MILLISEC_FOR_NAIMS1	bigint NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	스니펫	1	NB_SNIPPET	-	-	-	STD_NB_SNIPPET	A_END_MILLISEC_FOR_NAIMS1	bigint NOT NULL	신규	Proposed	확정	타겟 기본값 (0) 로 채움	
+	능동소나	3	PULSES	PULSE_ID	int NOT NULL	NUMBER(*,0)	STD_PULSES	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-15	능동소나	3	PULSES	SONAR_ID	int	NUMBER(*,0)	STD_PULSES	REF_STD_ACTV_SONAR_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-15	능동소나	3	PULSES	PULSE_NAME	varchar(30)	VARCHAR2(30 BYTE)	STD_PULSES	PULSE_NAME	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	NO_SEGMENT	int	NUMBER(2,0)	STD_PULSES	NO_SEGMENT	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	SPL	float	NUMBER(12,3)	STD_PULSES	SPL	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	PLS_LEN_MS_MIN	int	NUMBER(10,0)	STD_PULSES	PLS_LEN_MS_MIN	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	PLS_LEN_MS_MAX	int	NUMBER(10,0)	STD_PULSES	PLS_LEN_MS_MAX	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	REP_TIME_MS_MIN	float	NUMBER(12,3)	STD_PULSES	REP_TIME_MS_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	REP_TIME_MS_MAX	float	NUMBER(12,3)	STD_PULSES	REP_TIME_MS_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	TRM_MODE	varchar(10)	VARCHAR2(10 BYTE)	STD_PULSES	TRM_MODE	varchar(10) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	MODULATION	varchar(12)	VARCHAR2(12 BYTE)	STD_PULSES	MODULATION	varchar(12) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	FIRST_SEG_ID	int	NUMBER(*,0)	STD_PULSES	FIRST_SEG_ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	SECOND_SEG_ID	int	NUMBER(*,0)	STD_PULSES	SECOND_SEG_ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	THIRD_SEG_ID	int	NUMBER(*,0)	STD_PULSES	THIRD_SEG_ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	FOURTH_SEG_ID	int	NUMBER(*,0)	STD_PULSES	FOURTH_SEG_ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	FIFTH_SEG_ID	int	NUMBER(*,0)	STD_PULSES	FIFTH_SEG_ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	SIXTH_SEG_ID	int	NUMBER(*,0)	STD_PULSES	SIXTH_SEG_ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	SEVENTH_SEG_ID	int	NUMBER(*,0)	STD_PULSES	SEVENTH_SEG_ID	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	DET_COUNT	int	NUMBER(*,0)	STD_PULSES	DET_COUNT	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-15	능동소나	3	PULSES	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_PULSES	COMMENT	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-15	능동소나	3	PULSES	DATE_SET_CHNG	datetime2	DATE	STD_PULSES	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-15	능동소나	3	PULSES	DELETED	smallint	NUMBER(1,0)	STD_PULSES	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-15	능동소나	3	PULSES	SELF_DB	smallint	-	STD_PULSES	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	능동소나	1	PULSE_SEGMENTS	SEGMENT_ID	int NOT NULL	NUMBER(*,0)	STD_PULSE_SEGMENTS	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-16	능동소나	1	PULSE_SEGMENTS	SONAR_ID	int	NUMBER(*,0)	STD_PULSE_SEGMENTS	REF_STD_ACTV_SONAR_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-16	능동소나	1	PULSE_SEGMENTS	FREQ_START	float	NUMBER(12,3)	STD_PULSE_SEGMENTS	FREQ_START	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-16	능동소나	1	PULSE_SEGMENTS	FREQ_STOP	float	NUMBER(12,3)	STD_PULSE_SEGMENTS	FREQ_STOP	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-16	능동소나	1	PULSE_SEGMENTS	MODULATION	varchar(12)	VARCHAR2(12 BYTE)	STD_PULSE_SEGMENTS	MODULATION	varchar(12) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-16	능동소나	1	PULSE_SEGMENTS	SEG_LEN_MS_MIN	int	NUMBER(6,0)	STD_PULSE_SEGMENTS	SEG_LEN_MS_MIN	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-16	능동소나	1	PULSE_SEGMENTS	SEG_LEN_MS_MAX	int	NUMBER(6,0)	STD_PULSE_SEGMENTS	SEG_LEN_MS_MAX	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-16	능동소나	1	PULSE_SEGMENTS	DATE_SET_CHNG	datetime2	DATE	STD_PULSE_SEGMENTS	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-16	능동소나	1	PULSE_SEGMENTS	DELETED	smallint	NUMBER(1,0)	STD_PULSE_SEGMENTS	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-16	능동소나	1	PULSE_SEGMENTS	SEGMENT_NAME	varchar(16)	VARCHAR2(16 BYTE)	STD_PULSE_SEGMENTS	SEGMENT_NAME	varchar(16) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-16	능동소나	1	PULSE_SEGMENTS	SELF_DB	smallint	-	STD_PULSE_SEGMENTS	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	능동소나	1	PULSE_FREQUENCY_ISUS90	PULSE_F_ID	int NOT NULL	NUMBER	STD_PULSE_FREQUENCY_ISUS90	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-17	능동소나	1	PULSE_FREQUENCY_ISUS90	FREQUENCY	float	NUMBER(12,3)	STD_PULSE_FREQUENCY_ISUS90	FREQUENCY	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-17	능동소나	1	PULSE_FREQUENCY_ISUS90	SONAR_ID	int	NUMBER(*,0)	STD_PULSE_FREQUENCY_ISUS90	REF_STD_ACTV_SONAR_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-17	능동소나	1	PULSE_FREQUENCY_ISUS90	SELF_DB	smallint	-	STD_PULSE_FREQUENCY_ISUS90	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	능동소나	1	PULSE_SEG_LENGTH_ISUS90	SEG_ID	int NOT NULL	NUMBER	STD_PULSE_SEG_LENGTH_ISUS90	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-18	능동소나	1	PULSE_SEG_LENGTH_ISUS90	LENGTH_MIN	int	NUMBER	STD_PULSE_SEG_LENGTH_ISUS90	LENGTH_MIN	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-18	능동소나	1	PULSE_SEG_LENGTH_ISUS90	LENGTH_MAX	int	NUMBER	STD_PULSE_SEG_LENGTH_ISUS90	LENGTH_MAX	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-18	능동소나	1	PULSE_SEG_LENGTH_ISUS90	PULSE_F_ID	int	NUMBER	STD_PULSE_SEG_LENGTH_ISUS90	REF_STD_PULSE_FREQUENCY_ISUS90_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-18	능동소나	1	PULSE_SEG_LENGTH_ISUS90	SELF_DB	smallint	-	STD_PULSE_SEG_LENGTH_ISUS90	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	능동소나	1	PULSE_SEG_SWING_ISUS90	SWING_ID	int NOT NULL	NUMBER	STD_PULSE_SEG_SWING_ISUS90	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-19	능동소나	1	PULSE_SEG_SWING_ISUS90	SWING	float	NUMBER(12,3)	STD_PULSE_SEG_SWING_ISUS90	SWING	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-19	능동소나	1	PULSE_SEG_SWING_ISUS90	MODULATION	varchar(5)	VARCHAR2(5 BYTE)	STD_PULSE_SEG_SWING_ISUS90	MODULATION	varchar(12) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-19	능동소나	1	PULSE_SEG_SWING_ISUS90	PULSE_F_ID	int	NUMBER	STD_PULSE_SEG_SWING_ISUS90	REF_STD_PULSE_FREQUENCY_ISUS90_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-19	능동소나	1	PULSE_SEG_SWING_ISUS90	SELF_DB	smallint	-	STD_PULSE_SEG_SWING_ISUS90	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	수동신호	4	SIGNATURES	SIGNATURE_ID	int NOT NULL	NUMBER(*,0)	STD_SIGNATURES	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-20	수동신호	4	SIGNATURES	VESSEL_ID	int	NUMBER(*,0)	STD_SIGNATURES	REF_STD_VESSEL_DATA_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-20	수동신호	4	SIGNATURES	TYPE_NOISE	varchar(15)	VARCHAR2(15 BYTE)	STD_SIGNATURES	TYPE_NOISE	varchar(15) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	CATEGORY_NOISE	varchar(15)	VARCHAR2(15 BYTE)	STD_SIGNATURES	CATEGORY_NOISE	varchar(15) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	ASPECT_TGT	varchar(30)	VARCHAR2(30 BYTE)	STD_SIGNATURES	ASPECT_TGT	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	NOISE_SOURCE	varchar(25)	VARCHAR2(25 BYTE)	STD_SIGNATURES	NOISE_SOURCE	varchar(25) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	NOISE_SOURCE_L2	varchar(20)	VARCHAR2(20 BYTE)	STD_SIGNATURES	NOISE_SOURCE_L2	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	PROPULSION_SOURCE	varchar(12)	VARCHAR2(12 BYTE)	STD_SIGNATURES	PROPULSION_SOURCE	varchar(12) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	OPERATING_MODE	varchar(20)	VARCHAR2(20 BYTE)	STD_SIGNATURES	OPERATING_MODE	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	SPEED_ACOUS_SIGN_LO_KN	float	NUMBER(12,3)	STD_SIGNATURES	SPEED_ACOUS_SIGN_LO_KN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	SPEED_ACOUS_SIGN_HI_KN	float	NUMBER(12,3)	STD_SIGNATURES	SPEED_ACOUS_SIGN_HI_KN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	FREQ_NOISE_LO_HZ	float	NUMBER(12,3)	STD_SIGNATURES	FREQ_NOISE_LO_HZ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	FREQ_NOISE_HI_HZ	float	NUMBER(12,3)	STD_SIGNATURES	FREQ_NOISE_HI_HZ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	FREQ_NOISE_AVG_HZ	float	NUMBER(12,3)	STD_SIGNATURES	FREQ_NOISE_AVG_HZ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	NOISE_SOURCE_DEPTH_M	int	NUMBER(5,0)	STD_SIGNATURES	NOISE_SOURCE_DEPTH_M	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	SPL_LO_DB	float	NUMBER(12,3)	STD_SIGNATURES	SPL_LO_DB	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	SPL_HI_DB	float	NUMBER(12,3)	STD_SIGNATURES	SPL_HI_DB	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	SPL_AVG_DB	float	NUMBER(12,3)	STD_SIGNATURES	SPL_AVG_DB	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	BNDWTH_NOISE_LO_HZ	float	NUMBER(12,3)	STD_SIGNATURES	BNDWTH_NOISE_LO_HZ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	BNDWTH_NOISE_HI_HZ	float	NUMBER(12,3)	STD_SIGNATURES	BNDWTH_NOISE_HI_HZ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	BNDWTH_NOISE_AVG_HZ	float	NUMBER(12,3)	STD_SIGNATURES	BNDWTH_NOISE_AVG_HZ	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	TIME_NOISE_LO_SEC	float	NUMBER(12,3)	STD_SIGNATURES	TIME_NOISE_LO_SEC	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	TIME_NOISE_HI_SEC	float	NUMBER(12,3)	STD_SIGNATURES	TIME_NOISE_HI_SEC	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	NUMBER_HARMONICS	int	NUMBER(4,0)	STD_SIGNATURES	NUMBER_HARMONICS	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	HARM_PREDOMINANCE	int	NUMBER(4,0)	STD_SIGNATURES	HARM_PREDOMINANCE	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	MULTIPLETS	int	NUMBER(1,0)	STD_SIGNATURES	MULTIPLETS	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	DESYNCHRONIZATION	float	NUMBER(12,3)	STD_SIGNATURES	DESYNCHRONIZATION	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	STABILITY	varchar(10)	VARCHAR2(10 BYTE)	STD_SIGNATURES	STABILITY	varchar(10) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	REDUCTION_RATIO_MIN	float	NUMBER(12,3)	STD_SIGNATURES	REDUCTION_RATIO_MIN	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	REDUCTION_RATIO_MAX	float	NUMBER(12,3)	STD_SIGNATURES	REDUCTION_RATIO_MAX	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	RED_RATION_RMKS	varchar(80)	VARCHAR2(80 BYTE)	STD_SIGNATURES	RED_RATION_RMKS	varchar(100)	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	DET_COUNT	int	NUMBER	STD_SIGNATURES	DET_COUNT	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	GEN_RMKS	varchar(240)	VARCHAR2(240 BYTE)	STD_SIGNATURES	GEN_RMKS	varchar(1000)	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	DATE_SET_CHNG	datetime2	DATE	STD_SIGNATURES	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-20	수동신호	4	SIGNATURES	DELETED	int	NUMBER(1,0)	STD_SIGNATURES	DELETED	int NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-20	수동신호	4	SIGNATURES	HARMONIC_LIST	varchar(240)	VARCHAR2(240 BYTE)	STD_SIGNATURES	HARMONIC_LIST	varchar(2000) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	PREDOMINANCE_LIST	varchar(80)	VARCHAR2(80 BYTE)	STD_SIGNATURES	PREDOMINANCE_LIST	varchar(200) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	CPA	varchar(1)	CHAR(1 BYTE)	STD_SIGNATURES	CPA	varchar(1) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-20	수동신호	4	SIGNATURES	SELF_DB	smallint	-	STD_SIGNATURES	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	수동신호	4	SIGNATURES	-	-	-	STD_SIGNATURES	REF_STD_NB_SNIPPET_ID	int	신규	Proposed	신규제안	소스 대응 없음 — 기본값/NULL 또는 산출값	
+	순간소음	4	TRANSIENT	TR_ID	int NOT NULL	NUMBER(*,0)	STD_TRANSIENT	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-21	순간소음	4	TRANSIENT	CLASS_ID	int	NUMBER(*,0)	STD_TRANSIENT	REF_STD_CLASSES_ID	int	FKRename	Fixed	확정		
+STD-21	순간소음	4	TRANSIENT	VESSEL_ID	int	NUMBER(*,0)	STD_TRANSIENT	REF_STD_VESSEL_DATA_ID	int	FKRename	Fixed	확정		
+STD-21	순간소음	4	TRANSIENT	TR_NAME	varbinary(300)	VARCHAR2(200 BYTE)	STD_TRANSIENT	TR_NAME	varchar(50) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); Oracle: 길이 축소 200→50 — 잘림 주의; MsSQL만 암호화 / Oracle 평문	
+STD-21	순간소음	4	TRANSIENT	TR_GROUP	varchar(20)	VARCHAR2(20 BYTE)	STD_TRANSIENT	TR_GROUP	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-21	순간소음	4	TRANSIENT	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_TRANSIENT	COMMENT	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-21	순간소음	4	TRANSIENT	DATE_SET_CHNG	datetime2	DATE	STD_TRANSIENT	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-21	순간소음	4	TRANSIENT	DELETED	smallint	NUMBER(1,0)	STD_TRANSIENT	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-21	순간소음	4	TRANSIENT	SELF_DB	smallint	-	STD_TRANSIENT	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	순간소음	5	TR_FRAME	FRAME_ID	int NOT NULL	NUMBER(*,0)	STD_TR_FRAME	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-22	순간소음	5	TR_FRAME	TR_ID	int	NUMBER(*,0)	STD_TR_FRAME	REF_STD_TRANSIENT_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-22	순간소음	5	TR_FRAME	MFB_NO	int	NUMBER(3,0)	STD_TR_FRAME	MFB_NO	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_1	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_1	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_2	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_2	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_3	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_3	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_4	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_4	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_5	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_5	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_6	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_6	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_7	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_7	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_8	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_8	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_9	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_9	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_10	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_10	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_11	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_11	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_12	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_12	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_13	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_13	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_14	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_14	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_15	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_15	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_16	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_16	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_17	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_17	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_18	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_18	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_19	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_19	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_20	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_20	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_21	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_21	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_22	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_22	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_23	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_23	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_24	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_24	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_25	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_25	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_26	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_26	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_27	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_27	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_28	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_28	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_29	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_29	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_30	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_30	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_31	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_31	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	MFB_VALUE_32	float	NUMBER(9,4)	STD_TR_FRAME	MFB_VALUE_32	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	DET_COUNT	int	NUMBER(5,0)	STD_TR_FRAME	DET_COUNT	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-22	순간소음	5	TR_FRAME	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_TR_FRAME	COMMENT	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-22	순간소음	5	TR_FRAME	DATE_SET_CHNG	datetime2	DATE	STD_TR_FRAME	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-22	순간소음	5	TR_FRAME	DELETED	smallint	NUMBER(1,0)	STD_TR_FRAME	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-22	순간소음	5	TR_FRAME	SELF_DB	smallint	-	STD_TR_FRAME	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	스니펫	1	TR_SNIPPET	TR_SNIPPET_ID	int NOT NULL	NUMBER(*,0)	STD_TR_SNIPPET	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-23	스니펫	1	TR_SNIPPET	AUDIO_FILENAME	varchar(80)	VARCHAR2(80 BYTE)	STD_TR_SNIPPET	AUDIO_FILE_NAME	varchar(150)	Rename	Fixed	확정	파일명만 매핑	
+STD-23	스니펫	1	TR_SNIPPET	NO_FRAME	int	NUMBER(4,0)	STD_TR_SNIPPET	FRAME_NUM	int NOT NULL	Rename	Fixed	확정		
+STD-23	스니펫	1	TR_SNIPPET	A_START_TIME	int	NUMBER	STD_TR_SNIPPET	A_START_MICROSEC	bigint NOT NULL	초→µs (×1000000)	Fixed	확정	소스 A_START_TIME 은 초(seconds). AAS 확인: a_start_time = 오디오헤더 factchunk.start_time(= µs/1000000 = 초, ViewCCFApplySubTR.cpp:1993). 타겟 µs 이므로 ×1,000,000	
+STD-23	스니펫	1	TR_SNIPPET	A_END_TIME	int	NUMBER	STD_TR_SNIPPET	A_END_MICROSEC	bigint NOT NULL	초→µs (×1000000)	Fixed	확정	소스 A_END_TIME 은 초. 타겟 µs 이므로 ×1,000,000	
+STD-23	스니펫	1	TR_SNIPPET	SAMPLING_RATE	float	NUMBER(6,0)	STD_TR_SNIPPET	SAMPLING_RATE	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	DET_SONAR	varchar(10)	VARCHAR2(10 BYTE)	STD_TR_SNIPPET	DET_SONAR	varchar(15) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	LATITUDE_DEGREE	int	NUMBER	STD_TR_SNIPPET	LATITUDE_DEGREE	int	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	LATITUDE_MINUTE	int	NUMBER	STD_TR_SNIPPET	LATITUDE_MINUTE	int	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	LATITUDE_SECOND	int	NUMBER	STD_TR_SNIPPET	LATITUDE_SECOND	int	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	LONGITUDE_DEGREE	int	NUMBER	STD_TR_SNIPPET	LONGITUDE_DEGREE	int	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	LONGITUDE_MINUTE	int	NUMBER	STD_TR_SNIPPET	LONGITUDE_MINUTE	int	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	LONGITUDE_SECOND	int	NUMBER	STD_TR_SNIPPET	LONGITUDE_SECOND	int	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	DET_DATE	datetime2	DATE	STD_TR_SNIPPET	DET_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정	datetime 변환	
+STD-23	스니펫	1	TR_SNIPPET	DET_PLATFORM	varchar(30)	VARCHAR2(30 BYTE)	STD_TR_SNIPPET	DET_PLATFORM	varchar(30)	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	DISTANCE_KM	float	NUMBER(12,3)	STD_TR_SNIPPET	DISTANCE_KM	real	Direct	Fixed	확정	완전하게 대응	
+STD-23	스니펫	1	TR_SNIPPET	COMMENTS	varchar(240)	VARCHAR2(240 BYTE)	STD_TR_SNIPPET	COMMENT	varchar(1000)	Rename	Fixed	확정	COMMENTS -> COMMENT; 말머리 [NAIMS-I] 삽입	
+STD-23	스니펫	1	TR_SNIPPET	DATE_SET_CHNG	datetime2	DATE	STD_TR_SNIPPET	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-23	스니펫	1	TR_SNIPPET	DELETED	smallint	NUMBER(1,0)	STD_TR_SNIPPET	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-23	스니펫	1	TR_SNIPPET	SELF_DB	smallint	-	STD_TR_SNIPPET	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	스니펫	1	TR_SNIPPET	-	-	-	STD_TR_SNIPPET	AUDIO_FILE	varbinary(max)	wav 원본 적재	Proposed	확정	스니펫 실제 wav 데이터	
+	스니펫	1	TR_SNIPPET	-	-	-	STD_TR_SNIPPET	BIN_NUM	int NOT NULL	그램 데이터에서 계산	Proposed	확정	그램 데이터의 bin 수 계산	
+	스니펫	1	TR_SNIPPET	-	-	-	STD_TR_SNIPPET	SPECTROGRAM_DATA	varbinary(max) NOT NULL	빈 byte	Proposed	확정	일단 빈 바이트 적재	
+	스니펫	1	TR_SNIPPET	-	-	-	STD_TR_SNIPPET	SPECTROGRAM_START_FREQ	real NOT NULL	그램 내부값/-1	Proposed	확정	그램 내부에 있으면 삽입, 없으면 -1	
+	스니펫	1	TR_SNIPPET	-	-	-	STD_TR_SNIPPET	SPECTROGRAM_END_FREQ	real NOT NULL	그램 내부값/-1	Proposed	확정	그램 내부에 있으면 삽입, 없으면 -1	
+	스니펫	1	TR_SNIPPET	-	-	-	STD_TR_SNIPPET	SPECTROGRAM_FRAME_PER_SEC	real NOT NULL	직접 계산	Proposed	확정	초당 프레임 직접 계산	
+	스니펫	1	TR_SNIPPET	-	-	-	STD_TR_SNIPPET	ROWGUID	uniqueidentifier NOT NULL	신규	Proposed	확정	타겟 기본값 newid() 로 채움	
+	기준정보	3	VESSEL_DATA	VESSEL_ID	int NOT NULL	NUMBER(*,0)	STD_VESSEL_DATA	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-24	기준정보	3	VESSEL_DATA	CLASS_ID	int	NUMBER(*,0)	STD_VESSEL_DATA	REF_STD_CLASSES_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-24	기준정보	3	VESSEL_DATA	COUNTRY_ID	int	NUMBER(*,0)	STD_VESSEL_DATA	REF_STD_COUNTRY_CODES_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-24	기준정보	3	VESSEL_DATA	VESSEL_NAME	varbinary(300)	RAW(200)	STD_VESSEL_DATA	VESSEL_NAME	varchar(100) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); Oracle: 복호화 필요 (암호문→평문); 양쪽 암호화 — 복호화 후 적재	
+STD-24	기준정보	3	VESSEL_DATA	VESSEL_NAME_K	varbinary(300)	RAW(200)	STD_VESSEL_DATA	VESSEL_NAME_K	varchar(100) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); Oracle: 복호화 필요 (암호문→평문); 양쪽 암호화 — 복호화 후 적재	
+STD-24	기준정보	3	VESSEL_DATA	VESSEL_NAME_ISUS90	varbinary(300)	RAW(200)	STD_VESSEL_DATA	VESSEL_NAME_ISUS90	varchar(100) NOT NULL	Direct	Fixed	확정	MsSQL: 복호화 필요 (암호문→평문); Oracle: 복호화 필요 (암호문→평문); 양쪽 암호화 — 복호화 후 적재	
+STD-24	기준정보	3	VESSEL_DATA	CTRY_USER_RMKS	varchar(35)	VARCHAR2(35 BYTE)	STD_VESSEL_DATA	CTRY_USER_RMKS	varchar(35) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	PENDANT_NO	varchar(10)	VARCHAR2(10 BYTE)	STD_VESSEL_DATA	PENDANT_NO	varchar(10) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	CALL_SIGN	varchar(20)	VARCHAR2(20 BYTE)	STD_VESSEL_DATA	CALL_SIGN	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	CREW	int	NUMBER(5,0)	STD_VESSEL_DATA	CREW	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	LAID_DOWN	varchar(20)	VARCHAR2(20 BYTE)	STD_VESSEL_DATA	LAID_DOWN	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	COMMISSIONED	varchar(20)	VARCHAR2(20 BYTE)	STD_VESSEL_DATA	COMMISSIONED	varchar(20)	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	RETIRED	varchar(20)	VARCHAR2(20 BYTE)	STD_VESSEL_DATA	RETIRED	varchar(20)	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	MANUFACTURER	varchar(30)	VARCHAR2(30 BYTE)	STD_VESSEL_DATA	MANUFACTURER	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	VERSION	int	NUMBER(5,0)	STD_VESSEL_DATA	VERSION	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-24	기준정보	3	VESSEL_DATA	DATE_SET_CHNG	datetime2	DATE	STD_VESSEL_DATA	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-24	기준정보	3	VESSEL_DATA	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_VESSEL_DATA	COMMENT	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-24	기준정보	3	VESSEL_DATA	DELETED	smallint	NUMBER(1,0)	STD_VESSEL_DATA	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-24	기준정보	3	VESSEL_DATA	SELF_DB	smallint	-	STD_VESSEL_DATA	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	기준정보	3	VESSEL_DATA	-	-	-	STD_VESSEL_DATA	HAS_CLUTTER	smallint NOT NULL	신규	Proposed	확정	타겟 기본값 0 로 채움	
+	무장	1	WEAPON	WEAPON_ID	int NOT NULL	NUMBER(*,0)	STD_WEAPON	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-25	무장	1	WEAPON	WEAPON_MODEL	varchar(30)	VARCHAR2(30 BYTE)	STD_WEAPON	WEAPON_MODEL	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-25	무장	1	WEAPON	WEAPON_TYPE	varchar(20)	VARCHAR2(20 BYTE)	STD_WEAPON	WEAPON_TYPE	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-25	무장	1	WEAPON	ATTACK_RANGE_KM	float	NUMBER(12,3)	STD_WEAPON	ATTACK_RANGE_KM	real NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-25	무장	1	WEAPON	GUIDE_METHOD	varchar(20)	VARCHAR2(20 BYTE)	STD_WEAPON	GUIDE_METHOD	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-25	무장	1	WEAPON	MANUFACTURER	varchar(30)	VARCHAR2(30 BYTE)	STD_WEAPON	MANUFACTURER	varchar(30) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-25	무장	1	WEAPON	MANUFACT_DATE	varchar(20)	VARCHAR2(20 BYTE)	STD_WEAPON	MANUFACT_DATE	varchar(20) NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-25	무장	1	WEAPON	VERSION	int	NUMBER	STD_WEAPON	VERSION	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-25	무장	1	WEAPON	DATE_SET_CHNG	datetime2	DATE	STD_WEAPON	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-25	무장	1	WEAPON	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_WEAPON	COMMENT	varchar(1000)	Rename	Fixed	확정	말머리 [NAIMS-I] 삽입	
+STD-25	무장	1	WEAPON	DELETED	smallint	NUMBER(1,0)	STD_WEAPON	DELETED	smallint NOT NULL	형 변환	Fixed	확정	0=정상, 1=임시삭제 — 레거시 값 보존 (형 변환)	
+STD-25	무장	1	WEAPON	SELF_DB	smallint	-	STD_WEAPON	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	무장	3	WEAPON_CARRIER	WCARRIER_ID	int NOT NULL	NUMBER(*,0)	STD_WEAPON_CLASSES_LINK	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+STD-26	무장	3	WEAPON_CARRIER	WEAPON_ID	int	NUMBER(*,0)	STD_WEAPON_CLASSES_LINK	REF_STD_WEAPON_ID	int NOT NULL	FKRename	Fixed	확정		
+STD-26	무장	3	WEAPON_CARRIER	CLASS_ID	int	VARCHAR2(30 BYTE)	STD_WEAPON_CLASSES_LINK	REF_STD_CLASSES_ID	int NOT NULL	FKRename	Fixed	확정	Oracle: 타입 계열 상이 (STR→INT) 변환 규칙 확정 필요	
+STD-26	무장	3	WEAPON_CARRIER	QUANTITY	int	NUMBER(5,0)	STD_WEAPON_CLASSES_LINK	QUANTITY	int NOT NULL	Direct	Fixed	확정	완전하게 대응	
+STD-26	무장	3	WEAPON_CARRIER	DATE_SET_CHNG	datetime2	DATE	STD_WEAPON_CLASSES_LINK	CHNG_DATETIME	datetime2(7) NOT NULL	Rename	Fixed	확정		
+STD-26	무장	3	WEAPON_CARRIER	SELF_DB	smallint	-	STD_WEAPON_CLASSES_LINK	-	-	제외	Exclude	제외	Oracle 소스에 없음 (MsSQL 전용)	
+	스니펫	5	SIG_SNIPPET	SIG_SNP_ID	int NOT NULL	NUMBER(*,0)	STD_NB_SIG_SNIPPET_LINK	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+	스니펫	5	SIG_SNIPPET	NB_SNIPPET_ID	int	NUMBER(*,0)	STD_NB_SIG_SNIPPET_LINK	REF_STD_NB_SNIPPET_ID	int NOT NULL	FK→REF_*_ID	Proposed	신규제안		
+	스니펫	5	SIG_SNIPPET	SIGNATURE_ID	int	NUMBER(*,0)	STD_NB_SIG_SNIPPET_LINK	REF_STD_SIGNATURES_ID	int NOT NULL	FK→REF_*_ID	Proposed	신규제안		
+	스니펫	5	SIG_SNIPPET	DATE_SET_CHNG	datetime2	DATE	STD_NB_SIG_SNIPPET_LINK	CHNG_DATETIME	datetime2(7) NOT NULL	별칭	Proposed	확정		
+	스니펫	5	SIG_SNIPPET	DELETED	smallint	NUMBER(1,0)	STD_NB_SIG_SNIPPET_LINK	DELETED	smallint NOT NULL	동일	Proposed	확정	완전하게 대응	
+	스니펫	5	SIG_SNIPPET	SELF_DB	smallint	-	STD_NB_SIG_SNIPPET_LINK	-	-	폐기	Proposed	제외	신규 체계에서 사용하지 않음	
+	스니펫	6	FRAME_SNIPPET	FRM_SNP_ID	int NOT NULL	NUMBER(*,0)	STD_TR_FRAME_SNIPPET_LINK	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+	스니펫	6	FRAME_SNIPPET	FRAME_ID	int	NUMBER(*,0)	STD_TR_FRAME_SNIPPET_LINK	REF_STD_TR_FRAME_ID	int NOT NULL	FK수동	Proposed	신규제안	순간소음 프레임 참조 — TR_FRAME.RECORD_ID 로 치환	
+	스니펫	6	FRAME_SNIPPET	TR_SNIPPET_ID	int	NUMBER(*,0)	STD_TR_FRAME_SNIPPET_LINK	REF_STD_TR_SNIPPET_ID	int NOT NULL	FK→REF_*_ID	Proposed	신규제안		
+	스니펫	6	FRAME_SNIPPET	DATE_SET_CHNG	datetime2	DATE	STD_TR_FRAME_SNIPPET_LINK	CHNG_DATETIME	datetime2(7) NOT NULL	별칭	Proposed	확정		
+	스니펫	6	FRAME_SNIPPET	DELETED	smallint	NUMBER(1,0)	STD_TR_FRAME_SNIPPET_LINK	DELETED	smallint NOT NULL	동일	Proposed	확정	완전하게 대응	
+	스니펫	6	FRAME_SNIPPET	SELF_DB	smallint	-	STD_TR_FRAME_SNIPPET_LINK	-	-	폐기	Proposed	제외	신규 체계에서 사용하지 않음	
+	영상자료	4	IMAGE_DATA	IMAGE_ID	int NOT NULL	NUMBER(*,0)	STD_REFERENCE_DATA	RECORD_ID	int IDENTITY NOT NULL	제외 (신규 RECORD_ID 자동생성)		자동생성	레거시 PK 값은 승계하지 않고 타겟 IDENTITY 자동 채번	
+	영상자료	4	IMAGE_DATA	VESSEL_ID	int	NUMBER(*,0)	STD_REFERENCE_DATA	REF_TARGET_ID	int NOT NULL	VESSEL→RECORD_ID	Proposed	확정	소스 VESSEL_ID 를 VESSEL_DATA 신규 RECORD_ID 로 치환	
+	영상자료	4	IMAGE_DATA	IMG_FILENAME	varchar(80)	VARCHAR2(80 BYTE)	STD_REFERENCE_DATA	FILE_NAME	varchar(150) NOT NULL	IMG_FILENAME	Proposed	확정	소스 IMG_FILENAME	
+	영상자료	4	IMAGE_DATA	SOURCE	varchar(12)	VARCHAR2(12 BYTE)	STD_REFERENCE_DATA	SOURCE	varchar(20) NOT NULL	동일	Proposed	확정	완전하게 대응	
+	영상자료	4	IMAGE_DATA	DATE_SET_CHNG	datetime2	DATE	STD_REFERENCE_DATA	CHNG_DATETIME	datetime2(7) NOT NULL	별칭	Proposed	확정		
+	영상자료	4	IMAGE_DATA	COMMENTS	varchar(80)	VARCHAR2(80 BYTE)	STD_REFERENCE_DATA	COMMENT	varchar(1000)	별칭	Proposed	확정	말머리 [NAIMS-I] 삽입	
+	영상자료	4	IMAGE_DATA	DELETED	smallint	NUMBER(1,0)	STD_REFERENCE_DATA	DELETED	smallint	동일	Proposed	확정	완전하게 대응	
+	영상자료	4	IMAGE_DATA	SELF_DB	smallint	-	STD_REFERENCE_DATA	-	-	폐기	Proposed	제외	신규 체계에서 사용하지 않음	
+	영상자료	4	IMAGE_DATA	-	-	-	STD_REFERENCE_DATA	REF_TARGET_TYPE	int NOT NULL	고정값 5 (vessel)	Proposed	확정	함정(vessel) = 5 (신규 코드). 기존: 협대역=1/AI=2/능동=4	
+	영상자료	4	IMAGE_DATA	-	-	-	STD_REFERENCE_DATA	FILE_TYPE	int NOT NULL	png	Proposed	확정	이미지(png) 코드 (레거시 FileType=1=이미지)	
+	영상자료	4	IMAGE_DATA	-	-	-	STD_REFERENCE_DATA	ROWGUID	uniqueidentifier NOT NULL	신규	Proposed	확정	타겟 기본값 newid() 로 채움	
+	영상자료	4	IMAGE_DATA	-	-	-	STD_REFERENCE_DATA	FILE_DATA	varbinary(max) NOT NULL	IMG 파일 원본	Proposed	확정	IMG_FILENAME 이 가리키는 실제 이미지 바이트	

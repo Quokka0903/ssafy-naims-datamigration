@@ -162,7 +162,7 @@ namespace DBImplant_N1toN2.Features.Migration.Models
             if (ext == "CLA")
                 return ("PREC_SS_EVENT", "파싱→INSERT", "분류 결과");
             if (ext == "TMP")
-                return ("PREC_SS_FRAME", "파싱→INSERT", "바이너리 결과");
+                return ("—", "Exclude", "tmp 미사용 (Row 8,12)");
             if (ext == "GRM")
                 return ("—", "스킵(Phase2)", "GRM 변환 스펙 미확정");
 
@@ -176,11 +176,11 @@ namespace DBImplant_N1toN2.Features.Migration.Models
             var nbPath = Models.AppSettingsHelper.GetNarrowbandRaw();
             if (!Directory.Exists(nbPath)) return;
 
-            var nbDirs = SafeGetDirectories(nbPath, "*").Take(5); // 미리보기: 최대 5개 임무
+            var nbDirs = SafeGetDirectories(nbPath, "*");
             foreach (var missionDir in nbDirs)
             {
                 var mission = Path.GetFileName(missionDir);
-                foreach (var file in SafeGetFiles(missionDir, "*", SearchOption.AllDirectories).Take(20))
+                foreach (var file in SafeGetFiles(missionDir, "*", SearchOption.AllDirectories))
                 {
                     var rel = Path.GetRelativePath(missionDir, file);
                     var ext = Path.GetExtension(file).ToUpperInvariant().TrimStart('.');
@@ -189,58 +189,184 @@ namespace DBImplant_N1toN2.Features.Migration.Models
                     rows.Add(F("협대역(NB)", mission, rel, ext, target, action, size, note));
                 }
             }
-
-            if (!rows.Any(r => r.Category == "협대역(NB)"))
-            {
-                rows.Add(F("협대역(NB)", "(임무)", "nb_식별결과.fea", "FEA", "NB_SNIPPET", "파싱→INSERT", 0, "주파수 특징 정보"));
-                rows.Add(F("협대역(NB)", "(임무)", "식별파라미터.dat", "DAT", "NB_SNIPPET", "파싱→INSERT", 0, "식별 파라미터"));
-                rows.Add(F("협대역(NB)", "(임무)", "nb_식별결과.cla", "CLA", "NB_SNIPPET", "파싱→INSERT", 0, "분류 결과"));
-                rows.Add(F("협대역(NB)", "(임무)", "Snippets/*.wav",  "WAV", "NB_SNIPPET", "BLOB→INSERT", 0, "협대역 스니펫"));
-                rows.Add(F("협대역(NB)", "(임무)", "Snippets/*.grm",  "GRM", "—",          "스킵(Phase2)",0, "GRM 변환 스펙 미확정"));
-            }
         }
 
+        /// <summary>
+        /// 협대역원음자료 (*.nb 패키지) 파일 분류 — 매핑 테이블 2번 시트 Row 14~22 기준.
+        ///   *.nb 패키지/
+        ///     ├─ Signal.wav                            → PREC_SRC_NB_SIG (Row 16)
+        ///     ├─ 정밀신호처리파라미터.set                → PREC_NB_ANALYSIS (Row 15)
+        ///     └─ 정밀분석/
+        ///         ├─ nb_식별결과.fea                    → PREC_NB_SIGNATURE / PREC_NB_HARMONIC (Row 17)
+        ///         ├─ 식별파라미터.dat                   → Exclude (Row 18)
+        ///         ├─ nb_식별결과.cla                    → PREC_NB_CLASSIFICATION (Row 19)
+        ///         ├─ 보조정보.alg                       → RAW_COLLECT_SUPPLEMENT / PREC_COLLECT_SUPPLEMENT (Row 20)
+        ///         ├─ Snippets/*.wav,*.grm              → PREC_NB_SNIPPET (Row 21)
+        ///         └─ SnpTmp/*                          → Exclude (Row 22)
+        ///   루트 WAV + 연관파일 (수집원음 동일 구조):
+        ///     {Base}.wav → RAW_SCHANNEL_INFO, {Base}_Lofar.grm → RAW_SCHANNEL_NB_INFO 등
+        /// </summary>
         private static (string target, string action, string note) ClassifyNbFile(string rel, string ext)
         {
-            if (ext == "FEA") return ("NB_SNIPPET", "파싱→INSERT", "주파수 특징");
-            if (ext == "DAT") return ("NB_SNIPPET", "파싱→INSERT", "식별 파라미터");
-            if (ext == "CLA") return ("NB_SNIPPET", "파싱→INSERT", "분류 결과");
-            if (ext == "WAV") return ("NB_SNIPPET", "BLOB→INSERT", "스니펫 WAV");
-            if (ext == "GRM") return ("—", "스킵(Phase2)", "GRM 변환 미확정");
-            return ("—", "스킵", "");
+            var lower = rel.Replace('\\', '/').ToLowerInvariant();
+
+            // ── SnpTmp/ → Exclude (매핑 테이블 Row 22) ──
+            if (lower.Contains("snptmp"))
+                return ("—", "Exclude", "tmp 미사용 (Row 22)");
+
+            // ── Snippets/ → PREC_NB_SNIPPET (매핑 테이블 Row 21) ──
+            if (lower.Contains("snippets"))
+            {
+                if (ext == "WAV") return ("PREC_NB_SNIPPET", "BLOB→INSERT", "NB 발췌 원음 (Row 21)");
+                if (ext == "GRM") return ("PREC_NB_SNIPPET", "변환→INSERT", "NB 발췌 그램 (Row 21)");
+                return ("—", "확인필요", "Snippets 기타 파일");
+            }
+
+            // ── 정밀분석/ 하위 파일 ──
+            if (lower.Contains("정밀분석"))
+            {
+                if (ext == "FEA") return ("PREC_NB_SIGNATURE/PREC_NB_HARMONIC", "파싱→INSERT", "NB 특징 (Row 17)");
+                if (ext == "CLA") return ("PREC_NB_CLASSIFICATION", "파싱→INSERT", "NB 분류 (Row 19)");
+                if (ext == "DAT") return ("—", "Exclude", "식별파라미터 미사용 (Row 18)");
+                if (ext == "ALG") return ("RAW_COLLECT_SUPPLEMENT/PREC_COLLECT_SUPPLEMENT", "파싱→INSERT", "보조정보 (Row 20)");
+                if (ext == "SET") return ("PREC_NB_ANALYSIS", "파싱→INSERT", "NB 파라미터 (Row 15)");
+                return ("—", "확인필요", "정밀분석 기타");
+            }
+
+            // ── 루트: *.set ──
+            if (ext == "SET")
+                return ("PREC_NB_ANALYSIS", "파싱→INSERT", "NB 파라미터 (Row 15)");
+
+            // ── 루트: WAV → RAW_SCHANNEL_INFO ──
+            if (ext == "WAV")
+                return ("RAW_SCHANNEL_INFO", "INSERT", "FK→RAW_COLLECT_SIG, BaseName 1개=1건");
+
+            // ── {Base}_xxx.grm → RAW_SCHANNEL_NB_INFO ──
+            if (lower.Contains("_lofar") && ext == "GRM")
+                return ("RAW_SCHANNEL_NB_INFO.ANLAY_LOFAR_GRAM_FILE", "변환→INSERT", "FK→RAW_SCHANNEL_INFO");
+            if (lower.Contains("_demon") && ext == "GRM")
+                return ("RAW_SCHANNEL_NB_INFO.ANLAY_DEMON_GRAM_FILE", "변환→INSERT", "FK→RAW_SCHANNEL_INFO");
+            if (lower.Contains("_event") && ext == "GRM")
+                return ("EXTRACT_DATA_STORE.DATA", "변환→INSERT", "FK→RAW_SCHANNEL_INFO");
+
+            if (lower.Contains("_nblist") && ext == "TXT")
+                return ("(발췌구간참조)", "파싱→참조", "발췌 구간 목록");
+            if (lower.Contains("_spslist") && ext == "TXT")
+                return ("RAW_SCHANNEL_SS_EVENT/SS_SEGMENT", "파싱→INSERT", "SPS 이벤트/세그먼트");
+            if (lower.Contains("_detect") && ext == "DAT")
+                return ("(탐지임계값)", "파싱→참조", "float[] 탐지 결과");
+            if (lower.Contains("drawing") && ext == "TXT")
+                return ("—", "스킵", "커서마크");
+
+            return ("—", "확인필요", "미분류 파일");
         }
 
         // ── Raw 파일 매핑 ────────────────────────────────────────────────
 
+        /// <summary>
+        /// 수집원음자료 파일 매핑 — 이전 지시사항 기준:
+        ///   수집원음자료/임무폴더/               → RAW_COLLECT_SIG (1건)
+        ///     └─ 협대역/
+        ///         ├─ {Base}.wav                 → RAW_SCHANNEL_INFO (Base당 1건, FK→RAW_COLLECT_SIG)
+        ///         ├─ {Base}_Lofar.grm           → RAW_SCHANNEL_NB_INFO.ANLAY_LOFAR_GRAM_FILE (FK→RAW_SCHANNEL_INFO)
+        ///         ├─ {Base}_Demon.grm           → RAW_SCHANNEL_NB_INFO.ANLAY_DEMON_GRAM_FILE
+        ///         ├─ {Base}_Event.grm           → EXTRACT_DATA_STORE.DATA
+        ///         ├─ {Base}_NBlist.txt           → 발췌구간 참조
+        ///         ├─ {Base}_SPSlist.txt          → RAW_SCHANNEL_SS_EVENT/SS_SEGMENT
+        ///         ├─ {Base}_Detect.dat           → 탐지 임계값
+        ///         └─ {Base}_*Drawing*.txt        → 스킵
+        ///     └─ *.sd/                          → 단주기 동일 파싱
+        ///     └─ 보조정보.alg                    → RAW_COLLECT_SUPPLEMENT
+        /// </summary>
         private static void AddRawFileRules(List<FileTransferPreviewRow> rows, FileBrowserViewModel fb)
         {
             var rawPath = Models.AppSettingsHelper.GetCollectRaw();
             if (!Directory.Exists(rawPath)) return;
 
-            var rawDirs = SafeGetDirectories(rawPath, "*").Take(3);
+            var rawDirs = SafeGetDirectories(rawPath, "*");
             foreach (var missionDir in rawDirs)
             {
                 var mission = Path.GetFileName(missionDir);
-                foreach (var file in SafeGetFiles(missionDir, "*", SearchOption.TopDirectoryOnly).Take(10))
+
+                // 임무 폴더 자체 → RAW_COLLECT_SIG
+                rows.Add(F("수집원음(Raw)", mission, "(임무폴더)", "DIR",
+                    "RAW_COLLECT_SIG", "폴더→INSERT", 0, "임무폴더 1개=1레코드"));
+
+                // 협대역 하위 폴더 — BaseName 그룹핑
+                var nbDir = Path.Combine(missionDir, "협대역");
+                if (!Directory.Exists(nbDir))
+                    nbDir = SafeGetDirectories(missionDir, "*")
+                        .FirstOrDefault(d => Path.GetFileName(d).Contains("협대역")) ?? "";
+
+                if (Directory.Exists(nbDir))
                 {
-                    var rel = Path.GetFileName(file);
-                    var ext = Path.GetExtension(file).ToUpperInvariant().TrimStart('.');
-                    var size = new FileInfo(file).Length;
-                    var (target, action, note) = ClassifyRawFile(rel, ext);
-                    rows.Add(F("수집원음(Raw)", mission, rel, ext, target, action, size, note));
+                    var allFiles = SafeGetFiles(nbDir, "*.*");
+
+                    foreach (var file in allFiles)
+                    {
+                        var fi = new FileInfo(file);
+                        var ext = fi.Extension.ToUpperInvariant().TrimStart('.');
+                        var lower = fi.Name.ToLowerInvariant();
+                        string target, action, note;
+
+                        if (ext == "WAV")
+                        {
+                            target = "RAW_SCHANNEL_INFO";
+                            action = "INSERT";
+                            note = "FK→RAW_COLLECT_SIG, BaseName 1개=1건";
+                        }
+                        else if (lower.Contains("_lofar") && ext == "GRM")
+                        {
+                            target = "RAW_SCHANNEL_NB_INFO.ANLAY_LOFAR_GRAM_FILE";
+                            action = "변환→INSERT";
+                            note = "FK→RAW_SCHANNEL_INFO (short→float)";
+                        }
+                        else if (lower.Contains("_demon") && ext == "GRM")
+                        {
+                            target = "RAW_SCHANNEL_NB_INFO.ANLAY_DEMON_GRAM_FILE";
+                            action = "변환→INSERT";
+                            note = "FK→RAW_SCHANNEL_INFO (short→float)";
+                        }
+                        else if (lower.Contains("_event") && ext == "GRM")
+                        {
+                            target = "EXTRACT_DATA_STORE.DATA";
+                            action = "변환→INSERT";
+                            note = "FK→RAW_SCHANNEL_INFO";
+                        }
+                        else if (lower.Contains("_nblist") && ext == "TXT")
+                        { target = "(발췌구간참조)"; action = "파싱→참조"; note = "발췌 구간 목록"; }
+                        else if (lower.Contains("_spslist") && ext == "TXT")
+                        { target = "RAW_SCHANNEL_SS_EVENT/SS_SEGMENT"; action = "파싱→INSERT"; note = "SPS 이벤트/세그먼트"; }
+                        else if (lower.Contains("_detect") && ext == "DAT")
+                        { target = "(탐지임계값)"; action = "파싱→참조"; note = "float[] 탐지 결과"; }
+                        else if (lower.Contains("drawing") && ext == "TXT")
+                        { target = "—"; action = "스킵"; note = "커서마크"; }
+                        else
+                        { target = "—"; action = "확인필요"; note = "미분류"; }
+
+                        rows.Add(F("수집원음(Raw)", mission, $"협대역/{fi.Name}", ext,
+                            target, action, fi.Length, note));
+                    }
+                }
+
+                // .sd 하위 폴더
+                foreach (var sdDir in SafeGetDirectories(missionDir, "*.sd"))
+                {
+                    var sdName = Path.GetFileName(sdDir);
+                    var fileCount = SafeGetFiles(sdDir, "*", SearchOption.AllDirectories).Length;
+                    rows.Add(F("수집원음(Raw)", mission, sdName, "SD",
+                        "(단주기 동일파싱)", "파싱→INSERT", 0, $"파일 {fileCount}개"));
+                }
+
+                // 보조정보.alg
+                var algPath = Path.Combine(missionDir, "보조정보.alg");
+                if (File.Exists(algPath))
+                {
+                    rows.Add(F("수집원음(Raw)", mission, "보조정보.alg", "ALG",
+                        "RAW_COLLECT_SUPPLEMENT", "파싱→INSERT", new FileInfo(algPath).Length,
+                        "임무정보/해역/소음/표적/탐지정보"));
                 }
             }
-
-            if (!rows.Any(r => r.Category == "수집원음(Raw)"))
-            {
-                rows.Add(F("수집원음(Raw)", "(임무)", "Signal_*.wav", "WAV", "PREC_ANALYSIS", "경로참조", 0, "원음 WAV 참조"));
-            }
-        }
-
-        private static (string target, string action, string note) ClassifyRawFile(string rel, string ext)
-        {
-            if (ext == "WAV") return ("PREC_ANALYSIS", "경로참조", "원음 WAV");
-            return ("—", "스킵", "");
         }
 
         // ── 유틸 ─────────────────────────────────────────────────────────

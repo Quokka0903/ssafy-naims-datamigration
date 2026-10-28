@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DBImplant_N1toN2.Infrastructure.Utilities;
 using DBImplant_N1toN2.Audio;
 using System.Diagnostics;
 using System.Globalization;
@@ -142,6 +143,10 @@ VALUES
             evCmd.Parameters.AddWithValue("@pulse", ev.strPulseName ?? "NAIMS-I Imported");
             #endregion
 
+            // [NAIMS-ISSUE:CHAR-PADDING] .SD/.CLA/.TMP 는 C 고정 배열 문자열이라
+            //   변조방식·송신모드·소나명이 char[N] 폭만큼 공백으로 채워져 온다.
+            //   실행 직전에 한 번 훑어 떼면 파라미터가 늘어도 자동으로 덮인다.
+            LegacyText.NormalizeStringParameters(evCmd);
             int preciseEventId = (int)await evCmd.ExecuteScalarAsync();
 
             /*――― SEGMENT LOOP ―――*/
@@ -184,6 +189,7 @@ VALUES
                 segCmd.Parameters.AddWithValue("@ptn", seg.PatternValue);
                 #endregion
 
+                LegacyText.NormalizeStringParameters(segCmd);   // [NAIMS-ISSUE:CHAR-PADDING]
                 int preciseSegId = (int)await segCmd.ExecuteScalarAsync();
 
                 /*――― FRAME LOOP ―――*/
@@ -203,6 +209,7 @@ VALUES
                     frCmd.Parameters.AddWithValue("@segId", preciseSegId);
                     frCmd.Parameters.AddWithValue("@dbFrmId", fr.DBFrmID);
 
+                    LegacyText.NormalizeStringParameters(frCmd);   // [NAIMS-ISSUE:CHAR-PADDING]
                     await frCmd.ExecuteNonQueryAsync();
                 }
             }

@@ -6,3 +6,6 @@ publish/
 .vs/
 crash.log
 *.tmp
+
+# 배포 스테이징(대용량 self-contained 산출물)
+_deploy/

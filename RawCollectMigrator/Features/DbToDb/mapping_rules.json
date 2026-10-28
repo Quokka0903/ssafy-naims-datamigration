@@ -1,0 +1,706 @@
+{
+  "_comment": "NAIMS→NAIMS2 DB→DB 매핑 규칙 단일 원본(SSOT). docs/schema/build_mapping.py 와 C# MigrationRules.cs 가 함께 읽는다. 생성: docs/schema/dump_rules_json.py",
+  "version": "2026-07-23",
+  "plan": [
+    {
+      "source": "COUNTRY_CODES",
+      "target": "STD_COUNTRY_CODES",
+      "pk": "COUNTRY_ID",
+      "level": 1,
+      "category": "기준정보"
+    },
+    {
+      "source": "CLASSES",
+      "target": "STD_CLASSES",
+      "pk": "CLASS_ID",
+      "level": 2,
+      "category": "기준정보"
+    },
+    {
+      "source": "VESSEL_DATA",
+      "target": "STD_VESSEL_DATA",
+      "pk": "VESSEL_ID",
+      "level": 3,
+      "category": "기준정보"
+    },
+    {
+      "source": "CHARACTERISTICS",
+      "target": "STD_CHARACTERISTICS",
+      "pk": "CHARACTERISTICS_ID",
+      "level": 4,
+      "category": "기준정보"
+    },
+    {
+      "source": "SIGNATURES",
+      "target": "STD_SIGNATURES",
+      "pk": "SIGNATURES_ID",
+      "level": 4,
+      "category": "수동신호"
+    },
+    {
+      "source": "HARMONICS",
+      "target": "STD_HARMONICS",
+      "pk": "HARMONICS_ID",
+      "level": 5,
+      "category": "수동신호"
+    },
+    {
+      "source": "ACTIVE_SONAR",
+      "target": "STD_ACTV_SONAR",
+      "pk": "SONAR_ID",
+      "level": 2,
+      "category": "능동소나"
+    },
+    {
+      "source": "PULSES",
+      "target": "STD_PULSES",
+      "pk": "PULSE_ID",
+      "level": 3,
+      "category": "능동소나"
+    },
+    {
+      "source": "PULSE_SEGMENTS",
+      "target": "STD_PULSE_SEGMENTS",
+      "pk": "SEGMENT_ID",
+      "level": 1,
+      "category": "능동소나"
+    },
+    {
+      "source": "PULSE_FREQUENCY_ISUS90",
+      "target": "STD_PULSE_FREQUENCY_ISUS90",
+      "pk": "PULSE_F_ID",
+      "level": 1,
+      "category": "능동소나"
+    },
+    {
+      "source": "PULSE_SEG_LENGTH_ISUS90",
+      "target": "STD_PULSE_SEG_LENGTH_ISUS90",
+      "pk": "SEG_ID",
+      "level": 1,
+      "category": "능동소나"
+    },
+    {
+      "source": "PULSE_SEG_SWING_ISUS90",
+      "target": "STD_PULSE_SEG_SWING_ISUS90",
+      "pk": "SWING_ID",
+      "level": 1,
+      "category": "능동소나"
+    },
+    {
+      "source": "TRANSIENT",
+      "target": "STD_TRANSIENT",
+      "pk": "TR_ID",
+      "level": 4,
+      "category": "순간소음"
+    },
+    {
+      "source": "TR_FRAME",
+      "target": "STD_TR_FRAME",
+      "pk": "FRAME_ID",
+      "level": 5,
+      "category": "순간소음"
+    },
+    {
+      "source": "NB_SNIPPET",
+      "target": "STD_NB_SNIPPET",
+      "pk": "SNIPPET_ID",
+      "level": 1,
+      "category": "스니펫"
+    },
+    {
+      "source": "AI_SNIPPET",
+      "target": "STD_AI_SNIPPET",
+      "pk": "SNIPPET_ID",
+      "level": 4,
+      "category": "스니펫"
+    },
+    {
+      "source": "TR_SNIPPET",
+      "target": "STD_TR_SNIPPET",
+      "pk": "SNIPPET_ID",
+      "level": 1,
+      "category": "스니펫"
+    },
+    {
+      "source": "SIG_SNIPPET",
+      "target": "STD_NB_SIG_SNIPPET_LINK",
+      "pk": "SIG_SNIPPET_ID",
+      "level": 5,
+      "category": "스니펫"
+    },
+    {
+      "source": "FRAME_SNIPPET",
+      "target": "STD_TR_FRAME_SNIPPET_LINK",
+      "pk": "FRAME_SNIPPET_ID",
+      "level": 6,
+      "category": "스니펫"
+    },
+    {
+      "source": "IMAGE_DATA",
+      "target": "STD_REFERENCE_DATA",
+      "pk": "IMG_ID",
+      "level": 4,
+      "category": "영상자료"
+    },
+    {
+      "source": "WEAPON",
+      "target": "STD_WEAPON",
+      "pk": "WEAPON_ID",
+      "level": 1,
+      "category": "무장"
+    },
+    {
+      "source": "WEAPON_CARRIER",
+      "target": "STD_WEAPON_CLASSES_LINK",
+      "pk": "CARRIER_ID",
+      "level": 3,
+      "category": "무장"
+    },
+    {
+      "source": "DIST_LIST",
+      "target": "STD_DIST_LIST",
+      "pk": "DIST_ID",
+      "level": 2,
+      "category": "배포관리"
+    },
+    {
+      "source": "DIST_TO",
+      "target": "STD_DIST_TO",
+      "pk": "DIST_TO_ID",
+      "level": 3,
+      "category": "배포관리"
+    },
+    {
+      "source": "DB_DIST_GROUP",
+      "target": "STD_DB_DIST_GROUP",
+      "pk": "GROUP_ID",
+      "level": 1,
+      "category": "배포관리"
+    },
+    {
+      "source": "DB_DIST_LOG",
+      "target": "STD_DB_DIST_LOG",
+      "pk": "LOG_ID",
+      "level": 3,
+      "category": "배포관리"
+    },
+    {
+      "source": "CD_CHANGE_LOG",
+      "target": "STD_CD_CHANGE_LOG",
+      "pk": "LOG_ID",
+      "level": 1,
+      "category": "변경이력"
+    },
+    {
+      "source": "CD_BACKUP_LOG",
+      "target": "STD_CD_BACKUP_LOG",
+      "pk": "LOG_ID",
+      "level": 1,
+      "category": "변경이력"
+    },
+    {
+      "source": "CCF2CD_LOG",
+      "target": "STD_CCF2CD_LOG",
+      "pk": "CCFCD_ID",
+      "level": 1,
+      "category": "변경이력"
+    }
+  ],
+  "excluded": {
+    "DATASET": "0건 (빈 테이블)",
+    "DS_BACKUP_LOG": "0건 (빈 테이블)",
+    "DS_DIST_LOG": "0건 (빈 테이블)",
+    "FIELD_CONV": "0건 (빈 테이블)",
+    "HELP": "Oracle 전용 도움말 테이블",
+    "ONA_209": "용도 미상 — 이관 대상 아님(확정)",
+    "ONA_214": "용도 미상 — 이관 대상 아님(확정)",
+    "OPERATOR": "레거시 운용자 계정 — 신규 체계 인증과 무관",
+    "PASSWORD": "레거시 계정 — 신규 체계 인증과 무관",
+    "RAWDATAIMPORTINFO": "미이관 — 단, 원음 파일 이관 시 참조",
+    "RAWDATAINFO": "미이관 — 단, 원음 파일 이관 시 참조",
+    "RAWSIGNALINFO": "원음신호 정보 — 이관 대상 아님(확정)",
+    "REDO_DB": "Oracle 시스템 테이블",
+    "REDO_LOG": "Oracle 시스템 테이블",
+    "USER_JUMIN": "개인식별정보 — 이관 제외",
+    "sysdiagrams": "SSMS 다이어그램 메타 — DB 산출물 아님"
+  },
+  "referenceOnly": {
+    "RAWDATAIMPORTINFO": "원음반입 이력. 파일 이관 시 반입 이력 대조용으로 조회",
+    "RAWDATAINFO": "원음자료 정보. 파일 이관 시 원음 메타 대조용으로 조회"
+  },
+  "dropped": {
+    "SELF_DB": "신규 체계에서 사용하지 않음"
+  },
+  "aliases": {
+    "DATE_SET_CHNG": "CHNG_DATETIME",
+    "COMMENTS": "COMMENT",
+    "COMMENTS1": "COMMENT1",
+    "COMMENTS2": "COMMENT2",
+    "DET_DATE": "DET_DATETIME",
+    "NO_FRAME": "FRAME_NUM",
+    "A_START_TIME": "A_START_MICROSEC",
+    "A_END_TIME": "A_END_MICROSEC",
+    "NO_SEGMENT": "SEGMENT_NUM"
+  },
+  "targetOnlyNotes": {
+    "ROWGUID": "NEWID() 기본값 (merge replication용)",
+    "IS_LEGACY": "1 로 채움 (레거시 이관 데이터 표시)",
+    "DELETED": "소스 동명 컬럼 없으면 0",
+    "CHNG_DATETIME": "소스 DATE_SET_CHNG, 없으면 이관 시각",
+    "RECORD_ID": "IDENTITY — 타겟이 자동 채번 (INSERT 목록에서 제외)",
+    "IS_TRAINING": "0 으로 채움 (신규 체계 생성 필드)"
+  },
+  "manual": [
+    {
+      "source": "IMAGE_DATA",
+      "column": "IMG_FILENAME",
+      "target": "FILE_NAME",
+      "rule": "파일명",
+      "note": "소스 IMG_FILENAME → FILE_NAME (실제 이미지 바이트는 FILE_DATA)"
+    },
+    {
+      "source": "CLASSES",
+      "column": "ACTIVE_SONAR1",
+      "target": "ACTV_SONAR1",
+      "rule": "수동",
+      "note": ""
+    },
+    {
+      "source": "CLASSES",
+      "column": "ACTIVE_SONAR2",
+      "target": "ACTV_SONAR2",
+      "rule": "수동",
+      "note": ""
+    },
+    {
+      "source": "CD_CHANGE_LOG",
+      "column": "RECORD_ID",
+      "target": "TABLE_ID",
+      "rule": "수동",
+      "note": "타겟 RECORD_ID 는 신규 PK 라 이름 충돌 — 원래 값은 TABLE_ID 로"
+    },
+    {
+      "source": "CD_CHANGE_LOG",
+      "column": "DATASET_ID",
+      "target": null,
+      "rule": "미결",
+      "note": "타겟 OPERATOR_ID 와의 대응 여부 불명 — 담당자 확인 필요"
+    },
+    {
+      "source": "CCF2CD_LOG",
+      "column": "DATASET_ID",
+      "target": "REF_EXT_RAW_SIG_ID",
+      "rule": "미결",
+      "note": "타겟이 EXT_RAW_SIG 참조로 바뀜 — 값 변환 규칙 확인 필요"
+    },
+    {
+      "source": "AI_SNIPPET",
+      "column": "DISTANCE_KM",
+      "target": "DET_DISTANCE_NM",
+      "rule": "단위변환",
+      "note": "km → 해리(NM) 단위 변환 필요 (÷1.852)"
+    },
+    {
+      "source": "IMAGE_DATA",
+      "column": "VESSEL_ID",
+      "target": "REF_TARGET_ID",
+      "rule": "미결",
+      "note": "타겟이 다형 참조(REF_TARGET_TYPE + REF_TARGET_ID) — TYPE 값 확정 필요"
+    },
+    {
+      "source": "DIST_LIST",
+      "column": "GROUP_ID",
+      "target": "REF_STD_DB_DIST_GROUP_ID",
+      "rule": "FK수동",
+      "note": "배포그룹 참조 — DB_DIST_GROUP.RECORD_ID 로 치환"
+    },
+    {
+      "source": "FRAME_SNIPPET",
+      "column": "FRAME_ID",
+      "target": "REF_STD_TR_FRAME_ID",
+      "rule": "FK수동",
+      "note": "순간소음 프레임 참조 — TR_FRAME.RECORD_ID 로 치환"
+    },
+    {
+      "source": "FRAME_SNIPPET",
+      "column": "SNIPPET_ID",
+      "target": "REF_STD_TR_SNIPPET_ID",
+      "rule": "FK수동",
+      "note": "순간소음 스니펫 참조 — TR_SNIPPET.RECORD_ID 로 치환"
+    },
+    {
+      "source": "SIG_SNIPPET",
+      "column": "SIGNATURES_ID",
+      "target": "REF_STD_SIGNATURES_ID",
+      "rule": "FK수동",
+      "note": "시그니처 참조"
+    },
+    {
+      "source": "SIG_SNIPPET",
+      "column": "SNIPPET_ID",
+      "target": "REF_STD_NB_SNIPPET_ID",
+      "rule": "FK수동",
+      "note": "협대역 스니펫 참조"
+    }
+  ],
+  "columnRules": [
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "CLASSIFI_NB_AUDIO_SNIPPET_FILE",
+      "rule": "wav 원본 적재",
+      "verdict": "확정",
+      "note": "스니펫 실제 wav 데이터를 그대로 적재"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "CLASSIFI_NB_GRAM_SNIPPET_FILE",
+      "rule": "grm→R8 변환 적재",
+      "verdict": "확정",
+      "note": "레거시 .grm 을 신규 R8 66B 포맷으로 변환해 적재 (GramReader.cs)"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "STD_NB_AUDIO_SNIPPET_FILE_NAME",
+      "rule": "AUDIO_FILENAME",
+      "verdict": "확정",
+      "note": "소스 AUDIO_FILENAME(파일명)"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "STD_NB_GRAM_SNIPPET_FILE_NAME",
+      "rule": "GRAM_FILENAME",
+      "verdict": "확정",
+      "note": "소스 GRAM_FILENAME(파일명)"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "BIN_NUM",
+      "rule": "frame block bin 수",
+      "verdict": "확정",
+      "note": "실제 frame block 의 bin 수 (기본값 1601)"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "SNIPPET_START_DATETIME",
+      "rule": "wav 헤더 계산",
+      "verdict": "확정",
+      "note": "wav 헤더로 시작시각 계산"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "SNIPPET_END_DATETIME",
+      "rule": "wav 헤더 계산",
+      "verdict": "확정",
+      "note": "wav 헤더로 끝시각 계산"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "GRAM_UPDATE_TIME",
+      "rule": "마이그레이션 시각",
+      "verdict": "확정",
+      "note": "이관 수행 시각"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "INTEGRAL_TIME",
+      "rule": "고정값 -1",
+      "verdict": "확정",
+      "note": "-1"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "GRAM_TYPE",
+      "rule": ".grm 헤더 cGram→코드",
+      "verdict": "확정",
+      "note": "레거시 헤더 @0 cGram[3] 태그로 결정: L→101(LOFAR), D→201(DEMON), V1~V4→301~304(VERNIER)."
+    },
+    {
+      "target": "STD_CLASSES",
+      "column": "REF_COMMENT",
+      "rule": "고정값",
+      "verdict": "확정",
+      "note": "NAIMS-I 이관 데이터"
+    },
+    {
+      "target": "STD_AI_SNIPPET",
+      "column": "GRAM_FILE",
+      "rule": "grm→R8 변환 적재",
+      "verdict": "확정",
+      "note": "레거시 .grm 을 신규 R8 66B 포맷으로 변환해 적재"
+    },
+    {
+      "target": "STD_AI_SNIPPET",
+      "column": "AUDIO_FILE",
+      "rule": "wav 원본 적재",
+      "verdict": "확정",
+      "note": "스니펫 실제 wav 데이터"
+    },
+    {
+      "target": "STD_AI_SNIPPET",
+      "column": "BIN_NUM",
+      "rule": "그램 데이터에서 계산",
+      "verdict": "확정",
+      "note": "변환된 그램 데이터의 bin 수 계산"
+    },
+    {
+      "target": "STD_TR_SNIPPET",
+      "column": "AUDIO_FILE",
+      "rule": "wav 원본 적재",
+      "verdict": "확정",
+      "note": "스니펫 실제 wav 데이터"
+    },
+    {
+      "target": "STD_TR_SNIPPET",
+      "column": "BIN_NUM",
+      "rule": "그램 데이터에서 계산",
+      "verdict": "확정",
+      "note": "그램 데이터의 bin 수 계산"
+    },
+    {
+      "target": "STD_TR_SNIPPET",
+      "column": "SPECTROGRAM_DATA",
+      "rule": "빈 byte",
+      "verdict": "확정",
+      "note": "일단 빈 바이트 적재"
+    },
+    {
+      "target": "STD_TR_SNIPPET",
+      "column": "SPECTROGRAM_START_FREQ",
+      "rule": "그램 내부값/-1",
+      "verdict": "확정",
+      "note": "그램 내부에 있으면 삽입, 없으면 -1"
+    },
+    {
+      "target": "STD_TR_SNIPPET",
+      "column": "SPECTROGRAM_END_FREQ",
+      "rule": "그램 내부값/-1",
+      "verdict": "확정",
+      "note": "그램 내부에 있으면 삽입, 없으면 -1"
+    },
+    {
+      "target": "STD_TR_SNIPPET",
+      "column": "SPECTROGRAM_FRAME_PER_SEC",
+      "rule": "직접 계산",
+      "verdict": "확정",
+      "note": "초당 프레임 직접 계산"
+    },
+    {
+      "target": "STD_TR_SNIPPET",
+      "column": "A_START_MICROSEC",
+      "rule": "초→µs (×1000000)",
+      "verdict": "확정",
+      "note": "소스 A_START_TIME 은 초(seconds). AAS 확인: a_start_time = 오디오헤더 factchunk.start_time(= µs/1000000 = 초, ViewCCFApplySubTR.cpp:1993). 타겟 µs 이므로 ×1,000,000"
+    },
+    {
+      "target": "STD_TR_SNIPPET",
+      "column": "A_END_MICROSEC",
+      "rule": "초→µs (×1000000)",
+      "verdict": "확정",
+      "note": "소스 A_END_TIME 은 초. 타겟 µs 이므로 ×1,000,000"
+    },
+    {
+      "target": "STD_AI_SNIPPET",
+      "column": "A_START_MICROSEC",
+      "rule": "초→µs (×1000000)",
+      "verdict": "확정",
+      "note": "소스 A_START_TIME 은 초. AAS 확인: a_start_time = factchunk.start_time(초, ViewCCFApplySubAI.cpp:3180). 타겟 µs 이므로 ×1,000,000"
+    },
+    {
+      "target": "STD_AI_SNIPPET",
+      "column": "A_END_MICROSEC",
+      "rule": "초→µs (×1000000)",
+      "verdict": "확정",
+      "note": "소스 A_END_TIME 은 초. 타겟 µs 이므로 ×1,000,000"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "A_START_MILLISEC",
+      "rule": "초→ms (×1000)",
+      "verdict": "확정",
+      "note": "소스 A_START_TIME 은 초. AAS: NB DB a_start_time = factchunk.start_time(초). 타겟 컬럼이 밀리초(A_START_MILLISEC) 이므로 ×1000 (AI/TR 은 µs 라 ×1,000,000)"
+    },
+    {
+      "target": "STD_NB_SNIPPET",
+      "column": "A_END_MILLISEC",
+      "rule": "초→ms (×1000)",
+      "verdict": "확정",
+      "note": "소스 A_END_TIME 은 초. 타겟 밀리초 이므로 ×1000"
+    },
+    {
+      "target": "STD_REFERENCE_DATA",
+      "column": "FILE_NAME",
+      "rule": "IMG_FILENAME",
+      "verdict": "확정",
+      "note": "소스 IMG_FILENAME"
+    },
+    {
+      "target": "STD_REFERENCE_DATA",
+      "column": "FILE_DATA",
+      "rule": "IMG 파일 원본",
+      "verdict": "확정",
+      "note": "IMG_FILENAME 이 가리키는 실제 이미지 바이트"
+    },
+    {
+      "target": "STD_REFERENCE_DATA",
+      "column": "FILE_TYPE",
+      "rule": "png",
+      "verdict": "확정",
+      "note": "이미지(png) 코드 (레거시 FileType=1=이미지)"
+    },
+    {
+      "target": "STD_REFERENCE_DATA",
+      "column": "REF_TARGET_TYPE",
+      "rule": "고정값 5 (vessel)",
+      "verdict": "확정",
+      "note": "함정(vessel) = 5 (신규 코드). 기존: 협대역=1/AI=2/능동=4"
+    },
+    {
+      "target": "STD_REFERENCE_DATA",
+      "column": "REF_TARGET_ID",
+      "rule": "VESSEL→RECORD_ID",
+      "verdict": "확정",
+      "note": "소스 VESSEL_ID 를 VESSEL_DATA 신규 RECORD_ID 로 치환"
+    },
+    {
+      "target": "STD_AI_SNIPPET",
+      "column": "DET_DISTANCE_NM",
+      "rule": "DISTANCE_KM ÷1.852 (NM)",
+      "verdict": "확정",
+      "note": "소스 AI_SNIPPET.DISTANCE_KM(킬로미터) → 해리. 1 NM = 1.852 km. 이름이 달라 자동 대응이 안 되므로 규칙으로 명시한다."
+    }
+  ],
+  "targetFixedDefault": [
+    {
+      "target": "STD_VESSEL_DATA",
+      "column": "HAS_CLUTTER",
+      "value": "0"
+    }
+  ],
+  "classesFillDefault": {
+    "value": "-1",
+    "except": [
+      "CHNG_DATETIME",
+      "COMMENT",
+      "DELETED",
+      "IS_LEGACY",
+      "RECORD_ID",
+      "REF_COMMENT",
+      "ROWGUID"
+    ],
+    "note": "STD_CLASSES 소스 대응 없는 신규 컬럼 임시 기본값"
+  },
+  "corrections": [
+    {
+      "source": "CCF2CD_LOG",
+      "column": "APPL_DATE",
+      "target": "APPL_DATETIME",
+      "rule": "별칭",
+      "verdict": "확정",
+      "note": "APPL_DATE → APPL_DATETIME"
+    },
+    {
+      "source": "CCF2CD_LOG",
+      "column": "DATASET_ID",
+      "target": "REF_EXT_RAW_SIG_ID",
+      "rule": "수동",
+      "verdict": "확정",
+      "note": "DATASET_ID → REF_EXT_RAW_SIG_ID (구 워크북의 APPL_DATETIME 매핑은 오류)"
+    },
+    {
+      "source": "DB_DIST_LOG",
+      "column": "DIST_DATE",
+      "target": "DIST_DATETIME",
+      "rule": "별칭",
+      "verdict": "확정",
+      "note": "DIST_DATE → DIST_DATETIME"
+    },
+    {
+      "source": "DB_DIST_LOG",
+      "column": "DB_FILENAME",
+      "target": "DB_FILENAME",
+      "rule": "동일",
+      "verdict": "확정",
+      "note": "배포 DB ZIP 파일명(CD_*.zip). 배포완료 응답 매칭 키. 직접 대응 (구 워크북의 파일 내부 파싱 라우팅은 오류)"
+    },
+    {
+      "source": "DB_DIST_LOG",
+      "column": "LOG_FILENAME",
+      "target": "-",
+      "rule": "미매핑",
+      "verdict": "미결",
+      "note": "배포이력 HWP 보고서 파일명(DB_FILENAME 과 별개). STD_DB_DIST_LOG 에 대응 컬럼 없음 — 미매핑"
+    },
+    {
+      "source": "DIST_TO",
+      "column": "COMPLT_DATE",
+      "target": "CHNG_DATETIME",
+      "rule": "별칭",
+      "verdict": "확정",
+      "note": "COMPLT_DATE → CHNG_DATETIME"
+    },
+    {
+      "source": "DIST_TO",
+      "column": "COMPLT_OPTR",
+      "target": "-",
+      "rule": "미매핑",
+      "verdict": "미결",
+      "note": "STD_DIST_TO 에 대응 컬럼 없음 — 미매핑 기존 필드"
+    },
+    {
+      "source": "CD_CHANGE_LOG",
+      "column": "CHNG_DATE",
+      "target": "CHNG_DATETIME",
+      "rule": "별칭",
+      "verdict": "확정",
+      "note": "CHNG_DATE → CHNG_DATETIME"
+    },
+    {
+      "source": "CD_CHANGE_LOG",
+      "column": "RECORD_ID",
+      "target": "TABLE_ID",
+      "rule": "수동",
+      "verdict": "확정",
+      "note": "소스 RECORD_ID(변경된 레코드 id) → TABLE_ID. 타겟 RECORD_ID 는 신규 IDENTITY PK 라 충돌 방지 (varchar→int 변환)"
+    }
+  ],
+  "commentPrefix": "[NAIMS-I]",
+  "hiddenTargetColumns": [
+    "STD_NB_SIG_SNIPPET_LINK.OLD_NB_SNIPPET_ID",
+    "STD_NB_SIG_SNIPPET_LINK.OLD_SIGNATURE_ID"
+  ],
+  "encrypted": {
+    "mssql": [
+      "ACTIVE_SONAR.SONAR_NAME",
+      "ACTIVE_SONAR.SONAR_NAME_ISUS90",
+      "CLASSES.CLASS_NAME",
+      "CLASSES.CLASS_NAME_ISUS90",
+      "CLASSES.CLASS_NAME_K",
+      "TRANSIENT.TR_NAME",
+      "VESSEL_DATA.VESSEL_NAME",
+      "VESSEL_DATA.VESSEL_NAME_ISUS90",
+      "VESSEL_DATA.VESSEL_NAME_K"
+    ],
+    "oracle": [
+      "CLASSES.CLASS_NAME",
+      "CLASSES.CLASS_NAME_ISUS90",
+      "CLASSES.CLASS_NAME_K",
+      "VESSEL_DATA.VESSEL_NAME",
+      "VESSEL_DATA.VESSEL_NAME_ISUS90",
+      "VESSEL_DATA.VESSEL_NAME_K"
+    ]
+  },
+  "gramTypeMap": {
+    "L": 101,
+    "D": 201,
+    "V1": 301,
+    "V2": 302,
+    "V3": 303,
+    "V4": 304
+  },
+  "refTargetTypeCodes": {
+    "NARROWBAND": 1,
+    "AI": 2,
+    "ACTIVE": 4,
+    "VESSEL": 5
+  }
+}

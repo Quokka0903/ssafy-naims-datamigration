@@ -58,6 +58,14 @@ namespace DBImplant_N1toN2.Features.FileBrowser
             ActiveContent = RawTab;
         }
 
+        /// <summary>MSU 경로 변경 시 각 탭의 RootPath를 업데이트</summary>
+        public void ReloadPaths()
+        {
+            RawTab.RootPath = Roots.CollectRaw;
+            NbTab.RootPath = Roots.NarrowbandRaw;
+            SdTab.RootPath = Roots.ShortPeriodRaw;
+        }
+
         private void SwitchCategory(string category)
         {
             ActiveContent = category switch

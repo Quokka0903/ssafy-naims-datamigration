@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 using DBImplant_N1toN2.Features.DbBrowser;
 using Microsoft.Data.SqlClient;
@@ -11,15 +12,23 @@ namespace DBImplant_N1toN2.DataAccess
     {
         public string DbTypeName => "MsSQL";
         public string ConnectionString { get; }
+        private readonly LegacyConnectionMode _mode;
 
-        public MsSqlLegacyConnection(string connectionString)
-            => ConnectionString = connectionString;
+        public MsSqlLegacyConnection(string connectionString, LegacyConnectionMode mode = LegacyConnectionMode.Odbc)
+        {
+            ConnectionString = connectionString;
+            _mode = mode;
+        }
+
+        private DbConnection CreateConnection() => _mode == LegacyConnectionMode.Odbc
+            ? new System.Data.Odbc.OdbcConnection(ConnectionString)   // 폐쇄망 기본: ODBC 경유
+            : new SqlConnection(ConnectionString);                    // 다이렉트: SqlClient
 
         public async Task<bool> TestConnectionAsync()
         {
             try
             {
-                using var conn = new SqlConnection(ConnectionString);
+                using var conn = CreateConnection();
                 await conn.OpenAsync();
                 return true;
             }
@@ -28,20 +37,28 @@ namespace DBImplant_N1toN2.DataAccess
 
         public DataTable QueryTable(string tableName, string? filterColumn, object? filterValue, int maxRows = 500)
         {
-            using var conn = new SqlConnection(ConnectionString);
+            using var conn = CreateConnection();
             conn.Open();
 
+            // ODBC 는 위치 기반 '?', 다이렉트(SqlClient)는 명명 '@v'.
+            string marker = _mode == LegacyConnectionMode.Odbc ? "?" : "@v";
             string sql = filterColumn != null
-                ? $"SELECT TOP {maxRows} * FROM [{tableName}] WHERE [{filterColumn}] = @v"
+                ? $"SELECT TOP {maxRows} * FROM [{tableName}] WHERE [{filterColumn}] = {marker}"
                 : $"SELECT TOP {maxRows} * FROM [{tableName}]";
 
-            using var cmd = new SqlCommand(sql, conn);
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
             if (filterColumn != null)
-                cmd.Parameters.AddWithValue("@v", filterValue);
+            {
+                var p = cmd.CreateParameter();
+                p.ParameterName = "v";
+                p.Value = filterValue ?? DBNull.Value;
+                cmd.Parameters.Add(p);
+            }
 
-            using var da = new SqlDataAdapter(cmd);
+            using var reader = cmd.ExecuteReader();
             var dt = new DataTable(tableName);
-            da.Fill(dt);
+            dt.Load(reader);
             return dt;
         }
 

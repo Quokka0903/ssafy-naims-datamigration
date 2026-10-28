@@ -25,7 +25,7 @@ namespace DBImplant_N1toN2.Features.NarrowBand.ViewModels
         public string RootPath
         {
             get => _rootPath;
-            private set => Set(ref _rootPath, value);
+            set => Set(ref _rootPath, value);
         }
 
         public RelayCommand SelectRootPathCommand { get; }
@@ -70,6 +70,7 @@ namespace DBImplant_N1toN2.Features.NarrowBand.ViewModels
         public RelayCommand ScanParseCommand { get; }
         public RelayCommand DbImportCommand { get; }
         public RelayCommand CancelCommand { get; }
+        public RelayCommand<object> OpenGramCompareCommand { get; }
 
         private CancellationTokenSource? _cts;
 
@@ -81,6 +82,21 @@ namespace DBImplant_N1toN2.Features.NarrowBand.ViewModels
             DbImportCommand = new RelayCommand(() => { /* TODO */ }, () => !IsRunning && Packages.Count > 0);
             CancelCommand = new RelayCommand(Cancel, () => IsRunning);
             SelectRootPathCommand = new RelayCommand(SelectRootPath, () => !IsRunning);
+
+            OpenGramCompareCommand = new RelayCommand<object>(o =>
+            {
+                string? path = null;
+                if (o != null)
+                {
+                    var prop = o.GetType().GetProperty("GrmPath") ?? o.GetType().GetProperty("FullPath");
+                    path = prop?.GetValue(o) as string;
+                }
+                if (!string.IsNullOrEmpty(path) && path.EndsWith(".grm", StringComparison.OrdinalIgnoreCase))
+                {
+                    var win = new Features.Migration.Views.GramCompareWindow(path);
+                    win.Show();
+                }
+            });
 
             // 1) 초기: 목록만 스캔해서 1컬럼 전시
             ScanNbFolders();
